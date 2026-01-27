@@ -22,32 +22,32 @@
     .category-accent-ring:focus {
         --tw-ring-color: {{ category.accent_color }};
     }
-
+    
     /* Mobile responsive grid */
     @media (max-width: 640px) {
         .content-grid {
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         }
     }
-
+    
     @media (min-width: 640px) {
         .content-grid {
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         }
     }
-
+    
     /* Make cards fit content */
     .content-card {
         height: fit-content;
     }
-
+    
     .content-card img,
     .content-card video {
         width: 100%;
         height: auto;
         display: block;
     }
-
+    
     /* Lightbox styles */
     .lightbox {
         display: none;
@@ -60,20 +60,20 @@
         background-color: rgba(0, 0, 0, 0.95);
         animation: fadeIn 0.2s ease-in;
     }
-
+    
     .lightbox.active {
         display: flex;
         align-items: center;
         justify-content: center;
     }
-
+    
     .lightbox-content {
         max-width: 95vw;
         max-height: 95vh;
         object-fit: contain;
         animation: zoomIn 0.3s ease-out;
     }
-
+    
     .lightbox-close {
         position: absolute;
         top: 20px;
@@ -94,11 +94,11 @@
         line-height: 1;
         padding: 0;
     }
-
+    
     .lightbox-close:hover {
         background: rgba(255, 255, 255, 0.2);
     }
-
+    
     .lightbox-info {
         position: absolute;
         bottom: 0;
@@ -109,34 +109,34 @@
         padding: 30px 20px 20px;
         text-align: center;
     }
-
+    
     .lightbox-title {
         font-size: 1.5rem;
         font-weight: bold;
         margin-bottom: 5px;
     }
-
+    
     .lightbox-caption {
         font-size: 1rem;
         opacity: 0.9;
     }
-
+    
     @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
     }
-
+    
     @keyframes zoomIn {
         from { transform: scale(0.8); opacity: 0; }
         to { transform: scale(1); opacity: 1; }
     }
-
+    
     /* Click indicator on hover */
     .media-item {
         cursor: pointer;
         position: relative;
     }
-
+    
     .media-item::after {
         content: '';
         position: absolute;
@@ -155,11 +155,11 @@
         background-position: center;
         background-repeat: no-repeat;
     }
-
+    
     .media-item:hover::after {
         opacity: 1;
     }
-
+    
     /* Hover overlay for titles and captions */
     .content-overlay {
         position: absolute;
@@ -174,18 +174,18 @@
         pointer-events: none;
         z-index: 10;
     }
-
+    
     .content-card:hover .content-overlay {
         opacity: 1;
     }
-
+    
     .content-overlay-title {
         font-weight: 600;
         font-size: 0.875rem;
         margin-bottom: 4px;
         line-height: 1.2;
     }
-
+    
     .content-overlay-caption {
         font-size: 0.75rem;
         opacity: 0.9;
@@ -195,16 +195,16 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-
+    
     @media (min-width: 640px) {
         .content-overlay {
             padding: 16px;
         }
-
+        
         .content-overlay-title {
             font-size: 1rem;
         }
-
+        
         .content-overlay-caption {
             font-size: 0.875rem;
         }
@@ -217,7 +217,7 @@
         <div class="gradient-bg px-4 sm:px-6 py-6 sm:py-8 text-white relative overflow-hidden" style="--gradient-start: {{ category.accent_color }}; --gradient-end: {{ category.accent_color }}dd;">
             <!-- Decorative Pattern -->
             <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-
+            
             <div class="flex flex-col sm:flex-row justify-between items-start gap-4 relative z-10">
                 <div class="flex-1">
                     <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
@@ -353,7 +353,7 @@
                     Add Folder
                 </button>
             </div>
-
+            
             <!-- Add Folder Form -->
             <div id="addFolderForm" class="hidden mt-4 space-y-3 bg-white p-4 sm:p-6 rounded-lg border shadow-sm">
                 <h4 class="font-semibold text-gray-800 text-sm sm:text-base">Create New Folder</h4>
@@ -392,7 +392,7 @@
                     </button>
                 </div>
             </div>
-
+            
             <!-- Bulk Upload Form -->
             <div id="bulkUploadForm" class="hidden mt-4 space-y-3 bg-white p-4 sm:p-6 rounded-lg border shadow-sm">
                 <h4 class="font-semibold text-gray-800 text-sm sm:text-base">Bulk Upload Media Links</h4>
@@ -445,7 +445,7 @@
                     </button>
                 </div>
             </div>
-
+            
             <!-- Add Content Form -->
             <div id="addContentForm" class="hidden mt-4 space-y-3 bg-white p-4 sm:p-6 rounded-lg border shadow-sm">
                 <h4 class="font-semibold text-gray-800 text-sm sm:text-base">Add New Content</h4>
@@ -776,6 +776,54 @@
     </div>
 </div>
 
+<!-- Edit Content Modal (for folder content) -->
+<div id="editContentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeEditContentModal()">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-4 sm:p-6" onclick="event.stopPropagation()">
+        <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4">Edit Content</h3>
+        <div class="space-y-3 sm:space-y-4">
+            <input type="hidden" id="editContentId">
+            <input type="hidden" id="editContentType">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Title (optional)</label>
+                <input
+                    type="text"
+                    id="editContentTitle"
+                    class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm sm:text-base"
+                />
+            </div>
+            <div id="editContentUrlField">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Media URL</label>
+                <input
+                    type="text"
+                    id="editContentUrl"
+                    class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm sm:text-base"
+                />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Caption/Text</label>
+                <textarea
+                    id="editContentCaption"
+                    class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg h-20 sm:h-24 resize-y text-sm sm:text-base"
+                ></textarea>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2 pt-2">
+                <button
+                    onclick="saveEditContent()"
+                    class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm sm:text-base"
+                >
+                    Save Changes
+                </button>
+                <button
+                    onclick="closeEditContentModal()"
+                    class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 text-sm sm:text-base"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Lightbox -->
 <div id="lightbox" class="lightbox" onclick="closeLightbox()">
     <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
@@ -820,7 +868,7 @@
     function updateContentForm() {
         const type = document.getElementById('contentType').value;
         const urlField = document.getElementById('urlField');
-
+        
         if (type === 'text') {
             urlField.classList.add('hidden');
         } else {
@@ -964,10 +1012,10 @@
         currentFolderId = folderId;
         const modal = document.getElementById('folderModal');
         const content = document.getElementById('folderContent');
-
+        
         modal.classList.remove('hidden');
         content.innerHTML = '<div class="text-center py-8"><div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>';
-
+        
         // Fetch folder info and content
         fetch(`/api/folders/${folderId}/content`)
             .then(response => response.json())
@@ -975,12 +1023,12 @@
                 // Find folder info from page data
                 const folders = {{ folders | tojson }};
                 const folder = folders.find(f => f._id === folderId);
-
+                
                 if (folder) {
                     document.getElementById('folderModalTitle').textContent = folder.name;
                     document.getElementById('folderModalDesc').textContent = folder.description || '';
                 }
-
+                
                 if (items.length === 0) {
                     content.innerHTML = `
                         <div class="text-center py-20 bg-gray-50 rounded-lg">
@@ -995,15 +1043,32 @@
                     `;
                     return;
                 }
-
+                
                 let html = '<div class="content-grid grid gap-3 sm:gap-4">';
-
+                
                 items.forEach(item => {
-                    html += `<div class="bg-white rounded-lg border-2 border-gray-200 overflow-hidden hover:border-indigo-400 transition-all content-card relative">`;
-
+                    html += `<div id="content-${item._id}" class="bg-white rounded-lg border-2 border-gray-200 overflow-hidden hover:border-indigo-400 transition-all content-card relative group">`;
+                    
                     if (item.media_type === 'image') {
                         html += `<div class="relative bg-gray-100 media-item" onclick="openLightbox('${item.media_url}', 'image', '${item.title || ''}', '${item.caption || ''}')">
                             <img src="${item.media_url}" alt="${item.title || ''}" class="w-full h-auto object-contain" loading="lazy">`;
+                        
+                        // Add admin buttons for images
+                        {% if is_admin %}
+                        html += `<div class="absolute top-1 sm:top-2 right-1 sm:right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
+                            <button onclick="editFolderContent('${item._id}', '${item.title || ''}', '${item.media_url}', '${item.caption || ''}', '${item.media_type}')" class="p-1 sm:p-1.5 bg-white/90 hover:bg-white rounded shadow-sm">
+                                <svg class="w-3 sm:w-4 h-3 sm:h-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </button>
+                            <button onclick="deleteFolderContent('${item._id}')" class="p-1 sm:p-1.5 bg-white/90 hover:bg-white rounded shadow-sm">
+                                <svg class="w-3 sm:w-4 h-3 sm:h-4 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>`;
+                        {% endif %}
+                        
                         if (item.title || item.caption) {
                             html += `<div class="content-overlay">`;
                             if (item.title) html += `<div class="content-overlay-title">${item.title}</div>`;
@@ -1014,6 +1079,23 @@
                     } else if (item.media_type === 'video') {
                         html += `<div class="relative bg-gray-900">
                             <video src="${item.media_url}" controls class="w-full h-auto"></video>`;
+                        
+                        // Add admin buttons for videos
+                        {% if is_admin %}
+                        html += `<div class="absolute top-1 sm:top-2 right-1 sm:right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
+                            <button onclick="editFolderContent('${item._id}', '${item.title || ''}', '${item.media_url}', '${item.caption || ''}', '${item.media_type}')" class="p-1 sm:p-1.5 bg-white/90 hover:bg-white rounded shadow-sm">
+                                <svg class="w-3 sm:w-4 h-3 sm:h-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </button>
+                            <button onclick="deleteFolderContent('${item._id}')" class="p-1 sm:p-1.5 bg-white/90 hover:bg-white rounded shadow-sm">
+                                <svg class="w-3 sm:w-4 h-3 sm:h-4 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>`;
+                        {% endif %}
+                        
                         if (item.title || item.caption) {
                             html += `<div class="content-overlay">`;
                             if (item.title) html += `<div class="content-overlay-title">${item.title}</div>`;
@@ -1022,15 +1104,34 @@
                         }
                         html += `</div>`;
                     } else {
-                        html += `<div class="p-3 sm:p-4 min-h-[120px] sm:min-h-[150px]">
-                            ${item.title ? `<h4 class="font-semibold text-gray-800 mb-2 text-xs sm:text-sm">${item.title}</h4>` : ''}
-                            <p class="text-xs sm:text-sm text-gray-600">${item.text || item.caption || ''}</p>
+                        html += `<div class="p-3 sm:p-4 min-h-[120px] sm:min-h-[150px] flex flex-col justify-between">
+                            <div>
+                                ${item.title ? `<h4 class="font-semibold text-gray-800 mb-2 text-xs sm:text-sm">${item.title}</h4>` : ''}
+                                <p class="text-xs sm:text-sm text-gray-600">${item.text || item.caption || ''}</p>
+                            </div>`;
+                        
+                        // Add admin buttons for text
+                        {% if is_admin %}
+                        html += `<div class="flex gap-1 justify-end mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="editFolderContent('${item._id}', '${item.title || ''}', '', '${(item.text || item.caption || '').replace(/'/g, "\\'")}', '${item.media_type}')" class="p-1 hover:bg-gray-100 rounded">
+                                <svg class="w-3 sm:w-4 h-3 sm:h-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </button>
+                            <button onclick="deleteFolderContent('${item._id}')" class="p-1 hover:bg-red-50 rounded">
+                                <svg class="w-3 sm:w-4 h-3 sm:h-4 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
                         </div>`;
+                        {% endif %}
+                        
+                        html += `</div>`;
                     }
-
+                    
                     html += `</div>`;
                 });
-
+                
                 html += '</div>';
                 content.innerHTML = html;
             })
@@ -1049,21 +1150,21 @@
         const urls = document.getElementById('bulkUrls').value;
         const mediaType = document.getElementById('bulkMediaType').value;
         const destination = document.getElementById('bulkDestination').value;
-
+        
         if (!urls.trim()) {
             alert('Please paste at least one URL');
             return;
         }
-
+        
         const urlList = urls.split('\n').map(u => u.trim()).filter(u => u);
-
+        
         if (urlList.length === 0) {
             alert('No valid URLs found');
             return;
         }
-
+        
         if (!confirm(`Upload ${urlList.length} items?`)) return;
-
+        
         fetch('/api/content/bulk', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1127,7 +1228,7 @@
     function toggleEdit(contentId) {
         const editForm = document.getElementById(`edit-form-${contentId}`);
         const contentDisplay = document.getElementById(`content-display-${contentId}`);
-
+        
         editForm.classList.toggle('hidden');
         contentDisplay.classList.toggle('hidden');
     }
@@ -1135,7 +1236,7 @@
     function cancelEdit(contentId) {
         const editForm = document.getElementById(`edit-form-${contentId}`);
         const contentDisplay = document.getElementById(`content-display-${contentId}`);
-
+        
         editForm.classList.add('hidden');
         contentDisplay.classList.remove('hidden');
     }
@@ -1193,7 +1294,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const colorInput = document.getElementById('categoryColor');
         const colorPreview = document.getElementById('colorPreview');
-
+        
         if (colorInput && colorPreview) {
             colorInput.addEventListener('input', function() {
                 if (/^#[0-9A-F]{6}$/i.test(this.value)) {
@@ -1210,26 +1311,26 @@
         const lightboxInfo = document.getElementById('lightbox-info');
         const lightboxTitle = document.getElementById('lightbox-title');
         const lightboxCaption = document.getElementById('lightbox-caption');
-
+        
         // Only handle images
         if (type !== 'image') return;
-
+        
         // Set image
         lightboxImage.src = url;
-
+        
         // Show info if title or caption exists
         if (title || caption) {
             lightboxTitle.textContent = title || '';
             lightboxCaption.textContent = caption || '';
             lightboxInfo.style.display = 'block';
-
+            
             // Hide empty elements
             lightboxTitle.style.display = title ? 'block' : 'none';
             lightboxCaption.style.display = caption ? 'block' : 'none';
         } else {
             lightboxInfo.style.display = 'none';
         }
-
+        
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden'; // Prevent scrolling
     }
@@ -1246,5 +1347,86 @@
             closeLightbox();
         }
     });
+
+    // Functions for editing/deleting content in folders
+    function editFolderContent(contentId, title, url, caption, mediaType) {
+        document.getElementById('editContentId').value = contentId;
+        document.getElementById('editContentType').value = mediaType;
+        document.getElementById('editContentTitle').value = title;
+        document.getElementById('editContentUrl').value = url;
+        document.getElementById('editContentCaption').value = caption;
+        
+        // Hide URL field for text content
+        if (mediaType === 'text') {
+            document.getElementById('editContentUrlField').style.display = 'none';
+        } else {
+            document.getElementById('editContentUrlField').style.display = 'block';
+        }
+        
+        document.getElementById('editContentModal').classList.remove('hidden');
+    }
+
+    function closeEditContentModal() {
+        document.getElementById('editContentModal').classList.add('hidden');
+    }
+
+    function saveEditContent() {
+        const contentId = document.getElementById('editContentId').value;
+        const title = document.getElementById('editContentTitle').value;
+        const url = document.getElementById('editContentUrl').value;
+        const caption = document.getElementById('editContentCaption').value;
+        const mediaType = document.getElementById('editContentType').value;
+
+        fetch(`/api/content/${contentId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: title,
+                media_url: url,
+                caption: caption,
+                text: caption
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeEditContentModal();
+                // Reload folder content
+                if (currentFolderId) {
+                    openFolder(currentFolderId);
+                } else {
+                    location.reload();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update content');
+        });
+    }
+
+    function deleteFolderContent(contentId) {
+        if (!confirm('Delete this content?')) return;
+
+        fetch(`/api/content/${contentId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the element from the folder modal
+                const element = document.getElementById(`content-${contentId}`);
+                if (element) {
+                    element.style.opacity = '0';
+                    element.style.transform = 'scale(0.9)';
+                    setTimeout(() => element.remove(), 300);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to delete content');
+        });
+    }
 </script>
 {% endblock %}

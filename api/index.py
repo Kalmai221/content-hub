@@ -25,7 +25,7 @@ folders_collection = db['folders']
 
 # Helper function to get accessible categories for sidebar
 def get_accessible_categories():
-    """Get categories accessible to current user, sorted paid first then free, alphabetically"""
+    """Get all categories for current user, sorted paid first then free, alphabetically"""
     if 'user_id' not in session:
         return []
 
@@ -33,25 +33,16 @@ def get_accessible_categories():
     if not user:
         return []
 
-    is_admin = user.get('is_admin', False)
-    is_subscribed = user.get('is_subscribed', False)
-
-    # Get all categories
+    # Get all categories (show all to everyone)
     all_categories = list(categories_collection.find())
-
-    # Filter based on access
-    if is_admin or is_subscribed:
-        accessible = all_categories
-    else:
-        accessible = [c for c in all_categories if c.get('is_free', False)]
 
     # Separate into paid and free
     paid_categories = sorted(
-        [c for c in accessible if not c.get('is_free', False)],
+        [c for c in all_categories if not c.get('is_free', False)],
         key=lambda x: x['name'].lower()
     )
     free_categories = sorted(
-        [c for c in accessible if c.get('is_free', False)],
+        [c for c in all_categories if c.get('is_free', False)],
         key=lambda x: x['name'].lower()
     )
 
@@ -164,27 +155,22 @@ def categories():
     is_subscribed = user.get('is_subscribed', False)
     is_admin = user.get('is_admin', False)
 
-    # Fetch all categories
-    if is_admin or is_subscribed:
-        # Show all categories, sorted with paid first
-        all_categories = list(categories_collection.find())
-        paid_categories = sorted(
-            [c for c in all_categories if not c.get('is_free', False)],
-            key=lambda x: x['name'].lower()
-        )
-        free_categories = sorted(
-            [c for c in all_categories if c.get('is_free', False)],
-            key=lambda x: x['name'].lower()
-        )
-        categories = paid_categories + free_categories
-    else:
-        # Show only free categories
-        categories = sorted(
-            list(categories_collection.find({'is_free': True})),
-            key=lambda x: x['name'].lower()
-        )
+    # Fetch all categories for everyone, sorted with paid first
+    all_categories = list(categories_collection.find())
+    paid_categories = sorted(
+        [c for c in all_categories if not c.get('is_free', False)],
+        key=lambda x: x['name'].lower()
+    )
+    free_categories = sorted(
+        [c for c in all_categories if c.get('is_free', False)],
+        key=lambda x: x['name'].lower()
+    )
+    categories = paid_categories + free_categories
 
-    return render_template('categories.html', categories=categories, is_admin=is_admin)
+    return render_template('categories.html', 
+                         categories=categories, 
+                         is_admin=is_admin,
+                         is_subscribed=is_subscribed)
 
 @app.route('/category/<category_id>')
 @login_required

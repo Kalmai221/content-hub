@@ -110,7 +110,8 @@
                     <div id="sidebarCategories">
                         {% for category in sidebar_categories %}
                         <a 
-                            href="/category/{{ category._id }}"
+                            href="{% if session.get('is_admin') or session.get('is_subscribed') or category.is_free %}/category/{{ category._id }}{% else %}#{% endif %}"
+                            {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}onclick="event.preventDefault(); window.location.href='https://example.com';"{% endif %}
                             class="sidebar-category-link w-full flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-gray-100 rounded-lg transition"
                             data-name="{{ category.name.lower() }}"
                         >
@@ -121,9 +122,19 @@
                                 ></div>
                                 <span class="font-medium text-gray-800 text-sm sm:text-base truncate">{{ category.name }}</span>
                             </div>
-                            <span class="text-xs px-2 py-0.5 sm:py-1 rounded flex-shrink-0 ml-2 {% if category.is_free %}bg-green-100 text-green-700{% else %}bg-purple-100 text-purple-700{% endif %}">
-                                {% if category.is_free %}Free{% else %}Premium{% endif %}
-                            </span>
+                            <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                                {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
+                                <span class="text-xs px-2 py-0.5 sm:py-1 rounded bg-gray-200 text-gray-700 flex items-center gap-1">
+                                    <svg class="w-2.5 h-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                    Locked
+                                </span>
+                                {% endif %}
+                                <span class="text-xs px-2 py-0.5 sm:py-1 rounded {% if category.is_free %}bg-green-100 text-green-700{% else %}bg-purple-100 text-purple-700{% endif %}">
+                                    {% if category.is_free %}Free{% else %}Premium{% endif %}
+                                </span>
+                            </div>
                         </a>
                         {% endfor %}
                         
