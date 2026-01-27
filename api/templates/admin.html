@@ -38,7 +38,7 @@
                             onclick="toggleSubscription('{{ user._id }}', {{ 'true' if user.is_subscribed else 'false' }})"
                             class="px-2 sm:px-3 py-1 text-xs rounded {% if user.is_subscribed %}bg-green-100 text-green-700{% else %}bg-gray-200 text-gray-700{% endif %}"
                         >
-                            {% if user.is_subscribed %}Sub{% else %}Free{% endif %}
+                            {% if user.is_subscribed %}Paid{% else %}Free{% endif %}
                         </button>
                         {% if user._id|string != session.get('user_id')|string %}
                         <button
