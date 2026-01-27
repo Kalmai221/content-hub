@@ -21,6 +21,7 @@ users_collection = db['users']
 categories_collection = db['categories']
 content_collection = db['content']
 pages_collection = db['pages']
+folders_collection = db['folders']
 
 # Helper function to get accessible categories for sidebar
 def get_accessible_categories():
@@ -201,12 +202,18 @@ def category_detail(category_id):
     if not is_admin and not is_subscribed and not category.get('is_free', False):
         return "Subscription required", 403
 
-    # Fetch content for this category
-    content_items = list(content_collection.find({'category_id': category_id}))
+    # Fetch folders for this category and convert ObjectId to string
+    folders = list(folders_collection.find({'category_id': category_id}))
+    for folder in folders:
+        folder['_id'] = str(folder['_id'])
+
+    # Fetch content for this category (root level only - no folder_id)
+    content_items = list(content_collection.find({'category_id': category_id, 'folder_id': None}))
 
     return render_template('category_detail.html', 
                          category=category, 
                          content_items=content_items,
+                         folders=folders,
                          is_admin=is_admin)
 
 @app.route('/admin')
@@ -299,15 +306,69 @@ def update_category(category_id):
 @admin_required
 def delete_category(category_id):
     categories_collection.delete_one({'_id': ObjectId(category_id)})
+    # Delete all folders in this category
+    folders_collection.delete_many({'category_id': category_id})
+    # Delete all content in this category
     content_collection.delete_many({'category_id': category_id})
     return jsonify({'success': True})
 
+# Folder API Routes
+@app.route('/api/folders', methods=['POST'])
+@admin_required
+def create_folder():
+    data = request.json
+    folder_data = {
+        'category_id': data['category_id'],
+        'name': data['name'],
+        'description': data.get('description', ''),
+        'created_at': datetime.utcnow()
+    }
+
+    result = folders_collection.insert_one(folder_data)
+    return jsonify({'success': True, 'id': str(result.inserted_id)})
+
+@app.route('/api/folders/<folder_id>', methods=['PUT'])
+@admin_required
+def update_folder(folder_id):
+    data = request.json
+    update_data = {}
+
+    if 'name' in data:
+        update_data['name'] = data['name']
+    if 'description' in data:
+        update_data['description'] = data['description']
+
+    folders_collection.update_one(
+        {'_id': ObjectId(folder_id)},
+        {'$set': update_data}
+    )
+
+    return jsonify({'success': True})
+
+@app.route('/api/folders/<folder_id>', methods=['DELETE'])
+@admin_required
+def delete_folder(folder_id):
+    folders_collection.delete_one({'_id': ObjectId(folder_id)})
+    # Delete all content in this folder
+    content_collection.delete_many({'folder_id': folder_id})
+    return jsonify({'success': True})
+
+@app.route('/api/folders/<folder_id>/content', methods=['GET'])
+@login_required
+def get_folder_content(folder_id):
+    content_items = list(content_collection.find({'folder_id': folder_id}))
+    for item in content_items:
+        item['_id'] = str(item['_id'])
+    return jsonify(content_items)
+
+# Content API Routes
 @app.route('/api/content', methods=['POST'])
 @admin_required
 def create_content():
     data = request.json
     content_data = {
         'category_id': data['category_id'],
+        'folder_id': data.get('folder_id'),  # Can be None for root content
         'title': data.get('title', ''),
         'text': data.get('text', ''),
         'media_url': data.get('media_url', ''),
@@ -319,13 +380,53 @@ def create_content():
     result = content_collection.insert_one(content_data)
     return jsonify({'success': True, 'id': str(result.inserted_id)})
 
+@app.route('/api/content/bulk', methods=['POST'])
+@admin_required
+def bulk_create_content():
+    data = request.json
+    urls = data.get('urls', [])
+    category_id = data['category_id']
+    folder_id = data.get('folder_id')  # Can be None for root
+    media_type = data.get('media_type', 'image')
+
+    created_count = 0
+    failed_urls = []
+
+    for url in urls:
+        url = url.strip()
+        if not url:
+            continue
+
+        try:
+            content_data = {
+                'category_id': category_id,
+                'folder_id': folder_id,
+                'title': '',
+                'text': '',
+                'media_url': url,
+                'media_type': media_type,
+                'caption': '',
+                'created_at': datetime.utcnow()
+            }
+            content_collection.insert_one(content_data)
+            created_count += 1
+        except Exception as e:
+            failed_urls.append(url)
+
+    return jsonify({
+        'success': True, 
+        'created': created_count,
+        'failed': len(failed_urls),
+        'failed_urls': failed_urls
+    })
+
 @app.route('/api/content/<content_id>', methods=['PUT'])
 @admin_required
 def update_content(content_id):
     data = request.json
     update_data = {}
 
-    for field in ['title', 'text', 'media_url', 'media_type', 'caption']:
+    for field in ['title', 'text', 'media_url', 'media_type', 'caption', 'folder_id']:
         if field in data:
             update_data[field] = data[field]
 
