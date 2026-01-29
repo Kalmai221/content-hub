@@ -27,6 +27,7 @@ content_collection = db['content']
 pages_collection = db['pages']
 folders_collection = db['folders']
 verification_codes_collection = db['verification_codes']
+favorites_collection = db['favorites']
 
 # Email Configuration
 SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp-mail.outlook.com')
@@ -868,3 +869,115 @@ def update_beta_key():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
+@app.route('/api/favorites/<content_id>', methods=['POST'])
+def add_favorite(content_id):
+    """Add content to user's favorites"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+
+    user_id = session['user_id']
+
+    # Check if already favorited
+    existing = favorites_collection.find_one({
+        'user_id': ObjectId(user_id),
+        'content_id': ObjectId(content_id)
+    })
+
+    if existing:
+        return jsonify({'success': False, 'error': 'Already favorited'}), 400
+
+    # Add to favorites
+    favorites_collection.insert_one({
+        'user_id': ObjectId(user_id),
+        'content_id': ObjectId(content_id),
+        'created_at': datetime.utcnow()
+    })
+
+    return jsonify({'success': True})
+
+@app.route('/api/favorites/<content_id>', methods=['DELETE'])
+def remove_favorite(content_id):
+    """Remove content from user's favorites"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+
+    user_id = session['user_id']
+
+    result = favorites_collection.delete_one({
+        'user_id': ObjectId(user_id),
+        'content_id': ObjectId(content_id)
+    })
+
+    if result.deleted_count > 0:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'error': 'Not in favorites'}), 400
+
+@app.route('/api/favorites/check/<content_id>', methods=['GET'])
+def check_favorite(content_id):
+    """Check if content is favorited by current user"""
+    if 'user_id' not in session:
+        return jsonify({'is_favorited': False})
+
+    user_id = session['user_id']
+
+    favorite = favorites_collection.find_one({
+        'user_id': ObjectId(user_id),
+        'content_id': ObjectId(content_id)
+    })
+
+    return jsonify({'is_favorited': favorite is not None})
+
+@app.route('/favorites')
+def favorites_page():
+    """Display user's favorites page"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    is_admin = session.get('is_admin', False)
+    is_subscribed = session.get('is_subscribed', False)
+
+    # Get all favorited content IDs
+    favorite_docs = list(favorites_collection.find({'user_id': ObjectId(user_id)}))
+    content_ids = [fav['content_id'] for fav in favorite_docs]
+
+    # Get all content details
+    favorited_content = []
+    if content_ids:
+        contents = list(content_collection.find({'_id': {'$in': content_ids}}))
+
+        # Get category info for each content
+        for content in contents:
+            category = categories_collection.find_one({'_id': content['category_id']})
+            if category:
+                content['category_name'] = category['name']
+                content['category_accent_color'] = category.get('accent_color', '#4F46E5')
+            favorited_content.append(content)
+
+    return render_template('favorites.html',
+                         favorited_content=favorited_content,
+                         is_admin=is_admin,
+                         is_subscribed=is_subscribed,
+                         categories=get_accessible_categories())
+
+# =======================
+# CATEGORY BANNER IMAGE
+# =======================
+
+@app.route('/api/categories/<category_id>/banner', methods=['PUT'])
+def update_category_banner(category_id):
+    """Update category banner image"""
+    if 'user_id' not in session or not session.get('is_admin'):
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+    data = request.json
+    banner_url = data.get('banner_url', '')
+
+    categories_collection.update_one(
+        {'_id': ObjectId(category_id)},
+        {'$set': {'banner_image': banner_url}}
+    )
+
+    return jsonify({'success': True})

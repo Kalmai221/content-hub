@@ -31,10 +31,19 @@
         <a href="{% if is_admin or is_subscribed or category.is_free %}/category/{{ category._id }}{% else %}#{% endif %}" 
            {% if not is_admin and not is_subscribed and not category.is_free %}onclick="event.preventDefault(); window.location.href='https://discord.effexor.cc/';"{% endif %}
            class="category-card group block rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2" style="background-color: rgb(18, 18, 20);" data-name="{{ category.name.lower() }}">
-            <!-- Card Header with Gradient -->
-            <div class="relative h-32 gradient-bg overflow-hidden" style="--gradient-start: {{ category.accent_color }}; --gradient-end: {{ category.accent_color }}dd;">
-                <!-- Decorative Pattern -->
-                <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            <!-- Card Header with Banner or Gradient -->
+            <div class="relative h-32 overflow-hidden">
+                {% if category.banner_image %}
+                <!-- Banner Image -->
+                <img src="{{ category.banner_image }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10"></div>
+                {% else %}
+                <!-- Gradient Background -->
+                <div class="absolute inset-0 gradient-bg" style="--gradient-start: {{ category.accent_color }}; --gradient-end: {{ category.accent_color }}dd;">
+                    <!-- Decorative Pattern -->
+                    <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                </div>
+                {% endif %}
                 
                 <!-- Category Icon/Badge -->
                 <div class="absolute top-4 right-4 flex flex-col items-end gap-2">

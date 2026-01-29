@@ -14,7 +14,8 @@
                 <div class="flex items-center gap-2">
                     <div class="bg-gradient-to-br from-purple-500 to-pink-600 p-2 rounded-lg">
                         <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <span class="text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Effexor Hub</span>
@@ -23,6 +24,7 @@
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center gap-4">
                     <a href="#features" class="text-gray-300 hover:text-purple-400 transition px-3 py-2">Features</a>
+                    <a href="#categories" class="text-gray-300 hover:text-purple-400 transition px-3 py-2">Categories</a>
                     <a href="#pricing" class="text-gray-300 hover:text-purple-400 transition px-3 py-2">Pricing</a>
                     <a href="/login" class="text-gray-300 hover:text-purple-400 transition px-3 py-2">Login</a>
                     <a href="/register" class="px-6 py-2 rounded-lg font-semibold text-white transition hover:opacity-90" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}">
@@ -43,6 +45,7 @@
         <div id="mobileMenu" class="hidden md:hidden border-t border-gray-800">
             <div class="px-4 py-4 space-y-3">
                 <a href="#features" class="block text-gray-300 hover:text-purple-400 transition px-3 py-2">Features</a>
+                <a href="#categories" class="block text-gray-300 hover:text-purple-400 transition px-3 py-2">Categories</a>
                 <a href="#pricing" class="block text-gray-300 hover:text-purple-400 transition px-3 py-2">Pricing</a>
                 <a href="/login" class="block text-gray-300 hover:text-purple-400 transition px-3 py-2">Login</a>
                 <a href="/register" class="block text-center px-6 py-3 rounded-lg font-semibold text-white transition hover:opacity-90" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}">
@@ -59,48 +62,70 @@
                 <!-- Hero Content -->
                 <div class="text-center lg:text-left">
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                        {{ page.title if page.title else 'Welcome to Effexor Hub' }}
+                        {{ page.title if page.title else 'Your Premium Media Hub' }}
                     </h1>
                     <p class="text-lg sm:text-xl text-gray-400 mb-8 leading-relaxed">
-                        Your gateway to premium content and exclusive resources. Access curated collections, media libraries, and more.
+                        Stream, download, and organize your media library. Access exclusive content across multiple categories with our powerful media platform.
                     </p>
                     
                     <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                         <a href="/register" class="px-8 py-4 rounded-lg font-semibold text-white transition hover:opacity-90 shadow-lg text-center" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}">
-                            Get Started Free
+                            Start Watching Free
                         </a>
                         <a href="#features" class="px-8 py-4 rounded-lg font-semibold text-gray-200 bg-gray-800 hover:bg-gray-700 transition border border-gray-700 text-center">
-                            Learn More
+                            Explore Features
                         </a>
                     </div>
 
-                    <!-- Social Proof -->
-                    <div class="mt-8 flex items-center gap-6 justify-center lg:justify-start text-sm text-gray-400">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Free to join</span>
+                    <!-- Stats -->
+                    <div class="mt-12 grid grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white mb-1">1000+</div>
+                            <div class="text-sm text-gray-400">Media Files</div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Cancel anytime</span>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white mb-1">HD</div>
+                            <div class="text-sm text-gray-400">Quality</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white mb-1">24/7</div>
+                            <div class="text-sm text-gray-400">Access</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Hero Image -->
+                <!-- Hero Image/Video Preview -->
                 <div class="hidden lg:block">
                     <div class="relative">
                         <div class="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-3xl opacity-20"></div>
-                        <img 
-                            src="{{ page.preview_image if page.preview_image else 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=800&fit=crop' }}" 
-                            alt="Platform Preview" 
-                            class="relative rounded-2xl shadow-2xl w-full"
-                        />
+                        <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-700" style="background-color: rgb(18, 18, 20);">
+                            <!-- Mock Video Player Interface -->
+                            <div class="aspect-video bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/10 backdrop-blur-lg flex items-center justify-center">
+                                        <svg class="w-10 h-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-white font-semibold">Watch in HD Quality</p>
+                                    <p class="text-gray-400 text-sm mt-1">Adaptive streaming technology</p>
+                                </div>
+                            </div>
+                            <!-- Player Controls -->
+                            <div class="p-4 bg-gray-900/50 backdrop-blur-lg flex items-center gap-4">
+                                <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition">
+                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    </svg>
+                                </button>
+                                <div class="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
+                                    <div class="h-full bg-purple-500" style="width: 35%"></div>
+                                </div>
+                                <span class="text-white text-sm font-mono">1:25 / 3:45</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -115,84 +140,164 @@
     <section id="features" class="py-16 sm:py-24" style="background-color: rgb(18, 18, 20);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12 sm:mb-16">
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Everything You Need</h2>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Powerful Media Features</h2>
                 <p class="text-lg text-gray-400 max-w-2xl mx-auto">
-                    Access premium features designed to enhance your experience
+                    Everything you need for the ultimate media viewing experience
                 </p>
             </div>
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                <!-- Feature 1 -->
+                <!-- Feature 1: HD Streaming -->
                 <div class="p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition" style="background-color: rgba(26, 26, 30, 0.5);">
                     <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}20;">
                         <svg class="w-6 h-6" style="color: {{ page.accent_color if page.accent_color else '#4F46E5' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-white mb-2">Exclusive Content</h3>
-                    <p class="text-gray-400">Access premium categories and curated collections not available anywhere else</p>
+                    <h3 class="text-xl font-semibold text-white mb-2">HD Streaming</h3>
+                    <p class="text-gray-400">Watch content in crystal-clear high definition with adaptive streaming technology for buffer-free viewing</p>
                 </div>
 
-                <!-- Feature 2 -->
+                <!-- Feature 2: Smart Organization -->
+                <div class="p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition" style="background-color: rgba(26, 26, 30, 0.5);">
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}20;">
+                        <svg class="w-6 h-6" style="color: {{ page.accent_color if page.accent_color else '#4F46E5' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Smart Organization</h3>
+                    <p class="text-gray-400">Browse through organized categories with powerful search and filtering to find exactly what you want</p>
+                </div>
+
+                <!-- Feature 3: Multi-Format -->
+                <div class="p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition" style="background-color: rgba(26, 26, 30, 0.5);">
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}20;">
+                        <svg class="w-6 h-6" style="color: {{ page.accent_color if page.accent_color else '#4F46E5' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Multi-Format Support</h3>
+                    <p class="text-gray-400">Play videos, view images, read documents, and more - all in one universal media platform</p>
+                </div>
+
+                <!-- Feature 4: Fast Downloads -->
+                <div class="p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition" style="background-color: rgba(26, 26, 30, 0.5);">
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}20;">
+                        <svg class="w-6 h-6" style="color: {{ page.accent_color if page.accent_color else '#4F46E5' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Lightning Downloads</h3>
+                    <p class="text-gray-400">Download content for offline viewing with blazing-fast speeds and resume capability</p>
+                </div>
+
+                <!-- Feature 5: Regular Updates -->
                 <div class="p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition" style="background-color: rgba(26, 26, 30, 0.5);">
                     <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}20;">
                         <svg class="w-6 h-6" style="color: {{ page.accent_color if page.accent_color else '#4F46E5' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-white mb-2">Regular Updates</h3>
-                    <p class="text-gray-400">Fresh content added weekly to keep your library growing and engaging</p>
+                    <h3 class="text-xl font-semibold text-white mb-2">Fresh Content Daily</h3>
+                    <p class="text-gray-400">New media added regularly to keep your library growing with the latest and greatest content</p>
                 </div>
 
-                <!-- Feature 3 -->
+                <!-- Feature 6: Premium Collections -->
                 <div class="p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition" style="background-color: rgba(26, 26, 30, 0.5);">
                     <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}20;">
                         <svg class="w-6 h-6" style="color: {{ page.accent_color if page.accent_color else '#4F46E5' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-white mb-2">Organized Library</h3>
-                    <p class="text-gray-400">Browse content organized in categories and folders for easy navigation</p>
-                </div>
-
-                <!-- Feature 4 -->
-                <div class="p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition" style="background-color: rgba(26, 26, 30, 0.5);">
-                    <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}20;">
-                        <svg class="w-6 h-6" style="color: {{ page.accent_color if page.accent_color else '#4F46E5' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-2">Mobile Friendly</h3>
-                    <p class="text-gray-400">Optimized experience on any device - desktop, tablet, or mobile</p>
-                </div>
-
-                <!-- Feature 5 -->
-                <div class="p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition" style="background-color: rgba(26, 26, 30, 0.5);">
-                    <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}20;">
-                        <svg class="w-6 h-6" style="color: {{ page.accent_color if page.accent_color else '#4F46E5' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-2">Ad-Free Experience</h3>
-                    <p class="text-gray-400">Enjoy uninterrupted browsing without annoying advertisements</p>
-                </div>
-
-                <!-- Feature 6 -->
-                <div class="p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition" style="background-color: rgba(26, 26, 30, 0.5);">
-                    <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}20;">
-                        <svg class="w-6 h-6" style="color: {{ page.accent_color if page.accent_color else '#4F46E5' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-2">Secure & Private</h3>
-                    <p class="text-gray-400">Your data is protected with industry-standard security measures</p>
+                    <h3 class="text-xl font-semibold text-white mb-2">Exclusive Collections</h3>
+                    <p class="text-gray-400">Access premium content and curated collections not available anywhere else</p>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Media Categories Preview -->
+    <section id="categories" class="py-16 sm:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Browse Categories</h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+                    Discover organized collections across multiple categories
+                </p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Category Card 1 -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                    <div class="aspect-square bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center relative">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition"></div>
+                        <svg class="w-16 h-16 text-white relative z-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                        </svg>
+                    </div>
+                    <div class="p-4 bg-gray-900">
+                        <h3 class="text-lg font-semibold text-white mb-1">Videos</h3>
+                        <p class="text-sm text-gray-400">HD video content</p>
+                    </div>
+                </div>
+
+                <!-- Category Card 2 -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                    <div class="aspect-square bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center relative">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition"></div>
+                        <svg class="w-16 h-16 text-white relative z-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div class="p-4 bg-gray-900">
+                        <h3 class="text-lg font-semibold text-white mb-1">Images</h3>
+                        <p class="text-sm text-gray-400">High-res galleries</p>
+                    </div>
+                </div>
+
+                <!-- Category Card 3 -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                    <div class="aspect-square bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center relative">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition"></div>
+                        <svg class="w-16 h-16 text-white relative z-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div class="p-4 bg-gray-900">
+                        <h3 class="text-lg font-semibold text-white mb-1">Documents</h3>
+                        <p class="text-sm text-gray-400">Files & resources</p>
+                    </div>
+                </div>
+
+                <!-- Category Card 4 -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                    <div class="aspect-square bg-gradient-to-br from-orange-600 to-red-600 flex items-center justify-center relative">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition"></div>
+                        <svg class="w-16 h-16 text-white relative z-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <div class="p-4 bg-gray-900">
+                        <h3 class="text-lg font-semibold text-white mb-1">Collections</h3>
+                        <p class="text-sm text-gray-400">Curated packs</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <a href="/register" class="inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-white transition hover:opacity-90" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}">
+                    Explore All Categories
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Pricing Section -->
-    <section id="pricing" class="py-16 sm:py-24">
+    <section id="pricing" class="py-16 sm:py-24" style="background-color: rgb(18, 18, 20);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12 sm:mb-16">
                 <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Simple, Transparent Pricing</h2>
@@ -203,92 +308,105 @@
 
             <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 <!-- Free Plan -->
-                <div class="p-8 rounded-2xl border-2 border-gray-800" style="background-color: rgb(18, 18, 20);">
+                <div class="rounded-2xl border-2 border-gray-700 p-8" style="background-color: rgba(26, 26, 30, 0.5);">
                     <div class="mb-6">
                         <h3 class="text-2xl font-bold text-white mb-2">Free</h3>
                         <div class="flex items-baseline gap-2 mb-4">
                             <span class="text-4xl font-bold text-white">$0</span>
                             <span class="text-gray-400">/month</span>
                         </div>
-                        <p class="text-gray-400">Perfect for trying out the platform</p>
+                        <p class="text-gray-400">Perfect for getting started</p>
                     </div>
-
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span class="text-gray-300">Access to free categories</span>
+                            <span class="text-gray-300">Access to free content</span>
                         </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span class="text-gray-300">Limited content library</span>
+                            <span class="text-gray-300">HD streaming quality</span>
                         </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span class="text-gray-300">Ad-free browsing</span>
+                            <span class="text-gray-300">Basic download speeds</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span class="text-gray-300">Community support</span>
                         </li>
                     </ul>
-
-                    <a href="/register" class="block w-full text-center px-6 py-3 rounded-lg font-semibold text-white bg-gray-700 hover:bg-gray-600 transition">
-                        Get Started
+                    
+                    <a href="/register" class="block w-full px-6 py-3 rounded-lg font-semibold text-center text-gray-200 bg-gray-800 hover:bg-gray-700 transition border border-gray-700">
+                        Get Started Free
                     </a>
                 </div>
 
                 <!-- Premium Plan -->
-                <div class="p-8 rounded-2xl border-2 relative overflow-hidden" style="border-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}; background-color: rgb(18, 18, 20);">
-                    <!-- Popular Badge -->
-                    <div class="absolute top-0 right-0 px-4 py-1 text-xs font-semibold text-white rounded-bl-lg" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}">
-                        POPULAR
+                <div class="rounded-2xl border-2 p-8 relative" style="border-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}; background-color: rgba(26, 26, 30, 0.5);">
+                    <div class="absolute top-0 right-8 transform -translate-y-1/2">
+                        <span class="px-4 py-1 rounded-full text-sm font-semibold text-white shadow-lg" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}">
+                            Most Popular
+                        </span>
                     </div>
-
+                    
                     <div class="mb-6">
                         <h3 class="text-2xl font-bold text-white mb-2">Premium</h3>
                         <div class="flex items-baseline gap-2 mb-4">
                             <span class="text-4xl font-bold text-white">$9.99</span>
                             <span class="text-gray-400">/month</span>
                         </div>
-                        <p class="text-gray-400">Full access to all features</p>
+                        <p class="text-gray-400">Everything you need and more</p>
                     </div>
-
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span class="text-gray-300"><strong>Unlimited</strong> content access</span>
+                            <span class="text-gray-300"><strong class="text-white">Unlimited</strong> content access</span>
                         </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span class="text-gray-300">All premium categories</span>
+                            <span class="text-gray-300"><strong class="text-white">4K Ultra HD</strong> streaming</span>
                         </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span class="text-gray-300">Weekly new content</span>
+                            <span class="text-gray-300"><strong class="text-white">Lightning-fast</strong> downloads</span>
                         </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span class="text-gray-300">Priority support</span>
+                            <span class="text-gray-300"><strong class="text-white">Exclusive</strong> premium content</span>
                         </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span class="text-gray-300">Cancel anytime</span>
+                            <span class="text-gray-300"><strong class="text-white">Priority</strong> support</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span class="text-gray-300"><strong class="text-white">Ad-free</strong> experience</span>
                         </li>
                     </ul>
-
-                    <a href="/register" class="block w-full text-center px-6 py-3 rounded-lg font-semibold text-white transition hover:opacity-90" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}">
+                    
+                    <a href="https://discord.effexor.cc/" class="block w-full px-6 py-3 rounded-lg font-semibold text-center text-white transition hover:opacity-90 shadow-lg" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}">
                         Upgrade to Premium
                     </a>
                 </div>
@@ -297,166 +415,249 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-16 sm:py-24" style="background-color: rgb(18, 18, 20);">
+    <section class="py-16 sm:py-24">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to Get Started?</h2>
-            <p class="text-lg text-gray-400 mb-8">
-                Join thousands of users accessing premium content today
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/register" class="px-8 py-4 rounded-lg font-semibold text-white transition hover:opacity-90 shadow-lg" style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}">
-                    Sign Up Free
-                </a>
-                <a href="/login" class="px-8 py-4 rounded-lg font-semibold text-gray-200 bg-gray-800 hover:bg-gray-700 transition border border-gray-700">
-                    Login to Account
-                </a>
+            <div class="rounded-2xl p-12 relative overflow-hidden" style="background: linear-gradient(135deg, {{ page.accent_color if page.accent_color else '#4F46E5' }} 0%, {{ page.accent_color if page.accent_color else '#7C3AED' }} 100%);">
+                <div class="relative z-10">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+                        Ready to Start Watching?
+                    </h2>
+                    <p class="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
+                        Join thousands of users enjoying premium media content. Sign up now and get instant access to our library.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="/register" class="px-8 py-4 rounded-lg font-semibold text-gray-900 bg-white hover:bg-gray-100 transition shadow-lg text-center">
+                            Create Free Account
+                        </a>
+                        <a href="/login" class="px-8 py-4 rounded-lg font-semibold text-white border-2 border-white hover:bg-white/10 transition text-center">
+                            Sign In
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Decorative elements -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white rounded-full opacity-10 blur-3xl"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full opacity-10 blur-3xl"></div>
             </div>
-            <p class="text-sm text-gray-500 mt-6">No credit card required • Free tier available</p>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="border-t border-gray-800 py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center text-gray-500 text-sm">
-                <p>&copy; 2025 Effexor Hub. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 </div>
 
 {% else %}
-<!-- Home Page for Logged-in Users -->
-<div class="max-w-7xl mx-auto px-4 py-8">
-    <div class="space-y-8">
-        <!-- Hero Section -->
-        <div class="rounded-2xl shadow-xl overflow-hidden" style="background-color: rgb(18, 18, 20);">
-            <div class="relative">
-                <img 
-                    src="{{ page.preview_image if page.preview_image else 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=600&fit=crop' }}" 
-                    alt="Welcome" 
-                    class="w-full h-96 object-cover"
-                />
-                <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
-                
-                <div class="absolute inset-0 flex items-center">
-                    <div class="px-8 md:px-12 max-w-3xl">
-                        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-                            Welcome back, {{ session.get('username') }}!
-                        </h1>
-                        
-                        {% if session.get('is_subscribed') and not session.get('is_admin') %}
-                        <p class="text-lg text-white/90 mb-6 drop-shadow">
-                            You have a premium subscription! Enjoy access to all content and exclusive features.<br><br>
-                            {{ page.description if page.description else '' }}
-                        </p>
-                        {% elif not session.get('is_subscribed') and not session.get('is_admin') %}
-                        <p class="text-lg text-white/90 mb-6 drop-shadow">
-                            {{ page.description if page.description else 'Unlock premium content with our subscription! Get access to exclusive media and other features, with new content uploaded every week.' }}
-                        </p>
-                        <a href="https://discord.effexor.cc" target="_blank" rel="noopener noreferrer">
-                            <button 
-                                class="inline-flex items-center gap-2 text-white px-8 py-4 rounded-lg hover:opacity-90 transition text-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                                style="background-color: {{ page.accent_color if page.accent_color else '#4F46E5' }}"
-                            >
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
-                                Upgrade to Premium
-                            </button>
-                        </a>
+<!-- Dashboard for Logged-in Users -->
+<div class="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+    <!-- Welcome Header -->
+    <div class="mb-6 sm:mb-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-200 mb-2">Welcome back, {{ session.get('username') }}!</h2>
+        <p class="text-sm sm:text-base text-gray-400">Browse your media library and discover new content</p>
+    </div>
 
-                        {% elif session.get('is_admin') %}
-                        <p class="text-lg text-white/90 mb-6 drop-shadow">
-                            {{ page.description if page.description else 'Admin message: Customise this page in the section below' }}
-                        </p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Edit Section -->
-        {% if session.get('is_admin') %}
-        <div class="rounded-lg shadow p-6" style="background-color: rgb(18, 18, 20);">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-200">Customize Home Page</h3>
-                <button onclick="toggleEditHome()" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm">
-                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="rounded-xl p-6 border border-gray-700" style="background-color: rgb(18, 18, 20);">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    Edit
-                </button>
-            </div>
-            <div id="editHomeForm" class="hidden space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Preview Image URL</label>
-                    <input
-                        type="text"
-                        id="previewImage"
-                        value="{{ page.preview_image if page.preview_image else '' }}"
-                        class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-800/50 text-gray-200"
-                        placeholder="https://example.com/image.jpg"
-                    />
-                    <p class="text-xs text-gray-500 mt-1">Recommended: 1200x600px</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Login Screen Text</label>
-                    <input
-                        type="text"
-                        id="homeTitle"
-                        value="{{ page.title if page.title else 'Welcome to Effexor Hub' }}"
-                        class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-800/50 text-gray-200"
-                    />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Home Page Title</label>
-                    <textarea
-                        id="homeDescription"
-                        class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent h-32 bg-gray-800/50 text-gray-200"
-                    >{{ page.description if page.description else '' }}</textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Button Color (Hex)</label>
-                    <div class="flex gap-2">
-                        <input
-                            type="text"
-                            id="accentColor"
-                            value="{{ page.accent_color if page.accent_color else '#4F46E5' }}"
-                            class="flex-1 px-4 py-2 border border-gray-600 rounded-lg font-mono focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-800/50 text-gray-200"
-                            placeholder="#4F46E5"
-                        />
-                        <input
-                            type="color"
-                            id="accentColorPicker"
-                            value="{{ page.accent_color if page.accent_color else '#4F46E5' }}"
-                            class="w-12 h-10 rounded-lg border-2 border-gray-600 cursor-pointer bg-gray-800"
-                            title="Pick a color"
-                        />
-                    </div>
-                </div>
-                <div class="flex gap-2 pt-4">
-                    <button
-                        onclick="saveHomeSettings()"
-                        class="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                    >
-                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Save Changes
-                    </button>
-                    <button
-                        onclick="toggleEditHome()"
-                        class="px-6 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition"
-                    >
-                        Cancel
-                    </button>
+                    <div class="text-2xl font-bold text-white">{{ categories|length if categories else '0' }}</div>
+                    <div class="text-xs text-gray-400">Categories</div>
                 </div>
             </div>
         </div>
+
+        <div class="rounded-xl p-6 border border-gray-700" style="background-color: rgb(18, 18, 20);">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-white">HD</div>
+                    <div class="text-xs text-gray-400">Quality</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-xl p-6 border border-gray-700" style="background-color: rgb(18, 18, 20);">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                    {% if session.get('is_subscribed') %}
+                    <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    {% else %}
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    {% endif %}
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-white">{{ 'Premium' if session.get('is_subscribed') else 'Free' }}</div>
+                    <div class="text-xs text-gray-400">Plan</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-xl p-6 border border-gray-700" style="background-color: rgb(18, 18, 20);">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-orange-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-white">24/7</div>
+                    <div class="text-xs text-gray-400">Access</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <a href="/categories" class="group block rounded-xl p-6 border border-gray-700 hover:border-purple-500/50 transition" style="background-color: rgb(18, 18, 20);">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition">
+                    <svg class="w-6 h-6 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-1">Browse Categories</h3>
+                    <p class="text-sm text-gray-400">Explore organized content</p>
+                </div>
+            </div>
+        </a>
+
+        {% if not session.get('is_subscribed') %}
+        <a href="https://discord.effexor.cc/" class="group block rounded-xl p-6 border border-gray-700 hover:border-purple-500/50 transition" style="background-color: rgb(18, 18, 20);">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center group-hover:scale-110 transition">
+                    <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-1">Upgrade to Premium</h3>
+                    <p class="text-sm text-gray-400">Unlock all content</p>
+                </div>
+            </div>
+        </a>
+        {% endif %}
+
+        {% if session.get('is_admin') %}
+        <a href="/admin" class="group block rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition" style="background-color: rgb(18, 18, 20);">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition">
+                    <svg class="w-6 h-6 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-1">Admin Panel</h3>
+                    <p class="text-sm text-gray-400">Manage content</p>
+                </div>
+            </div>
+        </a>
         {% endif %}
     </div>
+
+    <!-- Home Page Customization for Admin -->
+    {% if session.get('is_admin') %}
+    <div class="rounded-xl p-6 border border-blue-500/30 mb-8" style="background-color: rgb(18, 18, 20);">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white">Customize Home Page</h3>
+                    <p class="text-sm text-gray-400">Personalize the landing page for visitors</p>
+                </div>
+            </div>
+            <button
+                onclick="toggleEditHome()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
+            >
+                Edit Settings
+            </button>
+        </div>
+
+        <!-- Edit Form -->
+        <div id="editHomeForm" class="hidden mt-6 space-y-4 pt-6 border-t border-gray-700">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Preview Image URL</label>
+                <input
+                    type="url"
+                    id="previewImage"
+                    value="{{ page.preview_image if page.preview_image else '' }}"
+                    placeholder="https://example.com/image.jpg"
+                    class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-800/50 text-gray-200"
+                />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Home Page Title</label>
+                <input
+                    type="text"
+                    id="homeTitle"
+                    value="{{ page.title if page.title else 'Welcome to Effexor Hub' }}"
+                    class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-800/50 text-gray-200"
+                />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Home Page Description</label>
+                <textarea
+                    id="homeDescription"
+                    class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent h-32 bg-gray-800/50 text-gray-200"
+                >{{ page.description if page.description else '' }}</textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Accent Color (Hex)</label>
+                <div class="flex gap-2">
+                    <input
+                        type="text"
+                        id="accentColor"
+                        value="{{ page.accent_color if page.accent_color else '#4F46E5' }}"
+                        class="flex-1 px-4 py-2 border border-gray-600 rounded-lg font-mono focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-800/50 text-gray-200"
+                        placeholder="#4F46E5"
+                    />
+                    <input
+                        type="color"
+                        id="accentColorPicker"
+                        value="{{ page.accent_color if page.accent_color else '#4F46E5' }}"
+                        class="w-12 h-10 rounded-lg border-2 border-gray-600 cursor-pointer bg-gray-800"
+                        title="Pick a color"
+                    />
+                </div>
+            </div>
+            <div class="flex gap-2 pt-4">
+                <button
+                    onclick="saveHomeSettings()"
+                    class="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                >
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Save Changes
+                </button>
+                <button
+                    onclick="toggleEditHome()"
+                    class="px-6 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endif %}
 {% endblock %}
@@ -493,7 +694,9 @@
 
     function toggleEditHome() {
         const form = document.getElementById('editHomeForm');
-        form.classList.toggle('hidden');
+        if (form) {
+            form.classList.toggle('hidden');
+        }
     }
 
     function saveHomeSettings() {
