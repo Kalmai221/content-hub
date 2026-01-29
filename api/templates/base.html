@@ -194,6 +194,53 @@
             });
         }
     </script>
+    <script>
+    (function() {
+      // Function to protect media
+      function protectMedia(element) {
+        // Disable right-click
+        element.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Disable dragging
+        element.setAttribute('draggable', 'false');
+        element.style.userSelect = 'none';
+        element.style.webkitUserDrag = 'none';
+
+        // If it's a video, hide download button
+        if (element.tagName === 'VIDEO') {
+          element.setAttribute('controlsList', 'nodownload');
+        }
+      }
+
+      // Protect existing media on page load
+      function protectAllMedia() {
+        const media = document.querySelectorAll('img, video');
+        media.forEach(protectMedia);
+      }
+
+      // Use MutationObserver to catch dynamically added media
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType === 1 && (node.tagName === 'IMG' || node.tagName === 'VIDEO')) {
+              protectMedia(node);
+            }
+            // Also protect media inside added elements
+            if (node.nodeType === 1) {
+              node.querySelectorAll && node.querySelectorAll('img, video').forEach(protectMedia);
+            }
+          });
+        });
+      });
+
+      // Start observing the body for new elements
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      // Protect existing media immediately
+      document.addEventListener('DOMContentLoaded', protectAllMedia);
+    })();
+    </script>
+
     {% block scripts %}{% endblock %}
 </body>
 </html>
