@@ -279,24 +279,46 @@
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Banner Image URL (optional)</label>
-                    <input
-                        type="url"
-                        id="categoryBannerImage"
-                        value="{{ category.banner_image if category.banner_image else '' }}"
-                        placeholder="https://example.com/banner.jpg"
-                        class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                    />
-                    <p class="text-xs text-gray-500 mt-1">Leave empty to use gradient background</p>
+                    <div class="relative">
+                        <input
+                            type="url"
+                            id="categoryBannerImage"
+                            value="{{ category.banner_image if category.banner_image else '' }}"
+                            placeholder="https://example.com/banner.jpg"
+                            class="w-full px-3 sm:px-4 py-2 pr-8 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                        />
+                        <button
+                            onclick="clearBannerInput('categoryBannerImage')"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
+                            title="Clear banner URL"
+                        >
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Recommended size: 1200×400 pixels (3:1 ratio)</p>
                 </div>
                 <div class="flex gap-2">
                     <div class="flex-1">
                         <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Accent Color</label>
-                        <input
-                            type="text"
-                            id="categoryColor"
-                            value="{{ category.accent_color }}"
-                            class="hidden min-[425px]:block w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg font-mono text-sm sm:text-base bg-gray-800/50 text-gray-200"
-                        />
+                        <div class="relative">
+                            <input
+                                type="text"
+                                id="categoryColor"
+                                value="{{ category.accent_color }}"
+                                class="hidden min-[425px]:block w-full px-3 sm:px-4 py-2 pr-8 border border-gray-600 rounded-lg font-mono text-sm sm:text-base bg-gray-800/50 text-gray-200"
+                            />
+                            <button
+                                onclick="clearColorInput('categoryColor', 'categoryColorPicker')"
+                                class="hidden min-[425px]:flex absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
+                                title="Clear color"
+                            >
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Preview</label>
@@ -919,6 +941,17 @@ https://example.com/image3.jpg"
             console.error('Error:', error);
             alert('Failed to update category');
         });
+    }
+
+    // Clear input functions
+    function clearColorInput(textInputId, pickerInputId) {
+        const defaultColor = '#4F46E5';
+        document.getElementById(textInputId).value = defaultColor;
+        document.getElementById(pickerInputId).value = defaultColor;
+    }
+
+    function clearBannerInput(inputId) {
+        document.getElementById(inputId).value = '';
     }
 
     function addFolder() {

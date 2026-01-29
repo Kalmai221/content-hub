@@ -28,6 +28,7 @@ pages_collection = db['pages']
 folders_collection = db['folders']
 verification_codes_collection = db['verification_codes']
 favorites_collection = db['favorites']
+user_pins_collection = db['user_pins']
 
 # Email Configuration
 SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp-mail.outlook.com')
@@ -97,7 +98,7 @@ def verify_code(email, code, code_type='email_verification'):
 
 # Helper function to get accessible categories for sidebar
 def get_accessible_categories():
-    """Get all categories for current user, sorted paid first then free, alphabetically"""
+    """Get all categories for current user, sorted with user's pinned first, then paid, then free, alphabetically"""
     if 'user_id' not in session:
         return []
 
@@ -108,25 +109,41 @@ def get_accessible_categories():
     # Get all categories (show all to everyone)
     all_categories = list(categories_collection.find())
 
-    # Separate into paid and free
+    # Get user's pinned categories
+    user_pins = user_pins_collection.find_one({'user_id': ObjectId(session['user_id'])})
+    pinned_category_ids = set(user_pins.get('pinned_categories', [])) if user_pins else set()
+
+    # Mark all categories with is_user_pinned
+    for category in all_categories:
+        category['is_user_pinned'] = str(category['_id']) in pinned_category_ids
+
+    # Separate into pinned and unpinned based on user's pins
+    pinned_categories = sorted(
+        [c for c in all_categories if c['is_user_pinned']],
+        key=lambda x: x['name'].lower()
+    )
+    unpinned_categories = [c for c in all_categories if not c['is_user_pinned']]
+
+    # Within unpinned, separate into paid and free
     paid_categories = sorted(
-        [c for c in all_categories if not c.get('is_free', False)],
+        [c for c in unpinned_categories if not c.get('is_free', False)],
         key=lambda x: x['name'].lower()
     )
     free_categories = sorted(
-        [c for c in all_categories if c.get('is_free', False)],
+        [c for c in unpinned_categories if c.get('is_free', False)],
         key=lambda x: x['name'].lower()
     )
 
-    # Combine: paid first, then free
-    return paid_categories + free_categories
+    # Combine: pinned first, then paid, then free
+    return pinned_categories + paid_categories + free_categories
 
 # Context processor to make categories available in all templates
 @app.context_processor
 def inject_categories():
     if 'user_id' in session:
-        return {'sidebar_categories': get_accessible_categories()}
-    return {'sidebar_categories': []}
+        cats = get_accessible_categories()
+        return {'sidebar_categories': cats, 'categories': cats}
+    return {'sidebar_categories': [], 'categories': []}
 
 # Authentication decorator
 def login_required(f):
@@ -532,17 +549,36 @@ def categories():
     is_subscribed = user.get('is_subscribed', False)
     is_admin = user.get('is_admin', False)
 
-    # Fetch all categories for everyone, sorted with paid first
+    # Fetch all categories for everyone, sorted with user's pinned first, then paid, then free
     all_categories = list(categories_collection.find())
+
+    # Get user's pinned categories
+    user_pins = user_pins_collection.find_one({'user_id': ObjectId(session['user_id'])})
+    pinned_category_ids = set(user_pins.get('pinned_categories', [])) if user_pins else set()
+
+    # Mark categories as pinned for the template
+    for category in all_categories:
+        category['is_user_pinned'] = str(category['_id']) in pinned_category_ids
+
+    # Separate pinned categories
+    pinned_categories = sorted(
+        [c for c in all_categories if c['is_user_pinned']],
+        key=lambda x: x['name'].lower()
+    )
+    unpinned_categories = [c for c in all_categories if not c['is_user_pinned']]
+
+    # Within unpinned, separate paid and free
     paid_categories = sorted(
-        [c for c in all_categories if not c.get('is_free', False)],
+        [c for c in unpinned_categories if not c.get('is_free', False)],
         key=lambda x: x['name'].lower()
     )
     free_categories = sorted(
-        [c for c in all_categories if c.get('is_free', False)],
+        [c for c in unpinned_categories if c.get('is_free', False)],
         key=lambda x: x['name'].lower()
     )
-    categories = paid_categories + free_categories
+
+    # Combine: pinned first, then paid, then free
+    categories = pinned_categories + paid_categories + free_categories
 
     return render_template('categories.html', 
                          categories=categories, 
@@ -667,10 +703,50 @@ def update_category(category_id):
         update_data['is_free'] = data['is_free']
     if 'accent_color' in data:
         update_data['accent_color'] = data['accent_color']
+    if 'banner_image' in data:
+        update_data['banner_image'] = data['banner_image']
 
     categories_collection.update_one(
         {'_id': ObjectId(category_id)},
         {'$set': update_data}
+    )
+
+    return jsonify({'success': True})
+
+@app.route('/api/categories/<category_id>/pin', methods=['PUT'])
+@login_required
+def pin_category(category_id):
+    data = request.json
+    is_pinned = data.get('is_pinned', False)
+    user_id = ObjectId(session['user_id'])
+
+    # Get or create user pins document
+    user_pins = user_pins_collection.find_one({'user_id': user_id})
+
+    if not user_pins:
+        user_pins = {
+            'user_id': user_id,
+            'pinned_categories': []
+        }
+        user_pins_collection.insert_one(user_pins)
+
+    # Update pinned categories list
+    pinned_categories = user_pins.get('pinned_categories', [])
+
+    if is_pinned:
+        # Add to pinned if not already there
+        if category_id not in pinned_categories:
+            pinned_categories.append(category_id)
+    else:
+        # Remove from pinned if present
+        if category_id in pinned_categories:
+            pinned_categories.remove(category_id)
+
+    # Update the database
+    user_pins_collection.update_one(
+        {'user_id': user_id},
+        {'$set': {'pinned_categories': pinned_categories}},
+        upsert=True
     )
 
     return jsonify({'success': True})
@@ -867,8 +943,43 @@ def update_beta_key():
 
     return jsonify({'success': True})
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+# Favorites Page Route (must come before API routes)
+@app.route('/favorites')
+@login_required
+def favorites_page():
+    """Display user's favorites page"""
+    user_id = session['user_id']
+    is_admin = session.get('is_admin', False)
+    is_subscribed = session.get('is_subscribed', False)
+
+    # Get all favorited content IDs
+    favorite_docs = list(favorites_collection.find({'user_id': ObjectId(user_id)}))
+    content_ids = [fav['content_id'] for fav in favorite_docs]
+
+    # Get all content details
+    favorited_content = []
+    if content_ids:
+        contents = list(content_collection.find({'_id': {'$in': content_ids}}))
+
+        # Get category info for each content
+        for content in contents:
+            # Handle category_id as either string or ObjectId
+            category_id = content.get('category_id')
+            if category_id:
+                if isinstance(category_id, str):
+                    category_id = ObjectId(category_id)
+                category = categories_collection.find_one({'_id': category_id})
+                if category:
+                    content['category_name'] = category['name']
+                    content['category_accent_color'] = category.get('accent_color', '#4F46E5')
+            favorited_content.append(content)
+
+    return render_template('favorites.html',
+                         favorited_content=favorited_content,
+                         is_admin=is_admin,
+                         is_subscribed=is_subscribed)
+
+# Favorites API Routes
 
 @app.route('/api/favorites/<content_id>', methods=['POST'])
 def add_favorite(content_id):
@@ -929,39 +1040,6 @@ def check_favorite(content_id):
 
     return jsonify({'is_favorited': favorite is not None})
 
-@app.route('/favorites')
-def favorites_page():
-    """Display user's favorites page"""
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    user_id = session['user_id']
-    is_admin = session.get('is_admin', False)
-    is_subscribed = session.get('is_subscribed', False)
-
-    # Get all favorited content IDs
-    favorite_docs = list(favorites_collection.find({'user_id': ObjectId(user_id)}))
-    content_ids = [fav['content_id'] for fav in favorite_docs]
-
-    # Get all content details
-    favorited_content = []
-    if content_ids:
-        contents = list(content_collection.find({'_id': {'$in': content_ids}}))
-
-        # Get category info for each content
-        for content in contents:
-            category = categories_collection.find_one({'_id': content['category_id']})
-            if category:
-                content['category_name'] = category['name']
-                content['category_accent_color'] = category.get('accent_color', '#4F46E5')
-            favorited_content.append(content)
-
-    return render_template('favorites.html',
-                         favorited_content=favorited_content,
-                         is_admin=is_admin,
-                         is_subscribed=is_subscribed,
-                         categories=get_accessible_categories())
-
 # =======================
 # CATEGORY BANNER IMAGE
 # =======================
@@ -981,3 +1059,6 @@ def update_category_banner(category_id):
     )
 
     return jsonify({'success': True})
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)

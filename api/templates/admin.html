@@ -145,13 +145,24 @@
                         class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"
                     ></textarea>
                     <div class="flex gap-2">
-                        <input
-                            type="text"
-                            id="newCategoryColor"
-                            placeholder="Accent Color (e.g., #4F46E5)"
-                            value="#4F46E5"
-                            class="hidden min-[425px]:block w-full px-4 py-2 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200"
-                        />
+                        <div class="relative flex-1">
+                            <input
+                                type="text"
+                                id="newCategoryColor"
+                                placeholder="Accent Color (e.g., #4F46E5)"
+                                value="#4F46E5"
+                                class="hidden min-[425px]:block w-full px-4 py-2 pr-8 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200"
+                            />
+                            <button
+                                onclick="clearColorInput('newCategoryColor', 'newCategoryColorPicker')"
+                                class="hidden min-[425px]:flex absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
+                                title="Clear color"
+                            >
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
                         <input
                             type="color"
                             id="newCategoryColorPicker"
@@ -170,48 +181,59 @@
                         </label>
                         <button
                             onclick="addCategory()"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition whitespace-nowrap"
                         >
-                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            Add Category
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <input
+                            type="text"
+                            id="newCategoryBanner"
+                            placeholder="Banner Image URL (optional)"
+                            class="w-full px-4 py-2 pr-8 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                        />
+                        <button
+                            onclick="clearBannerInput('newCategoryBanner')"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
+                            title="Clear banner URL"
+                        >
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
+                    <p class="text-xs text-gray-500">Recommended banner size: 1200×400 pixels (3:1 ratio)</p>
                 </div>
             </div>
-
+            
             <!-- Categories List -->
             <div class="space-y-2">
                 {% for category in categories %}
                 <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded">
-                    <div class="flex items-center gap-3 flex-1">
-                        <div 
-                            class="w-3 h-3 rounded-full" 
-                            style="background-color: {{ category.accent_color }}"
-                        ></div>
-                        <div>
-                            <p class="font-medium text-gray-200">{{ category.name }}</p>
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: {{ category.accent_color }}"></div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <p class="font-medium text-gray-200 truncate">{{ category.name }}</p>
+                                {% if category.get('is_pinned', False) %}
+                                <svg class="w-4 h-4 text-yellow-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
+                                </svg>
+                                {% endif %}
+                            </div>
                             {% if category.description %}
-                            <p class="text-xs text-gray-500">{{ category.description[:50] }}{% if category.description|length > 50 %}...{% endif %}</p>
+                            <p class="text-xs text-gray-500 truncate">{{ category.description }}</p>
                             {% endif %}
                         </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs px-3 py-1 rounded {% if category.is_free %}bg-green-500/20 text-green-400{% else %}bg-purple-500/20 text-purple-400{% endif %}">
+                        <span class="px-2 py-1 text-xs rounded flex-shrink-0 {% if category.is_free %}bg-green-500/20 text-green-400{% else %}bg-purple-500/20 text-purple-400{% endif %}">
                             {% if category.is_free %}Free{% else %}Premium{% endif %}
                         </span>
-                        <a
-                            href="/category/{{ category._id }}"
-                            class="p-1 text-indigo-400 hover:bg-indigo-500/20 rounded"
-                        >
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </a>
+                    </div>
+                    <div class="flex items-center gap-1 ml-2 flex-shrink-0">
                         <button
                             onclick="deleteCategory('{{ category._id }}')"
-                            class="p-1 text-red-400 hover:bg-red-500/20 rounded"
+                            class="p-1.5 text-red-400 hover:bg-red-500/20 rounded transition-colors"
                         >
                             <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -222,22 +244,6 @@
                 {% endfor %}
             </div>
         </div>
-
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-indigo-500/20 p-4 rounded-lg border border-indigo-500/30">
-                <p class="text-sm text-indigo-400 font-medium">Total Users</p>
-                <p class="text-2xl font-bold text-indigo-300">{{ users|length }}</p>
-            </div>
-            <div class="bg-green-500/20 p-4 rounded-lg border border-green-500/30">
-                <p class="text-sm text-green-400 font-medium">Subscribed Users</p>
-                <p class="text-2xl font-bold text-green-300">{{ users|selectattr('is_subscribed')|list|length }}</p>
-            </div>
-            <div class="bg-purple-500/20 p-4 rounded-lg border border-purple-500/30">
-                <p class="text-sm text-purple-400 font-medium">Total Categories</p>
-                <p class="text-2xl font-bold text-purple-300">{{ categories|length }}</p>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}
@@ -246,9 +252,9 @@
 <script>
     function filterUsers() {
         const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-        const userRows = document.querySelectorAll('.user-row');
+        const rows = document.querySelectorAll('.user-row');
         
-        userRows.forEach(row => {
+        rows.forEach(row => {
             const username = row.getAttribute('data-username');
             if (username.includes(searchTerm)) {
                 row.style.display = 'flex';
@@ -259,10 +265,12 @@
     }
 
     function toggleSubscription(userId, currentStatus) {
-        fetch(`/api/users/${userId}`, {
+        const newStatus = !JSON.parse(currentStatus);
+
+        fetch(`/api/users/${userId}/subscription`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ is_subscribed: !currentStatus })
+            body: JSON.stringify({ is_subscribed: newStatus })
         })
         .then(response => response.json())
         .then(data => {
@@ -299,6 +307,7 @@
         const description = document.getElementById('newCategoryDescription').value;
         const accentColor = document.getElementById('newCategoryColor').value;
         const isFree = document.getElementById('newCategoryFree').checked;
+        const bannerImage = document.getElementById('newCategoryBanner').value;
 
         if (!name) {
             alert('Please enter a category name');
@@ -317,7 +326,8 @@
                 name, 
                 description, 
                 accent_color: accentColor, 
-                is_free: isFree 
+                is_free: isFree,
+                banner_image: bannerImage
             })
         })
         .then(response => response.json())
@@ -347,6 +357,26 @@
         .catch(error => {
             console.error('Error:', error);
             alert('Failed to delete category');
+        });
+    }
+
+    function togglePinCategory(categoryId, currentStatus) {
+        const newStatus = !JSON.parse(currentStatus);
+
+        fetch(`/api/categories/${categoryId}/pin`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ is_pinned: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update pin status');
         });
     }
 
@@ -411,6 +441,17 @@
             key += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         document.getElementById('betaKeyInput').value = key;
+    }
+
+    // Clear input functions
+    function clearColorInput(textInputId, pickerInputId) {
+        const defaultColor = '#4F46E5';
+        document.getElementById(textInputId).value = defaultColor;
+        document.getElementById(pickerInputId).value = defaultColor;
+    }
+
+    function clearBannerInput(inputId) {
+        document.getElementById(inputId).value = '';
     }
 
     // Auto-format beta key input

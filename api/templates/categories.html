@@ -25,90 +25,218 @@
         </div>
     </div>
 
-    <!-- Categories Grid -->
-    <div id="categoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {% for category in categories %}
-        <a href="{% if is_admin or is_subscribed or category.is_free %}/category/{{ category._id }}{% else %}#{% endif %}" 
-           {% if not is_admin and not is_subscribed and not category.is_free %}onclick="event.preventDefault(); window.location.href='https://discord.effexor.cc/';"{% endif %}
-           class="category-card group block rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2" style="background-color: rgb(18, 18, 20);" data-name="{{ category.name.lower() }}">
-            <!-- Card Header with Banner or Gradient -->
-            <div class="relative h-32 overflow-hidden">
-                {% if category.banner_image %}
-                <!-- Banner Image -->
-                <img src="{{ category.banner_image }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10"></div>
-                {% else %}
-                <!-- Gradient Background -->
-                <div class="absolute inset-0 gradient-bg" style="--gradient-start: {{ category.accent_color }}; --gradient-end: {{ category.accent_color }}dd;">
-                    <!-- Decorative Pattern -->
-                    <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-                </div>
-                {% endif %}
-                
-                <!-- Category Icon/Badge -->
-                <div class="absolute top-4 right-4 flex flex-col items-end gap-2">
-                    {% if not is_admin and not is_subscribed and not category.is_free %}
-                    <span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg bg-purple-500 flex items-center gap-1">
-                        <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                        </svg>
-                        Premium
-                    </span>
-                    <span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg bg-gray-700 flex items-center gap-1">
-                        <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                        Locked
-                    </span>
-                    {% else %}
-                    <span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg {% if category.is_free %}bg-green-500{% else %}bg-purple-500{% endif %}">
-                        {% if category.is_free %}
-                        <svg class="w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                        </svg>
-                        Free
-                        {% else %}
-                        <svg class="w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                        </svg>
-                        Premium
-                        {% endif %}
-                    </span>
-                    {% endif %}
-                </div>
-                
-                <!-- Category Name -->
-                <div class="absolute bottom-4 left-6">
-                    <h3 class="text-2xl font-bold text-white drop-shadow-lg">{{ category.name }}</h3>
-                </div>
-            </div>
-            
-            <!-- Card Content -->
-            <div class="p-6">
-                {% if category.description %}
-                <p class="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">
-                    {{ category.description }}
-                </p>
-                {% else %}
-                <p class="text-gray-500 text-sm leading-relaxed mb-4 italic">
-                    Click to view content in this category
-                </p>
-                {% endif %}
-                
-                <!-- Card Footer -->
-                <div class="flex items-center justify-between pt-4 border-t border-gray-700">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full" style="background-color: {{ category.accent_color }}"></div>
-                        <span class="text-xs text-gray-500 font-medium">View Content</span>
-                    </div>
-                    <svg class="w-5 h-5 text-gray-500 group-hover:translate-x-1 transition-all" style="color: {{ category.accent_color }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+    {% set pinned_categories = categories | selectattr('is_user_pinned', 'equalto', true) | list %}
+    {% set unpinned_categories = categories | rejectattr('is_user_pinned', 'equalto', true) | list %}
+
+    <!-- Pinned Categories Grid -->
+    {% if pinned_categories|length > 0 %}
+    <div class="mb-6">
+        <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
+            </svg>
+            <h3 class="text-lg font-semibold text-gray-300">Pinned Categories</h3>
+        </div>
+        <div id="pinnedCategoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {% for category in pinned_categories %}
+            <div class="category-card relative rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300" style="background-color: rgb(18, 18, 20);" data-name="{{ category.name.lower() }}" data-pinned="true">
+                <!-- Pin Button (Top Left) -->
+                <button
+                    onclick="event.stopPropagation(); togglePin('{{ category._id }}', true);"
+                    class="absolute top-2 left-2 z-20 p-2 rounded-full bg-yellow-500 text-white hover:bg-yellow-600 transition-all shadow-lg"
+                    title="Unpin category"
+                >
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
                     </svg>
-                </div>
+                </button>
+
+                <!-- Clickable Card Area -->
+                <a href="{% if is_admin or is_subscribed or category.is_free %}/category/{{ category._id }}{% else %}#{% endif %}" 
+                   {% if not is_admin and not is_subscribed and not category.is_free %}onclick="event.preventDefault(); window.location.href='https://discord.effexor.cc/';"{% endif %}
+                   class="block group">
+                    <!-- Card Header with Banner or Gradient -->
+                    <div class="relative h-32 overflow-hidden">
+                        {% if category.banner_image %}
+                        <img src="{{ category.banner_image }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10"></div>
+                        {% else %}
+                        <div class="absolute inset-0 gradient-bg" style="--gradient-start: {{ category.accent_color }}; --gradient-end: {{ category.accent_color }}dd;">
+                            <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Status Badges (Top Right) -->
+                        <div class="absolute top-4 right-4 flex flex-col items-end gap-2">
+                            {% if not is_admin and not is_subscribed and not category.is_free %}
+                            <span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg bg-purple-500 flex items-center gap-1">
+                                <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                </svg>
+                                Premium
+                            </span>
+                            <span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg bg-gray-700 flex items-center gap-1">
+                                <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                Locked
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg {% if category.is_free %}bg-green-500{% else %}bg-purple-500{% endif %}">
+                                {% if category.is_free %}
+                                <svg class="w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                                </svg>
+                                Free
+                                {% else %}
+                                <svg class="w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                </svg>
+                                Premium
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Category Name -->
+                        <div class="absolute bottom-4 left-6">
+                            <h3 class="text-2xl font-bold text-white drop-shadow-lg">{{ category.name }}</h3>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Content -->
+                    <div class="p-6">
+                        {% if category.description %}
+                        <p class="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">
+                            {{ category.description }}
+                        </p>
+                        {% else %}
+                        <p class="text-gray-500 text-sm leading-relaxed mb-4 italic">
+                            Click to view content in this category
+                        </p>
+                        {% endif %}
+                        
+                        <!-- Card Footer -->
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-700">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full" style="background-color: {{ category.accent_color }}"></div>
+                                <span class="text-xs text-gray-500 font-medium">View Content</span>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-500 group-hover:translate-x-1 transition-all" style="color: {{ category.accent_color }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
             </div>
-        </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Separator line between pinned and unpinned -->
+    {% if pinned_categories|length > 0 and unpinned_categories|length > 0 %}
+    <div class="my-8 border-t border-gray-700"></div>
+    {% endif %}
+    {% endif %}
+
+    <!-- Regular Categories Grid -->
+    {% if unpinned_categories|length > 0 %}
+    {% if pinned_categories|length > 0 %}
+    <div class="mb-4">
+        <h3 class="text-lg font-semibold text-gray-300">All Categories</h3>
+    </div>
+    {% endif %}
+    <div id="categoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {% for category in unpinned_categories %}
+        <div class="category-card relative rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300" style="background-color: rgb(18, 18, 20);" data-name="{{ category.name.lower() }}" data-pinned="false">
+            <!-- Pin Button (Top Left) -->
+            <button
+                onclick="event.stopPropagation(); togglePin('{{ category._id }}', false);"
+                class="absolute top-2 left-2 z-20 p-2 rounded-full bg-gray-700 text-gray-400 hover:bg-yellow-500 hover:text-white transition-all shadow-lg"
+                title="Pin category"
+            >
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                </svg>
+            </button>
+
+            <!-- Clickable Card Area -->
+            <a href="{% if is_admin or is_subscribed or category.is_free %}/category/{{ category._id }}{% else %}#{% endif %}" 
+               {% if not is_admin and not is_subscribed and not category.is_free %}onclick="event.preventDefault(); window.location.href='https://discord.effexor.cc/';"{% endif %}
+               class="block group">
+                <!-- Same card content as pinned categories -->
+                <div class="relative h-32 overflow-hidden">
+                    {% if category.banner_image %}
+                    <img src="{{ category.banner_image }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10"></div>
+                    {% else %}
+                    <div class="absolute inset-0 gradient-bg" style="--gradient-start: {{ category.accent_color }}; --gradient-end: {{ category.accent_color }}dd;">
+                        <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="absolute top-4 right-4 flex flex-col items-end gap-2">
+                        {% if not is_admin and not is_subscribed and not category.is_free %}
+                        <span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg bg-purple-500 flex items-center gap-1">
+                            <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                            Premium
+                        </span>
+                        <span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg bg-gray-700 flex items-center gap-1">
+                            <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Locked
+                        </span>
+                        {% else %}
+                        <span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg {% if category.is_free %}bg-green-500{% else %}bg-purple-500{% endif %}">
+                            {% if category.is_free %}
+                            <svg class="w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                            </svg>
+                            Free
+                            {% else %}
+                            <svg class="w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                            Premium
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="absolute bottom-4 left-6">
+                        <h3 class="text-2xl font-bold text-white drop-shadow-lg">{{ category.name }}</h3>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    {% if category.description %}
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">
+                        {{ category.description }}
+                    </p>
+                    {% else %}
+                    <p class="text-gray-500 text-sm leading-relaxed mb-4 italic">
+                        Click to view content in this category
+                    </p>
+                    {% endif %}
+                    
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-700">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full" style="background-color: {{ category.accent_color }}"></div>
+                            <span class="text-xs text-gray-500 font-medium">View Content</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-500 group-hover:translate-x-1 transition-all" style="color: {{ category.accent_color }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+        </div>
         {% endfor %}
     </div>
+    {% endif %}
 
     {% if categories|length == 0 %}
     <div class="text-center py-20">
@@ -134,18 +262,61 @@
 
 {% block scripts %}
 <script>
+    function togglePin(categoryId, currentlyPinned) {
+        fetch(`/api/categories/${categoryId}/pin`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ is_pinned: !currentlyPinned })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update pin status');
+        });
+    }
+
     function filterCategories() {
         const searchTerm = document.getElementById('categorySearch').value.toLowerCase();
         const cards = document.querySelectorAll('.category-card');
         
+        let pinnedVisible = 0;
+        let unpinnedVisible = 0;
+        
         cards.forEach(card => {
             const name = card.getAttribute('data-name');
+            const isPinned = card.getAttribute('data-pinned') === 'true';
+            
             if (name.includes(searchTerm)) {
                 card.style.display = 'block';
+                if (isPinned) pinnedVisible++;
+                else unpinnedVisible++;
             } else {
                 card.style.display = 'none';
             }
         });
+        
+        // Hide/show section headers and separators based on visibility
+        const pinnedGrid = document.getElementById('pinnedCategoriesGrid');
+        const categoriesGrid = document.getElementById('categoriesGrid');
+        
+        if (pinnedGrid && pinnedVisible === 0) {
+            pinnedGrid.parentElement.style.display = 'none';
+        } else if (pinnedGrid) {
+            pinnedGrid.parentElement.style.display = 'block';
+        }
+        
+        // Hide separator if either section is empty
+        const separator = document.querySelector('.my-8.border-t');
+        if (separator && (pinnedVisible === 0 || unpinnedVisible === 0)) {
+            separator.style.display = 'none';
+        } else if (separator) {
+            separator.style.display = 'block';
+        }
     }
 </script>
 {% endblock %}
