@@ -25,9 +25,10 @@
         <h1 class="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Welcome Back</h1>
         <p class="text-center text-gray-400 mb-8">Sign in to access your content</p>
         
+        <!-- Login Form -->
         <form id="loginForm" class="space-y-5">
             <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-2">Username</label>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">Username or Email</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -40,7 +41,7 @@
                         name="username"
                         required
                         class="w-full pl-10 pr-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        placeholder="Enter your username"
+                        placeholder="Enter your username or email"
                     />
                 </div>
             </div>
@@ -64,6 +65,12 @@
                 </div>
             </div>
             
+            <div class="flex items-center justify-end">
+                <button type="button" onclick="showForgotPassword()" class="text-sm text-indigo-400 hover:text-indigo-300 font-semibold">
+                    Forgot Password?
+                </button>
+            </div>
+            
             <div id="errorMessage" class="hidden bg-red-500/20 border-l-4 border-red-500 p-3 rounded">
                 <div class="flex items-center">
                     <svg class="w-5 h-5 text-red-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -80,8 +87,117 @@
                 Sign In
             </button>
         </form>
+
+        <!-- Forgot Password Form (Hidden by default) -->
+        <div id="forgotPasswordForm" class="hidden space-y-5">
+            <div class="text-center mb-6">
+                <button onclick="showLogin()" class="inline-flex items-center text-sm text-gray-400 hover:text-gray-300 mb-4">
+                    <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Login
+                </button>
+                <h3 class="text-xl font-bold text-gray-200 mb-2">Reset Password</h3>
+                <p class="text-sm text-gray-400">Enter your email to receive a reset code</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">Email Address</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <input
+                        type="email"
+                        id="resetEmail"
+                        required
+                        class="w-full pl-10 pr-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                        placeholder="Enter your email"
+                    />
+                </div>
+            </div>
+
+            <button
+                onclick="sendResetCode()"
+                class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+            >
+                Send Reset Code
+            </button>
+        </div>
+
+        <!-- Reset Password Form (Hidden by default) -->
+        <div id="resetPasswordForm" class="hidden space-y-5">
+            <div class="text-center mb-6">
+                <button onclick="showForgotPassword()" class="inline-flex items-center text-sm text-gray-400 hover:text-gray-300 mb-4">
+                    <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back
+                </button>
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-500/20 rounded-full mb-4">
+                    <svg class="w-8 h-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-200 mb-2">Enter Reset Code</h3>
+                <p class="text-sm text-gray-400">Check your email for the 6-digit code</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">Verification Code</label>
+                <input
+                    type="text"
+                    id="resetCode"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-gray-800/50 text-gray-200 placeholder-gray-500 text-center text-2xl tracking-widest font-mono"
+                    placeholder="000000"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">New Password</label>
+                <input
+                    type="password"
+                    id="newPassword"
+                    minlength="6"
+                    required
+                    class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                    placeholder="Enter new password"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">Confirm New Password</label>
+                <input
+                    type="password"
+                    id="confirmNewPassword"
+                    required
+                    class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                    placeholder="Confirm new password"
+                />
+            </div>
+
+            <div id="resetErrorMessage" class="hidden bg-red-500/20 border-l-4 border-red-500 p-3 rounded">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-red-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-red-400 text-sm font-medium" id="resetErrorText"></p>
+                </div>
+            </div>
+
+            <button
+                onclick="resetPassword()"
+                class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+            >
+                Reset Password
+            </button>
+        </div>
         
-        <div class="mt-6 text-center">
+        <div id="registerLink" class="mt-6 text-center">
             <p class="text-gray-400 text-sm">
                 Don't have an account? 
                 <a href="/register" class="text-indigo-400 hover:text-indigo-300 font-semibold hover:underline">Create one</a>
@@ -89,21 +205,19 @@
         </div>
         
         <div class="mt-8 p-4 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-xl border border-indigo-500/30">
-            <p class="text-xs font-semibold text-indigo-400 mb-2">Demo Credentials:</p>
+            <p class="text-xs font-semibold text-indigo-400 mb-2">We are having some issues with sign in</p>
             <div class="space-y-1 text-xs text-indigo-300">
                 <div class="flex items-center gap-2">
                     <span class="font-semibold">Admin:</span>
                     <code class="bg-gray-800/50 px-2 py-0.5 rounded">an / an</code>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="font-semibold">Default User:</span>
-                    <code class="bg-gray-800/50 px-2 py-0.5 rounded">new-user / pass123</code>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        let resetEmailAddress = null;
+
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -134,6 +248,120 @@
                 errorText.textContent = 'An error occurred. Please try again.';
                 errorMessage.classList.remove('hidden');
             }
+        });
+
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('forgotPasswordForm').classList.add('hidden');
+            document.getElementById('resetPasswordForm').classList.add('hidden');
+            document.getElementById('registerLink').classList.remove('hidden');
+        }
+
+        function showForgotPassword() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('forgotPasswordForm').classList.remove('hidden');
+            document.getElementById('resetPasswordForm').classList.add('hidden');
+            document.getElementById('registerLink').classList.add('hidden');
+        }
+
+        function showResetPassword() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('forgotPasswordForm').classList.add('hidden');
+            document.getElementById('resetPasswordForm').classList.remove('hidden');
+            document.getElementById('registerLink').classList.add('hidden');
+        }
+
+        async function sendResetCode() {
+            const email = document.getElementById('resetEmail').value;
+
+            if (!email) {
+                alert('Please enter your email');
+                return;
+            }
+
+            try {
+                const response = await fetch('/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resetEmailAddress = email;
+                    showResetPassword();
+                    alert('Reset code sent! Check your email.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        async function resetPassword() {
+            const code = document.getElementById('resetCode').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+            const errorMessage = document.getElementById('resetErrorMessage');
+            const errorText = document.getElementById('resetErrorText');
+
+            if (code.length !== 6) {
+                errorText.textContent = 'Please enter a 6-digit code';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                errorText.textContent = 'Passwords do not match';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                errorText.textContent = 'Password must be at least 6 characters';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch('/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        email: resetEmailAddress, 
+                        code, 
+                        new_password: newPassword 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Password reset successfully! Please log in.');
+                    showLogin();
+                    // Clear form fields
+                    document.getElementById('resetCode').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmNewPassword').value = '';
+                } else {
+                    errorText.textContent = data.message || 'Invalid or expired code';
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorText.textContent = 'An error occurred. Please try again.';
+                errorMessage.classList.remove('hidden');
+            }
+        }
+
+        // Auto-format code input
+        document.getElementById('resetCode')?.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
         });
     </script>
 </body>

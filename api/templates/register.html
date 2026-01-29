@@ -22,9 +22,10 @@
             </div>
         </div>
 
-        <h1 class="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Create Account</h1>
+        <h1 class="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Create An Account</h1>
         <p class="text-center text-gray-400 mb-8">Join us and start exploring</p>
         
+        <!-- Registration Form -->
         <form id="registerForm" class="space-y-5">
             <div>
                 <label class="block text-sm font-semibold text-gray-300 mb-2">Username</label>
@@ -45,6 +46,25 @@
                     />
                 </div>
                 <p class="text-xs text-gray-500 mt-1 ml-1">Minimum 3 characters</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">Email</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        class="w-full pl-10 pr-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                        placeholder="Enter your email"
+                    />
+                </div>
             </div>
             
             <div>
@@ -103,8 +123,58 @@
                 Create Account
             </button>
         </form>
+
+        <!-- Verification Form (Hidden by default) -->
+        <div id="verificationForm" class="hidden space-y-5">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-500/20 rounded-full mb-4">
+                    <svg class="w-8 h-8 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-200 mb-2">Verify Your Email</h3>
+                <p class="text-sm text-gray-400">We sent a 6-digit code to <span id="userEmail" class="text-purple-400 font-medium"></span></p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">Verification Code</label>
+                <input
+                    type="text"
+                    id="verificationCode"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition bg-gray-800/50 text-gray-200 placeholder-gray-500 text-center text-2xl tracking-widest font-mono"
+                    placeholder="000000"
+                />
+            </div>
+
+            <div id="verifyErrorMessage" class="hidden bg-red-500/20 border-l-4 border-red-500 p-3 rounded">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-red-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-red-400 text-sm font-medium" id="verifyErrorText"></p>
+                </div>
+            </div>
+
+            <button
+                onclick="verifyEmail()"
+                class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+            >
+                Verify Email
+            </button>
+
+            <div class="text-center">
+                <p class="text-sm text-gray-400">
+                    Didn't receive the code? 
+                    <button onclick="resendVerification()" class="text-purple-400 hover:text-purple-300 font-semibold hover:underline">
+                        Resend
+                    </button>
+                </p>
+            </div>
+        </div>
         
-        <div class="mt-6 text-center">
+        <div id="loginLink" class="mt-6 text-center">
             <p class="text-gray-400 text-sm">
                 Already have an account? 
                 <a href="/login" class="text-purple-400 hover:text-purple-300 font-semibold hover:underline">Sign in</a>
@@ -125,10 +195,14 @@
     </div>
 
     <script>
+        let userId = null;
+        let userEmailAddress = null;
+
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const errorMessage = document.getElementById('errorMessage');
@@ -147,13 +221,19 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username, email, password })
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    window.location.href = '/';
+                    userId = data.user_id;
+                    userEmailAddress = email;
+                    
+                    // Hide registration form, show verification form
+                    document.getElementById('registerForm').classList.add('hidden');
+                    document.getElementById('verificationForm').classList.remove('hidden');
+                    document.getElementById('userEmail').textContent = email;
                 } else {
                     errorText.textContent = data.message || 'Registration failed';
                     errorMessage.classList.remove('hidden');
@@ -163,6 +243,69 @@
                 errorText.textContent = 'An error occurred. Please try again.';
                 errorMessage.classList.remove('hidden');
             }
+        });
+
+        async function verifyEmail() {
+            const code = document.getElementById('verificationCode').value;
+            const errorMessage = document.getElementById('verifyErrorMessage');
+            const errorText = document.getElementById('verifyErrorText');
+
+            if (code.length !== 6) {
+                errorText.textContent = 'Please enter a 6-digit code';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch('/verify-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: userId, code })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    errorText.textContent = data.message || 'Invalid or expired code';
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorText.textContent = 'An error occurred. Please try again.';
+                errorMessage.classList.remove('hidden');
+            }
+        }
+
+        async function resendVerification() {
+            try {
+                const response = await fetch('/resend-verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: userId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Verification code resent! Check your email.');
+                } else {
+                    alert('Failed to resend code. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        // Auto-focus and format verification code input
+        document.getElementById('verificationCode')?.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
         });
     </script>
 </body>

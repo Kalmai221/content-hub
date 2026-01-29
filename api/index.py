@@ -5,7 +5,11 @@ from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
+import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'abc123')
@@ -22,6 +26,73 @@ categories_collection = db['categories']
 content_collection = db['content']
 pages_collection = db['pages']
 folders_collection = db['folders']
+verification_codes_collection = db['verification_codes']
+
+# Email Configuration
+SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp-mail.outlook.com')
+SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
+SMTP_USERNAME = os.environ.get('SMTP_USERNAME')
+SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD')
+FROM_EMAIL = os.environ.get('FROM_EMAIL', SMTP_USERNAME)
+
+def send_email(to_email, subject, body):
+    """Send email using SMTP"""
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = FROM_EMAIL
+        msg['To'] = to_email
+        msg['Subject'] = subject
+
+        msg.attach(MIMEText(body, 'html'))
+
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        text = msg.as_string()
+        server.sendmail(FROM_EMAIL, to_email, text)
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Email error: {e}")
+        return False
+
+def generate_verification_code():
+    """Generate a 6-digit verification code"""
+    return ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+
+def create_verification_code(user_id, email, code_type='email_verification'):
+    """Create and store a verification code"""
+    code = generate_verification_code()
+    expiry = datetime.utcnow() + timedelta(minutes=15)
+
+    verification_codes_collection.insert_one({
+        'user_id': user_id,
+        'email': email,
+        'code': code,
+        'type': code_type,
+        'expires_at': expiry,
+        'used': False
+    })
+
+    return code
+
+def verify_code(email, code, code_type='email_verification'):
+    """Verify a code and mark it as used"""
+    verification = verification_codes_collection.find_one({
+        'email': email,
+        'code': code,
+        'type': code_type,
+        'used': False,
+        'expires_at': {'$gt': datetime.utcnow()}
+    })
+
+    if verification:
+        verification_codes_collection.update_one(
+            {'_id': verification['_id']},
+            {'$set': {'used': True}}
+        )
+        return True
+    return False
 
 # Helper function to get accessible categories for sidebar
 def get_accessible_categories():
@@ -97,17 +168,28 @@ def index():
 def login():
     if request.method == 'POST':
         data = request.json
-        username = data.get('username')
+        username_or_email = data.get('username')
         password = data.get('password')
 
-        user = users_collection.find_one({'username': username})
+        # Search by username or email
+        user = users_collection.find_one({
+            '$or': [
+                {'username': username_or_email},
+                {'email': username_or_email}
+            ]
+        })
 
-        if user and check_password_hash(user['password'], password):
-            session['user_id'] = str(user['_id'])
-            session['username'] = user['username']
-            session['is_admin'] = user.get('is_admin', False)
-            session['is_subscribed'] = user.get('is_subscribed', False)
-            return jsonify({'success': True, 'is_admin': user.get('is_admin', False)})
+        if user:
+            # Check if email is verified
+            if not user.get('email_verified', False):
+                return jsonify({'success': False, 'message': 'Please verify your email first'}), 401
+
+            if check_password_hash(user['password'], password):
+                session['user_id'] = str(user['_id'])
+                session['username'] = user['username']
+                session['is_admin'] = user.get('is_admin', False)
+                session['is_subscribed'] = user.get('is_subscribed', False)
+                return jsonify({'success': True, 'is_admin': user.get('is_admin', False)})
 
         return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
 
@@ -118,35 +200,299 @@ def register():
     if request.method == 'POST':
         data = request.json
         username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
 
         # Check if username already exists
         if users_collection.find_one({'username': username}):
             return jsonify({'success': False, 'message': 'Username already exists'}), 400
 
+        # Check if email already exists
+        if users_collection.find_one({'email': email}):
+            return jsonify({'success': False, 'message': 'Email already exists'}), 400
+
         # Create new user
         user_data = {
             'username': username,
+            'email': email,
             'password': generate_password_hash(password),
             'is_admin': False,
             'is_subscribed': False,
+            'email_verified': False,
             'created_at': datetime.utcnow()
         }
 
         result = users_collection.insert_one(user_data)
-        session['user_id'] = str(result.inserted_id)
-        session['username'] = username
-        session['is_admin'] = False
-        session['is_subscribed'] = False
+        user_id = str(result.inserted_id)
+
+        # Generate verification code
+        code = create_verification_code(user_id, email, 'email_verification')
+
+        # Send verification email
+        subject = "Verify Your Email - Effexor Hub"
+        body = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; text-align: center;">
+                    <h1 style="color: white; margin: 0;">Welcome to Effexor Hub!</h1>
+                </div>
+                <div style="padding: 30px; background: #f9fafb; border-radius: 10px; margin-top: 20px;">
+                    <h2 style="color: #333;">Verify Your Email</h2>
+                    <p style="color: #666; font-size: 16px;">Thank you for registering! Your verification code is:</p>
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                        <h1 style="color: #667eea; font-size: 36px; letter-spacing: 8px; margin: 0;">{code}</h1>
+                    </div>
+                    <p style="color: #666; font-size: 14px;">This code will expire in 15 minutes.</p>
+                    <p style="color: #999; font-size: 12px; margin-top: 30px;">If you didn't create this account, please ignore this email.</p>
+                </div>
+            </body>
+        </html>
+        """
+
+        if send_email(email, subject, body):
+            return jsonify({'success': True, 'user_id': user_id})
+        else:
+            # If email fails, delete the user
+            users_collection.delete_one({'_id': ObjectId(user_id)})
+            return jsonify({'success': False, 'message': 'Failed to send verification email'}), 500
+
+    return render_template('register.html')
+
+@app.route('/verify-email', methods=['POST'])
+def verify_email():
+    data = request.json
+    user_id = data.get('user_id')
+    code = data.get('code')
+
+    user = users_collection.find_one({'_id': ObjectId(user_id)})
+    if not user:
+        return jsonify({'success': False, 'message': 'User not found'}), 404
+
+    if verify_code(user['email'], code, 'email_verification'):
+        users_collection.update_one(
+            {'_id': ObjectId(user_id)},
+            {'$set': {'email_verified': True}}
+        )
+
+        # Auto-login after verification
+        session['user_id'] = user_id
+        session['username'] = user['username']
+        session['is_admin'] = user.get('is_admin', False)
+        session['is_subscribed'] = user.get('is_subscribed', False)
 
         return jsonify({'success': True})
 
-    return render_template('register.html')
+    return jsonify({'success': False, 'message': 'Invalid or expired code'}), 400
+
+@app.route('/resend-verification', methods=['POST'])
+def resend_verification():
+    data = request.json
+    user_id = data.get('user_id')
+
+    user = users_collection.find_one({'_id': ObjectId(user_id)})
+    if not user:
+        return jsonify({'success': False, 'message': 'User not found'}), 404
+
+    if user.get('email_verified', False):
+        return jsonify({'success': False, 'message': 'Email already verified'}), 400
+
+    # Generate new code
+    code = create_verification_code(user_id, user['email'], 'email_verification')
+
+    # Send verification email
+    subject = "Verify Your Email - Effexor Hub"
+    body = f"""
+    <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; text-align: center;">
+                <h1 style="color: white; margin: 0;">Effexor Hub</h1>
+            </div>
+            <div style="padding: 30px; background: #f9fafb; border-radius: 10px; margin-top: 20px;">
+                <h2 style="color: #333;">Verify Your Email</h2>
+                <p style="color: #666; font-size: 16px;">Your new verification code is:</p>
+                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                    <h1 style="color: #667eea; font-size: 36px; letter-spacing: 8px; margin: 0;">{code}</h1>
+                </div>
+                <p style="color: #666; font-size: 14px;">This code will expire in 15 minutes.</p>
+            </div>
+        </body>
+    </html>
+    """
+
+    if send_email(user['email'], subject, body):
+        return jsonify({'success': True})
+
+    return jsonify({'success': False, 'message': 'Failed to send email'}), 500
+
+@app.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.json
+    email = data.get('email')
+
+    user = users_collection.find_one({'email': email})
+    if not user:
+        # Don't reveal if email exists
+        return jsonify({'success': True})
+
+    # Generate reset code
+    code = create_verification_code(str(user['_id']), email, 'password_reset')
+
+    # Send reset email
+    subject = "Reset Your Password - Effexor Hub"
+    body = f"""
+    <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; text-align: center;">
+                <h1 style="color: white; margin: 0;">Password Reset</h1>
+            </div>
+            <div style="padding: 30px; background: #f9fafb; border-radius: 10px; margin-top: 20px;">
+                <h2 style="color: #333;">Reset Your Password</h2>
+                <p style="color: #666; font-size: 16px;">Your password reset code is:</p>
+                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                    <h1 style="color: #667eea; font-size: 36px; letter-spacing: 8px; margin: 0;">{code}</h1>
+                </div>
+                <p style="color: #666; font-size: 14px;">This code will expire in 15 minutes.</p>
+                <p style="color: #999; font-size: 12px; margin-top: 30px;">If you didn't request this reset, please ignore this email.</p>
+            </div>
+        </body>
+    </html>
+    """
+
+    send_email(email, subject, body)
+    return jsonify({'success': True})
+
+@app.route('/reset-password', methods=['POST'])
+def reset_password():
+    data = request.json
+    email = data.get('email')
+    code = data.get('code')
+    new_password = data.get('new_password')
+
+    user = users_collection.find_one({'email': email})
+    if not user:
+        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+
+    if verify_code(email, code, 'password_reset'):
+        users_collection.update_one(
+            {'_id': user['_id']},
+            {'$set': {'password': generate_password_hash(new_password)}}
+        )
+        return jsonify({'success': True})
+
+    return jsonify({'success': False, 'message': 'Invalid or expired code'}), 400
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+@app.route('/settings')
+@login_required
+def settings():
+    user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+    return render_template('settings.html', user=user)
+
+@app.route('/settings/change-password', methods=['POST'])
+@login_required
+def change_password():
+    data = request.json
+    code = data.get('code')
+    new_password = data.get('new_password')
+
+    user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+
+    if verify_code(user['email'], code, 'password_change'):
+        users_collection.update_one(
+            {'_id': user['_id']},
+            {'$set': {'password': generate_password_hash(new_password)}}
+        )
+        return jsonify({'success': True})
+
+    return jsonify({'success': False, 'message': 'Invalid or expired code'}), 400
+
+@app.route('/settings/send-change-password-code', methods=['POST'])
+@login_required
+def send_change_password_code():
+    user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+
+    # Generate code
+    code = create_verification_code(session['user_id'], user['email'], 'password_change')
+
+    # Send email
+    subject = "Password Change Verification - Effexor Hub"
+    body = f"""
+    <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; text-align: center;">
+                <h1 style="color: white; margin: 0;">Password Change</h1>
+            </div>
+            <div style="padding: 30px; background: #f9fafb; border-radius: 10px; margin-top: 20px;">
+                <h2 style="color: #333;">Verify Password Change</h2>
+                <p style="color: #666; font-size: 16px;">Your verification code is:</p>
+                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                    <h1 style="color: #667eea; font-size: 36px; letter-spacing: 8px; margin: 0;">{code}</h1>
+                </div>
+                <p style="color: #666; font-size: 14px;">This code will expire in 15 minutes.</p>
+            </div>
+        </body>
+    </html>
+    """
+
+    if send_email(user['email'], subject, body):
+        return jsonify({'success': True})
+
+    return jsonify({'success': False, 'message': 'Failed to send email'}), 500
+
+@app.route('/settings/delete-account', methods=['POST'])
+@login_required
+def delete_account():
+    data = request.json
+    code = data.get('code')
+
+    user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+
+    if verify_code(user['email'], code, 'account_deletion'):
+        # Delete user
+        users_collection.delete_one({'_id': user['_id']})
+        # Clear session
+        session.clear()
+        return jsonify({'success': True})
+
+    return jsonify({'success': False, 'message': 'Invalid or expired code'}), 400
+
+@app.route('/settings/send-delete-account-code', methods=['POST'])
+@login_required
+def send_delete_account_code():
+    user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+
+    # Generate code
+    code = create_verification_code(session['user_id'], user['email'], 'account_deletion')
+
+    # Send email
+    subject = "Account Deletion Verification - Effexor Hub"
+    body = f"""
+    <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 30px; border-radius: 10px; text-align: center;">
+                <h1 style="color: white; margin: 0;">⚠️ Account Deletion</h1>
+            </div>
+            <div style="padding: 30px; background: #f9fafb; border-radius: 10px; margin-top: 20px;">
+                <h2 style="color: #333;">Confirm Account Deletion</h2>
+                <p style="color: #666; font-size: 16px;">Your verification code is:</p>
+                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                    <h1 style="color: #ef4444; font-size: 36px; letter-spacing: 8px; margin: 0;">{code}</h1>
+                </div>
+                <p style="color: #666; font-size: 14px;">This code will expire in 15 minutes.</p>
+                <p style="color: #dc2626; font-size: 14px; font-weight: bold; margin-top: 20px;">⚠️ Warning: This action is permanent and cannot be undone!</p>
+            </div>
+        </body>
+    </html>
+    """
+
+    if send_email(user['email'], subject, body):
+        return jsonify({'success': True})
+
+    return jsonify({'success': False, 'message': 'Failed to send email'}), 500
 
 @app.route('/categories')
 @login_required

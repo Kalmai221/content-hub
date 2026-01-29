@@ -1,1 +1,6 @@
 manage.py
+
+
+SMTP_USERNAME=your-email@outlook.com
+SMTP_PASSWORD=your-outlook-password
+FROM_EMAIL=your-email@outlook.com

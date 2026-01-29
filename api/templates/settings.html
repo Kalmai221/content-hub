@@ -1,0 +1,464 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Effexor Hub{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+    <div class="mb-6 sm:mb-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-200 mb-2">Account Settings</h2>
+        <p class="text-sm sm:text-base text-gray-400">Manage your account preferences and security</p>
+    </div>
+
+    <!-- Account Information -->
+    <div class="rounded-lg shadow mb-6" style="background-color: rgb(18, 18, 20);">
+        <div class="p-4 sm:p-6 border-b border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-200 mb-4">Account Information</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-400">Username</p>
+                        <p class="text-base font-medium text-gray-200">{{ user.username }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-400">Email</p>
+                        <p class="text-base font-medium text-gray-200">{{ user.email }}</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold {% if user.email_verified %}bg-green-500/20 text-green-400{% else %}bg-yellow-500/20 text-yellow-400{% endif %}">
+                        {% if user.email_verified %}Verified{% else %}Not Verified{% endif %}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-400">Account Type</p>
+                        <p class="text-base font-medium text-gray-200">
+                            {% if user.is_admin %}
+                                Administrator
+                            {% elif user.is_subscribed %}
+                                Premium Member
+                            {% else %}
+                                Free Account
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Settings -->
+    <div class="rounded-lg shadow mb-6" style="background-color: rgb(18, 18, 20);">
+        <div class="p-4 sm:p-6">
+            <h3 class="text-lg font-semibold text-gray-200 mb-4">Security</h3>
+
+            <!-- Change Password Section -->
+            <div class="mb-6 p-4 bg-gray-800/50 rounded-lg">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h4 class="text-base font-medium text-gray-200 mb-1">Change Password</h4>
+                        <p class="text-sm text-gray-400">Update your password to keep your account secure</p>
+                    </div>
+                </div>
+
+                <button
+                    onclick="showChangePasswordModal()"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-medium"
+                >
+                    Change Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="rounded-lg shadow border-2 border-red-500/30" style="background-color: rgb(18, 18, 20);">
+        <div class="p-4 sm:p-6">
+            <h3 class="text-lg font-semibold text-red-400 mb-4">Danger Zone</h3>
+
+            <div class="p-4 bg-red-500/10 rounded-lg border border-red-500/30">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h4 class="text-base font-medium text-red-400 mb-1">Delete Account</h4>
+                        <p class="text-sm text-gray-400">Permanently delete your account and all associated data. This action cannot be undone.</p>
+                    </div>
+                </div>
+
+                <button
+                    onclick="showDeleteAccountModal()"
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
+                >
+                    Delete Account
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div id="changePasswordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="rounded-2xl shadow-2xl p-6 w-full max-w-md" style="background-color: rgb(18, 18, 20);">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-200">Change Password</h3>
+            <button onclick="hideChangePasswordModal()" class="text-gray-400 hover:text-gray-200">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div id="passwordStep1" class="space-y-4">
+            <p class="text-sm text-gray-400">We'll send a verification code to your email: <span class="text-indigo-400 font-medium">{{ user.email }}</span></p>
+
+            <div id="passwordError" class="hidden bg-red-500/20 border-l-4 border-red-500 p-3 rounded">
+                <p class="text-red-400 text-sm" id="passwordErrorText"></p>
+            </div>
+
+            <button
+                onclick="sendPasswordChangeCode()"
+                class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition"
+            >
+                Send Verification Code
+            </button>
+        </div>
+
+        <div id="passwordStep2" class="hidden space-y-4">
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">Verification Code</label>
+                <input
+                    type="text"
+                    id="passwordCode"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-gray-800/50 text-gray-200 text-center text-2xl tracking-widest font-mono"
+                    placeholder="000000"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">New Password</label>
+                <input
+                    type="password"
+                    id="newPasswordInput"
+                    minlength="6"
+                    class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-gray-800/50 text-gray-200"
+                    placeholder="Enter new password"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">Confirm New Password</label>
+                <input
+                    type="password"
+                    id="confirmPasswordInput"
+                    class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-gray-800/50 text-gray-200"
+                    placeholder="Confirm new password"
+                />
+            </div>
+
+            <button
+                onclick="changePassword()"
+                class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition"
+            >
+                Change Password
+            </button>
+
+            <button
+                onclick="backToPasswordStep1()"
+                class="w-full text-gray-400 hover:text-gray-200 py-2 text-sm"
+            >
+                Resend Code
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div id="deleteAccountModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="rounded-2xl shadow-2xl p-6 w-full max-w-md border-2 border-red-500/30" style="background-color: rgb(18, 18, 20);">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-red-400">Delete Account</h3>
+            <button onclick="hideDeleteAccountModal()" class="text-gray-400 hover:text-gray-200">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div id="deleteStep1" class="space-y-4">
+            <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                <div class="flex items-start gap-3">
+                    <svg class="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                        <p class="text-sm font-semibold text-red-400 mb-2">Warning: This action is permanent!</p>
+                        <ul class="text-xs text-gray-400 space-y-1 list-disc list-inside">
+                            <li>Your account will be permanently deleted</li>
+                            <li>All your data will be removed</li>
+                            <li>This action cannot be undone</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-sm text-gray-400">We'll send a verification code to your email: <span class="text-red-400 font-medium">{{ user.email }}</span></p>
+
+            <div id="deleteError" class="hidden bg-red-500/20 border-l-4 border-red-500 p-3 rounded">
+                <p class="text-red-400 text-sm" id="deleteErrorText"></p>
+            </div>
+
+            <button
+                onclick="sendDeleteAccountCode()"
+                class="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition"
+            >
+                Send Verification Code
+            </button>
+
+            <button
+                onclick="hideDeleteAccountModal()"
+                class="w-full text-gray-400 hover:text-gray-200 py-2 text-sm"
+            >
+                Cancel
+            </button>
+        </div>
+
+        <div id="deleteStep2" class="hidden space-y-4">
+            <div>
+                <label class="block text-sm font-semibold text-red-400 mb-2">Verification Code</label>
+                <input
+                    type="text"
+                    id="deleteCode"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    class="w-full px-4 py-3 border-2 border-red-600 rounded-xl focus:ring-2 focus:ring-red-500 bg-gray-800/50 text-gray-200 text-center text-2xl tracking-widest font-mono"
+                    placeholder="000000"
+                />
+            </div>
+
+            <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                <p class="text-sm text-red-400 font-semibold">Type "DELETE" to confirm:</p>
+                <input
+                    type="text"
+                    id="deleteConfirm"
+                    class="w-full mt-2 px-4 py-2 border-2 border-red-600 rounded-xl focus:ring-2 focus:ring-red-500 bg-gray-800/50 text-gray-200"
+                    placeholder="Type DELETE"
+                />
+            </div>
+
+            <button
+                onclick="deleteAccount()"
+                class="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition"
+            >
+                Permanently Delete Account
+            </button>
+
+            <button
+                onclick="backToDeleteStep1()"
+                class="w-full text-gray-400 hover:text-gray-200 py-2 text-sm"
+            >
+                Resend Code
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Change Password Functions
+    function showChangePasswordModal() {
+        document.getElementById('changePasswordModal').classList.remove('hidden');
+        document.getElementById('passwordStep1').classList.remove('hidden');
+        document.getElementById('passwordStep2').classList.add('hidden');
+    }
+
+    function hideChangePasswordModal() {
+        document.getElementById('changePasswordModal').classList.add('hidden');
+        document.getElementById('passwordError').classList.add('hidden');
+        document.getElementById('passwordCode').value = '';
+        document.getElementById('newPasswordInput').value = '';
+        document.getElementById('confirmPasswordInput').value = '';
+    }
+
+    function backToPasswordStep1() {
+        document.getElementById('passwordStep1').classList.remove('hidden');
+        document.getElementById('passwordStep2').classList.add('hidden');
+        document.getElementById('passwordError').classList.add('hidden');
+    }
+
+    async function sendPasswordChangeCode() {
+        try {
+            const response = await fetch('/settings/send-change-password-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                document.getElementById('passwordStep1').classList.add('hidden');
+                document.getElementById('passwordStep2').classList.remove('hidden');
+                alert('Verification code sent to your email!');
+            } else {
+                document.getElementById('passwordErrorText').textContent = data.message || 'Failed to send code';
+                document.getElementById('passwordError').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('passwordErrorText').textContent = 'An error occurred. Please try again.';
+            document.getElementById('passwordError').classList.remove('hidden');
+        }
+    }
+
+    async function changePassword() {
+        const code = document.getElementById('passwordCode').value;
+        const newPassword = document.getElementById('newPasswordInput').value;
+        const confirmPassword = document.getElementById('confirmPasswordInput').value;
+
+        if (code.length !== 6) {
+            document.getElementById('passwordErrorText').textContent = 'Please enter a 6-digit code';
+            document.getElementById('passwordError').classList.remove('hidden');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            document.getElementById('passwordErrorText').textContent = 'Passwords do not match';
+            document.getElementById('passwordError').classList.remove('hidden');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            document.getElementById('passwordErrorText').textContent = 'Password must be at least 6 characters';
+            document.getElementById('passwordError').classList.remove('hidden');
+            return;
+        }
+
+        try {
+            const response = await fetch('/settings/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code, new_password: newPassword })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Password changed successfully!');
+                hideChangePasswordModal();
+            } else {
+                document.getElementById('passwordErrorText').textContent = data.message || 'Invalid or expired code';
+                document.getElementById('passwordError').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('passwordErrorText').textContent = 'An error occurred. Please try again.';
+            document.getElementById('passwordError').classList.remove('hidden');
+        }
+    }
+
+    // Delete Account Functions
+    function showDeleteAccountModal() {
+        document.getElementById('deleteAccountModal').classList.remove('hidden');
+        document.getElementById('deleteStep1').classList.remove('hidden');
+        document.getElementById('deleteStep2').classList.add('hidden');
+    }
+
+    function hideDeleteAccountModal() {
+        document.getElementById('deleteAccountModal').classList.add('hidden');
+        document.getElementById('deleteError').classList.add('hidden');
+        document.getElementById('deleteCode').value = '';
+        document.getElementById('deleteConfirm').value = '';
+    }
+
+    function backToDeleteStep1() {
+        document.getElementById('deleteStep1').classList.remove('hidden');
+        document.getElementById('deleteStep2').classList.add('hidden');
+        document.getElementById('deleteError').classList.add('hidden');
+    }
+
+    async function sendDeleteAccountCode() {
+        try {
+            const response = await fetch('/settings/send-delete-account-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                document.getElementById('deleteStep1').classList.add('hidden');
+                document.getElementById('deleteStep2').classList.remove('hidden');
+                alert('Verification code sent to your email!');
+            } else {
+                document.getElementById('deleteErrorText').textContent = data.message || 'Failed to send code';
+                document.getElementById('deleteError').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('deleteErrorText').textContent = 'An error occurred. Please try again.';
+            document.getElementById('deleteError').classList.remove('hidden');
+        }
+    }
+
+    async function deleteAccount() {
+        const code = document.getElementById('deleteCode').value;
+        const confirm = document.getElementById('deleteConfirm').value;
+
+        if (code.length !== 6) {
+            document.getElementById('deleteErrorText').textContent = 'Please enter a 6-digit code';
+            document.getElementById('deleteError').classList.remove('hidden');
+            return;
+        }
+
+        if (confirm !== 'DELETE') {
+            document.getElementById('deleteErrorText').textContent = 'Please type DELETE to confirm';
+            document.getElementById('deleteError').classList.remove('hidden');
+            return;
+        }
+
+        if (!confirm('Are you absolutely sure? This action cannot be undone!')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/settings/delete-account', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Account deleted successfully. You will be redirected to the home page.');
+                window.location.href = '/';
+            } else {
+                document.getElementById('deleteErrorText').textContent = data.message || 'Invalid or expired code';
+                document.getElementById('deleteError').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('deleteErrorText').textContent = 'An error occurred. Please try again.';
+            document.getElementById('deleteError').classList.remove('hidden');
+        }
+    }
+
+    // Auto-format code inputs
+    document.getElementById('passwordCode')?.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    document.getElementById('deleteCode')?.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+</script>
+{% endblock %}
