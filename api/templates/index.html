@@ -527,7 +527,7 @@
                     <div class="text-2xl font-bold text-white">24/7</div>
                     <div class="text-xs text-gray-400">Access</div>
                     {% else %}
-                    <div id="timerDisplay" class="text-2xl font-bold text-white">--:--</div>
+                    <div id="homeTimerDisplay" class="text-2xl font-bold text-white">--:--</div>
                     <div class="text-xs text-gray-400">Time Left</div>
                     {% endif %}
                 </div>
@@ -738,6 +738,14 @@
     let isExpired = false;
 
     function formatTime(seconds) {
+        // Handle invalid values
+        if (seconds === null || seconds === undefined || isNaN(seconds)) {
+            return '0:00';
+        }
+        
+        // Ensure seconds is a valid number and not negative
+        seconds = Math.max(0, Math.floor(seconds));
+        
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
@@ -749,7 +757,7 @@
     }
 
     function updateTimerDisplay() {
-        const display = document.getElementById('timerDisplay');
+        const display = document.getElementById('homeTimerDisplay');
         if (display) {
             display.textContent = formatTime(timeRemaining);
             
@@ -790,6 +798,15 @@
             clearInterval(timerInterval);
         }
 
+        // Validate timeRemaining before starting timer
+        if (isNaN(timeRemaining) || timeRemaining === null || timeRemaining === undefined) {
+            console.error('Invalid timeRemaining value, resetting to 0');
+            timeRemaining = 0;
+            updateTimerDisplay();
+            showExpiredModal();
+            return;
+        }
+
         timerInterval = setInterval(() => {
             if (timeRemaining > 0 && !isExpired) {
                 timeRemaining--;
@@ -821,8 +838,21 @@
     fetch('/api/timer/get')
         .then(res => res.json())
         .then(data => {
+            console.log('Timer data received:', data);
             if (data.success && !data.is_subscribed) {
-                timeRemaining = data.time_remaining;
+                // Ensure we have a valid time_remaining value
+                timeRemaining = data.time_remaining || 0;
+                
+                // Handle invalid values
+                if (isNaN(timeRemaining) || timeRemaining === null || timeRemaining === undefined) {
+                    console.error('Invalid time_remaining value:', timeRemaining);
+                    timeRemaining = 0;
+                }
+                
+                // Ensure it's not negative
+                timeRemaining = Math.max(0, Math.floor(timeRemaining));
+                
+                console.log('Processed timeRemaining:', timeRemaining);
                 updateTimerDisplay();
                 
                 if (timeRemaining <= 0) {
@@ -832,7 +862,11 @@
                 }
             }
         })
-        .catch(err => console.error('Timer error:', err));
+        .catch(err => {
+            console.error('Timer error:', err);
+            timeRemaining = 0;
+            updateTimerDisplay();
+        });
 
     // Stop timer when page is not visible
     document.addEventListener('visibilitychange', function() {
