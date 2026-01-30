@@ -53,7 +53,7 @@
 
                 <!-- Clickable Card Area -->
                 <a href="{% if is_admin or is_subscribed or category.is_free %}/category/{{ category._id }}{% else %}#{% endif %}" 
-                   {% if not is_admin and not is_subscribed and not category.is_free %}onclick="event.preventDefault(); window.location.href='https://discord.effexor.cc/';"{% endif %}
+                   {% if not is_admin and not is_subscribed and not category.is_free %}onclick="event.preventDefault(); window.location.href='/premium';"{% endif %}
                    class="block group">
                     <!-- Card Header with Banner or Gradient -->
                     <div class="relative h-32 overflow-hidden">
@@ -162,7 +162,7 @@
 
             <!-- Clickable Card Area -->
             <a href="{% if is_admin or is_subscribed or category.is_free %}/category/{{ category._id }}{% else %}#{% endif %}" 
-               {% if not is_admin and not is_subscribed and not category.is_free %}onclick="event.preventDefault(); window.location.href='https://discord.effexor.cc/';"{% endif %}
+               {% if not is_admin and not is_subscribed and not category.is_free %}onclick="event.preventDefault(); window.location.href='/premium';"{% endif %}
                class="block group">
                 <!-- Same card content as pinned categories -->
                 <div class="relative h-32 overflow-hidden">

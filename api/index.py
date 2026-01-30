@@ -29,6 +29,7 @@ folders_collection = db['folders']
 verification_codes_collection = db['verification_codes']
 favorites_collection = db['favorites']
 user_pins_collection = db['user_pins']
+system_settings_collection = db['system_settings']
 
 # Email Configuration
 SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp-mail.outlook.com')
@@ -165,6 +166,21 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def check_access_timer(f):
+    """Decorator to check if unsubscribed user has time remaining"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' in session:
+            user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+            # Admin and subscribed users bypass timer
+            if user and not user.get('is_subscribed', False) and not user.get('is_admin', False):
+                # Reset timer if needed
+                user = reset_user_timer_if_needed(user)
+                # Don't redirect - let JavaScript modal handle it
+                # Just ensure timer is reset
+        return f(*args, **kwargs)
+    return decorated_function
+
 # Routes
 @app.route('/')
 def index():
@@ -179,6 +195,12 @@ def index():
             'preview_image': ''
         }
         pages_collection.insert_one(page_data)
+
+    # If user is logged in and not subscribed, check/reset timer
+    if 'user_id' in session:
+        user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+        if user and not user.get('is_subscribed', False) and not user.get('is_admin', False):
+            user = reset_user_timer_if_needed(user)
 
     return render_template('index.html', page=page_data)
 
@@ -264,7 +286,9 @@ def register():
             'is_admin': False,
             'is_subscribed': False,
             'email_verified': False,
-            'created_at': datetime.utcnow()
+            'created_at': datetime.utcnow(),
+            'access_time_remaining': 3600,  # 1 hour in seconds
+            'last_reset_date': datetime.utcnow().date().isoformat()
         }
 
         result = users_collection.insert_one(user_data)
@@ -440,6 +464,11 @@ def settings():
     user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
     return render_template('settings.html', user=user)
 
+@app.route('/premium')
+@login_required
+def premium_page():
+    return render_template('premium.html')
+
 @app.route('/settings/change-password', methods=['POST'])
 @login_required
 def change_password():
@@ -544,6 +573,7 @@ def send_delete_account_code():
 
 @app.route('/categories')
 @login_required
+@check_access_timer
 def categories():
     user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
     is_subscribed = user.get('is_subscribed', False)
@@ -587,6 +617,7 @@ def categories():
 
 @app.route('/category/<category_id>')
 @login_required
+@check_access_timer
 def category_detail(category_id):
     user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
     is_subscribed = user.get('is_subscribed', False)
@@ -946,6 +977,7 @@ def update_beta_key():
 # Favorites Page Route (must come before API routes)
 @app.route('/favorites')
 @login_required
+@check_access_timer
 def favorites_page():
     """Display user's favorites page"""
     user_id = session['user_id']
@@ -1059,6 +1091,132 @@ def update_category_banner(category_id):
     )
 
     return jsonify({'success': True})
+
+# =======================
+# ACCESS TIMER SYSTEM
+# =======================
+
+def get_access_time_limit():
+    """Get the access time limit for unsubscribed users (in seconds)"""
+    settings = system_settings_collection.find_one({'key': 'access_time_limit'})
+    if settings:
+        return settings.get('value', 3600)
+    # Default to 1 hour if not set
+    return 3600
+
+def reset_user_timer_if_needed(user):
+    """Reset user's access timer if it's a new day in their local timezone"""
+    if user.get('is_subscribed', False):
+        return user  # No timer for subscribed users
+
+    today = datetime.utcnow().date().isoformat()
+    last_reset = user.get('last_reset_date')
+
+    if last_reset != today:
+        # It's a new day, reset the timer
+        access_limit = get_access_time_limit()
+        users_collection.update_one(
+            {'_id': user['_id']},
+            {
+                '$set': {
+                    'access_time_remaining': access_limit,
+                    'last_reset_date': today
+                }
+            }
+        )
+        user['access_time_remaining'] = access_limit
+        user['last_reset_date'] = today
+
+    return user
+
+@app.route('/api/timer/get', methods=['GET'])
+@login_required
+def get_timer():
+    """Get current user's remaining access time"""
+    user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found'}), 404
+
+    # Check if subscribed
+    if user.get('is_subscribed', False):
+        return jsonify({
+            'success': True,
+            'is_subscribed': True,
+            'time_remaining': None
+        })
+
+    # Reset timer if needed
+    user = reset_user_timer_if_needed(user)
+
+    return jsonify({
+        'success': True,
+        'is_subscribed': False,
+        'time_remaining': user.get('access_time_remaining', 3600)
+    })
+
+@app.route('/api/timer/update', methods=['POST'])
+@login_required
+def update_timer():
+    """Update user's remaining access time (called when user is actively on the site)"""
+    user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found'}), 404
+
+    # Don't update timer for subscribed users
+    if user.get('is_subscribed', False):
+        return jsonify({'success': True, 'is_subscribed': True})
+
+    # Reset timer if needed
+    user = reset_user_timer_if_needed(user)
+
+    data = request.json
+    time_remaining = data.get('time_remaining', 0)
+
+    # Make sure time doesn't go negative
+    time_remaining = max(0, time_remaining)
+
+    users_collection.update_one(
+        {'_id': user['_id']},
+        {'$set': {'access_time_remaining': time_remaining}}
+    )
+
+    return jsonify({
+        'success': True,
+        'time_remaining': time_remaining,
+        'expired': time_remaining <= 0
+    })
+
+@app.route('/api/settings/access-time', methods=['GET'])
+@admin_required
+def get_access_time_setting():
+    """Get the access time limit setting"""
+    limit = get_access_time_limit()
+    return jsonify({'success': True, 'access_time_limit': limit})
+
+@app.route('/api/settings/access-time', methods=['PUT'])
+@admin_required
+def update_access_time_setting():
+    """Update the access time limit for all unsubscribed users"""
+    data = request.json
+    new_limit = data.get('access_time_limit', 3600)
+
+    # Validate that it's a positive number
+    if not isinstance(new_limit, (int, float)) or new_limit < 0:
+        return jsonify({'success': False, 'error': 'Invalid time limit'}), 400
+
+    # Update or create the setting
+    system_settings_collection.update_one(
+        {'key': 'access_time_limit'},
+        {'$set': {'value': new_limit}},
+        upsert=True
+    )
+
+    # Update all unsubscribed users who haven't been reset today
+    # This will apply to their next reset
+
+    return jsonify({'success': True, 'access_time_limit': new_limit})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

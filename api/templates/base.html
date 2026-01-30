@@ -33,6 +33,16 @@
                 </a>
             </div>
             <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Timer Display for non-subscribed users -->
+                {% if not session.get('is_subscribed') and not session.get('is_admin') %}
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-800 rounded-lg border border-gray-700">
+                    <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="timerDisplay" class="text-sm font-mono font-semibold text-white">--:--</span>
+                </div>
+                {% endif %}
+                
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-medium text-gray-200">{{ session.get('username') }}</p>
                     <p class="text-xs text-gray-400">
@@ -72,6 +82,19 @@
                         </svg>
                     </button>
                 </div>
+
+                <!-- Timer Display (Mobile) -->
+                {% if not session.get('is_subscribed') and not session.get('is_admin') %}
+                <div class="sm:hidden mb-4 p-3 bg-gray-800 rounded-lg border border-gray-700">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-sm text-gray-400">Time Remaining:</span>
+                        <span id="timerDisplayMobile" class="text-sm font-mono font-semibold text-white">--:--</span>
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- Navigation Links -->
                 <div class="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
@@ -114,16 +137,13 @@
                     </a>
                 </div>
 
-                <!-- Divider -->
-                <div class="border-t border-gray-700 my-3 sm:my-4"></div>
-
-                <!-- Search Bar -->
+                <!-- Search for Categories -->
                 <div class="mb-3 sm:mb-4">
-                    <input
-                        type="text"
-                        id="sidebarSearch"
-                        placeholder="Search categories..."
-                        class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                    <input 
+                        type="text" 
+                        id="sidebarSearch" 
+                        placeholder="Search categories..." 
+                        class="w-full px-3 sm:px-4 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         onkeyup="filterSidebarCategories()"
                     />
                 </div>
@@ -153,7 +173,7 @@
 
                             <a 
                                 href="{% if session.get('is_admin') or session.get('is_subscribed') or category.is_free %}/category/{{ category._id }}{% else %}#{% endif %}"
-                                {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}onclick="event.preventDefault(); window.location.href='https://discord.effexor.cc/';"{% endif %}
+                                {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}onclick="event.preventDefault(); window.location.href='/premium';"{% endif %}
                                 class="sidebar-category-link w-full flex items-center justify-between pl-8 pr-3 sm:pr-4 py-2.5 sm:py-3 hover:bg-gray-700/50 rounded-lg transition"
                             >
                                 <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
@@ -188,6 +208,67 @@
             </div>
         </div>
     </div>
+
+    <!-- Access Expired Modal (show on all pages except premium/settings) -->
+    {% if not session.get('is_subscribed') and not session.get('is_admin') %}
+    {% set current_path = request.path %}
+    {% if current_path not in ['/premium', '/settings'] %}
+    <div id="accessExpiredModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-800" onclick="event.stopPropagation()">
+            <div class="text-center">
+                <!-- Icon -->
+                <div class="mx-auto w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                
+                <!-- Title -->
+                <h3 class="text-2xl font-bold text-white mb-2">Time's Up!</h3>
+                <p class="text-gray-400 mb-6">Your free access time has expired for today. Upgrade to premium for unlimited access!</p>
+                
+                <!-- Benefits -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-6 text-left">
+                    <p class="text-sm font-semibold text-gray-300 mb-2">Premium Benefits:</p>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Unlimited access time
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Access to all premium categories
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            High-quality content
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Ad-free experience
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- CTA Button -->
+                <a href="/premium" class="block w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition mb-3">
+                    View Premium Plans
+                </a>
+                
+                <p class="text-xs text-gray-500">Your timer will reset tomorrow</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
     {% endif %}
 
     <!-- Main Content -->
@@ -232,6 +313,199 @@
                 alert('Failed to update pin status');
             });
         }
+
+        // Global Access Timer System
+        {% if session.get('user_id') and not session.get('is_subscribed') and not session.get('is_admin') %}
+        (function() {
+            let timeRemaining = 0;
+            let timerInterval = null;
+            let isExpired = false;
+
+            function formatTime(seconds) {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                
+                if (hours > 0) {
+                    return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                }
+                return `${minutes}:${String(secs).padStart(2, '0')}`;
+            }
+
+            function updateTimerDisplay() {
+                const display = document.getElementById('timerDisplay');
+                const displayMobile = document.getElementById('timerDisplayMobile');
+                const timeStr = formatTime(timeRemaining);
+                
+                if (display) {
+                    display.textContent = timeStr;
+                    
+                    // Change color based on time remaining
+                    if (timeRemaining <= 300) { // 5 minutes
+                        display.classList.add('text-red-400');
+                        display.classList.remove('text-white', 'text-orange-400');
+                    } else if (timeRemaining <= 600) { // 10 minutes
+                        display.classList.add('text-orange-400');
+                        display.classList.remove('text-white', 'text-red-400');
+                    } else {
+                        display.classList.add('text-white');
+                        display.classList.remove('text-orange-400', 'text-red-400');
+                    }
+                }
+
+                if (displayMobile) {
+                    displayMobile.textContent = timeStr;
+                }
+            }
+
+            function showExpiredModal() {
+                // Don't show modal on premium or settings pages
+                const currentPath = window.location.pathname;
+                if (currentPath === '/premium' || currentPath === '/settings') {
+                    return;
+                }
+                
+                const modal = document.getElementById('accessExpiredModal');
+                if (modal && !isExpired) {
+                    modal.classList.remove('hidden');
+                    isExpired = true;
+                    
+                    // Block ALL interactions except navigation to premium/settings/logout
+                    document.body.addEventListener('click', function(e) {
+                        const link = e.target.closest('a');
+                        if (link) {
+                            const href = link.getAttribute('href') || '';
+                            // Allow only premium, settings, and logout
+                            if (!href.includes('/premium') && 
+                                !href.includes('/settings') && 
+                                !href.includes('/logout')) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                modal.classList.remove('hidden');
+                                return false;
+                            }
+                        } else {
+                            // Block any other clicks (videos, images, buttons, etc.)
+                            const isModalClick = e.target.closest('#accessExpiredModal');
+                            if (!isModalClick) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                modal.classList.remove('hidden');
+                                return false;
+                            }
+                        }
+                    }, true);
+
+                    // Block form submissions
+                    document.body.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        modal.classList.remove('hidden');
+                        return false;
+                    }, true);
+
+                    // Close burger menu if open
+                    const menuOverlay = document.getElementById('menuOverlay');
+                    if (menuOverlay && !menuOverlay.classList.contains('hidden')) {
+                        menuOverlay.classList.add('hidden');
+                    }
+                }
+            }
+
+            function startTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+
+                timerInterval = setInterval(() => {
+                    if (timeRemaining > 0 && !isExpired) {
+                        timeRemaining--;
+                        updateTimerDisplay();
+
+                        // Update server every 10 seconds
+                        if (timeRemaining % 10 === 0) {
+                            fetch('/api/timer/update', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ time_remaining: timeRemaining })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.expired && !isExpired) {
+                                    showExpiredModal();
+                                    clearInterval(timerInterval);
+                                }
+                            })
+                            .catch(err => console.error('Timer update error:', err));
+                        }
+                    } else if (timeRemaining <= 0 && !isExpired) {
+                        clearInterval(timerInterval);
+                        showExpiredModal();
+                    }
+                }, 1000);
+            }
+
+            // Fetch initial timer value
+            fetch('/api/timer/get')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && !data.is_subscribed) {
+                        timeRemaining = data.time_remaining;
+                        updateTimerDisplay();
+                        
+                        if (timeRemaining <= 0) {
+                            showExpiredModal();
+                        } else {
+                            startTimer();
+                        }
+                    }
+                })
+                .catch(err => console.error('Timer fetch error:', err));
+
+            // Stop timer when page is not visible, resume when visible
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                    }
+                    // Save current time to server
+                    if (!isExpired && timeRemaining > 0) {
+                        fetch('/api/timer/update', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ time_remaining: timeRemaining })
+                        }).catch(err => console.error('Timer save error:', err));
+                    }
+                } else {
+                    // Fetch latest time from server when page becomes visible
+                    fetch('/api/timer/get')
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success && !data.is_subscribed) {
+                                timeRemaining = data.time_remaining;
+                                updateTimerDisplay();
+                                
+                                if (timeRemaining <= 0) {
+                                    showExpiredModal();
+                                } else if (!isExpired) {
+                                    startTimer();
+                                }
+                            }
+                        })
+                        .catch(err => console.error('Timer refresh error:', err));
+                }
+            });
+
+            // Update timer before page unload
+            window.addEventListener('beforeunload', function() {
+                if (!isExpired && timeRemaining > 0) {
+                    navigator.sendBeacon('/api/timer/update', JSON.stringify({ 
+                        time_remaining: timeRemaining 
+                    }));
+                }
+            });
+        })();
+        {% endif %}
     </script>
 
     {% block scripts %}{% endblock %}

@@ -477,7 +477,7 @@
                     </svg>
                 </div>
                 <div>
-                    <div class="text-2xl font-bold text-white">HD</div>
+                    <div class="text-2xl font-bold text-white">{% if session.get('is_subscribed') %}HD{% else %}360p{% endif %}</div>
                     <div class="text-xs text-gray-400">Quality</div>
                 </div>
             </div>
@@ -510,17 +510,22 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <div>
+                <div class="w-full">
+                    {% if session.get('is_subscribed') %}
                     <div class="text-2xl font-bold text-white">24/7</div>
                     <div class="text-xs text-gray-400">Access</div>
+                    {% else %}
+                    <div id="timerDisplay" class="text-2xl font-bold text-white">--:--</div>
+                    <div class="text-xs text-gray-400">Time Left</div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <a href="/categories" class="group block rounded-xl p-6 border border-gray-700 hover:border-purple-500/50 transition" style="background-color: rgb(18, 18, 20);">
+    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+        <a href="/categories" class="group flex-1 rounded-xl p-6 border border-gray-700 hover:border-purple-500/50 transition" style="background-color: rgb(18, 18, 20);">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition">
                     <svg class="w-6 h-6 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -535,7 +540,7 @@
         </a>
 
         {% if not session.get('is_subscribed') %}
-        <a href="https://discord.effexor.cc/" class="group block rounded-xl p-6 border border-gray-700 hover:border-purple-500/50 transition" style="background-color: rgb(18, 18, 20);">
+        <a href="https://discord.effexor.cc/" class="group flex-1 rounded-xl p-6 border border-gray-700 hover:border-purple-500/50 transition" style="background-color: rgb(18, 18, 20);">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center group-hover:scale-110 transition">
                     <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -551,7 +556,7 @@
         {% endif %}
 
         {% if session.get('is_admin') %}
-        <a href="/admin" class="group block rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition" style="background-color: rgb(18, 18, 20);">
+        <a href="/admin" class="group flex-1 rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition" style="background-color: rgb(18, 18, 20);">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition">
                     <svg class="w-6 h-6 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -658,6 +663,27 @@
         </div>
     </div>
     {% endif %}
+
+    <!-- Access Expired Modal -->
+    {% if not session.get('is_subscribed') %}
+    <div id="accessExpiredModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" style="backdrop-filter: blur(4px);">
+        <div class="bg-gray-900 rounded-xl p-8 max-w-md w-full mx-4 border border-gray-700 shadow-2xl">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10 text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Access Expired</h2>
+                <p class="text-gray-400 mb-6">Your free daily access time has ended. Upgrade to Premium for unlimited 24/7 access!</p>
+                <a href="/premium" class="block w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:opacity-90 transition">
+                    View Premium Plans
+                </a>
+                <p class="text-xs text-gray-500 mt-4">Your access will reset tomorrow at midnight</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endif %}
 {% endblock %}
@@ -691,6 +717,138 @@
             }
         });
     });
+
+    // Access Timer System
+    {% if session.get('user_id') and not session.get('is_subscribed') %}
+    let timeRemaining = 0;
+    let timerInterval = null;
+    let lastUpdateTime = Date.now();
+    let isExpired = false;
+
+    function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        if (hours > 0) {
+            return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+        return `${minutes}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateTimerDisplay() {
+        const display = document.getElementById('timerDisplay');
+        if (display) {
+            display.textContent = formatTime(timeRemaining);
+            
+            // Change color based on time remaining
+            if (timeRemaining <= 300) { // 5 minutes
+                display.classList.add('text-red-400');
+                display.classList.remove('text-white');
+            } else if (timeRemaining <= 600) { // 10 minutes
+                display.classList.add('text-orange-400');
+                display.classList.remove('text-white', 'text-red-400');
+            } else {
+                display.classList.add('text-white');
+                display.classList.remove('text-orange-400', 'text-red-400');
+            }
+        }
+    }
+
+    function showExpiredModal() {
+        const modal = document.getElementById('accessExpiredModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            isExpired = true;
+            
+            // Prevent navigation to other pages except premium
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link && !link.href.includes('/premium') && !link.href.includes('/logout')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    modal.classList.remove('hidden');
+                }
+            }, true);
+        }
+    }
+
+    function startTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+
+        timerInterval = setInterval(() => {
+            if (timeRemaining > 0 && !isExpired) {
+                timeRemaining--;
+                updateTimerDisplay();
+
+                // Update server every 10 seconds
+                if (timeRemaining % 10 === 0) {
+                    fetch('/api/timer/update', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ time_remaining: timeRemaining })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.expired && !isExpired) {
+                            showExpiredModal();
+                            clearInterval(timerInterval);
+                        }
+                    });
+                }
+            } else if (timeRemaining <= 0 && !isExpired) {
+                clearInterval(timerInterval);
+                showExpiredModal();
+            }
+        }, 1000);
+    }
+
+    // Fetch initial timer value
+    fetch('/api/timer/get')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && !data.is_subscribed) {
+                timeRemaining = data.time_remaining;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    showExpiredModal();
+                } else {
+                    startTimer();
+                }
+            }
+        })
+        .catch(err => console.error('Timer error:', err));
+
+    // Stop timer when page is not visible
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            // Save current time to server
+            fetch('/api/timer/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ time_remaining: timeRemaining })
+            });
+        } else {
+            // Resume timer when page becomes visible
+            if (!isExpired && timeRemaining > 0) {
+                startTimer();
+            }
+        }
+    });
+
+    // Update timer before page unload
+    window.addEventListener('beforeunload', function() {
+        if (!isExpired && timeRemaining > 0) {
+            navigator.sendBeacon('/api/timer/update', JSON.stringify({ time_remaining: timeRemaining }));
+        }
+    });
+    {% endif %}
 
     function toggleEditHome() {
         const form = document.getElementById('editHomeForm');

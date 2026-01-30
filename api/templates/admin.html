@@ -125,6 +125,71 @@
             </div>
         </div>
 
+        <!-- Access Time Settings -->
+        <div class="mb-6 sm:mb-8">
+            <h3 class="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-300">Access Time Limit</h3>
+            <div class="bg-gray-800/50 rounded-lg p-4">
+                <div class="space-y-4">
+                    <div>
+                        <p class="font-medium text-gray-200 mb-2">Free User Daily Access Time</p>
+                        <p class="text-xs text-gray-500 mb-3">Set how long unsubscribed users can access the site per day (resets at midnight)</p>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-gray-300 mb-2">Time in Seconds</label>
+                            <input
+                                type="number"
+                                id="accessTimeLimit"
+                                min="1"
+                                step="1"
+                                placeholder="3600"
+                                class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Examples: 10 (testing), 3600 (1 hour), 7200 (2 hours)</p>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-gray-300 mb-2">Human Readable</label>
+                            <input
+                                type="text"
+                                id="accessTimeDisplay"
+                                readonly
+                                class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700/50 text-gray-400 cursor-not-allowed"
+                                placeholder="--"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Calculated automatically</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button
+                            onclick="updateAccessTimeLimit()"
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                        >
+                            Update Time Limit
+                        </button>
+                        <button
+                            onclick="loadAccessTimeLimit()"
+                            class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition"
+                        >
+                            Reload Current Setting
+                        </button>
+                    </div>
+
+                    <div class="p-3 rounded-lg bg-blue-500/20 border border-blue-500/30">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-sm text-blue-400">
+                                Changes will apply to all unsubscribed users on their next daily reset (midnight)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Category Management -->
         <div class="mb-8">
             <h3 class="text-lg font-semibold mb-3 text-gray-300">Category Management</h3>
@@ -457,6 +522,85 @@
     // Auto-format beta key input
     document.getElementById('betaKeyInput')?.addEventListener('input', function(e) {
         this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 12);
+    });
+
+    // Access Time Limit Functions
+    function formatSeconds(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        let result = [];
+        if (hours > 0) result.push(`${hours}h`);
+        if (minutes > 0) result.push(`${minutes}m`);
+        if (secs > 0 || result.length === 0) result.push(`${secs}s`);
+        
+        return result.join(' ');
+    }
+
+    function updateAccessTimeDisplay() {
+        const input = document.getElementById('accessTimeLimit');
+        const display = document.getElementById('accessTimeDisplay');
+        
+        if (input && display) {
+            const seconds = parseInt(input.value) || 0;
+            display.value = formatSeconds(seconds);
+        }
+    }
+
+    function loadAccessTimeLimit() {
+        fetch('/api/settings/access-time')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('accessTimeLimit').value = data.access_time_limit;
+                    updateAccessTimeDisplay();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load access time limit');
+            });
+    }
+
+    function updateAccessTimeLimit() {
+        const timeLimit = parseInt(document.getElementById('accessTimeLimit').value);
+        
+        if (!timeLimit || timeLimit < 1) {
+            alert('Please enter a valid time limit (minimum 1 second)');
+            return;
+        }
+
+        if (!confirm(`Set access time to ${formatSeconds(timeLimit)} for all unsubscribed users?\n\nThis will take effect on their next daily reset (midnight).`)) {
+            return;
+        }
+
+        fetch('/api/settings/access-time', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ access_time_limit: timeLimit })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Access time limit updated to ${formatSeconds(timeLimit)}`);
+                updateAccessTimeDisplay();
+            } else {
+                alert('Failed to update access time limit');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update access time limit');
+        });
+    }
+
+    // Update display when input changes
+    document.getElementById('accessTimeLimit')?.addEventListener('input', updateAccessTimeDisplay);
+
+    // Load current access time limit on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAccessTimeLimit();
     });
 
     // Update color preview
