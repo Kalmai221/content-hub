@@ -42,14 +42,12 @@
                 </div>
                 
                 <!-- Timer Display for non-subscribed users -->
-                {% if not session.get('is_subscribed') and not session.get('is_admin') %}
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-800 rounded-lg border border-gray-700">
+                <div id="navbarTimerDisplay" class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-800 rounded-lg border border-gray-700">
                     <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span id="timerDisplay" class="text-sm font-mono font-semibold text-white">--:--</span>
                 </div>
-                {% endif %}
                 
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-medium text-gray-200">{{ session.get('username') }}</p>
@@ -78,6 +76,56 @@
         </div>
     </header>
 
+    <!-- Account Update Notification -->
+    <div id="accountUpdateNotification" class="hidden fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4 animate-slide-down">
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-2xl p-4 border border-purple-400">
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-white font-bold text-lg mb-1">Account Updated!</h3>
+                    <p class="text-white/90 text-sm mb-3">Your account has been modified by an administrator. Refreshing in <span id="refreshCountdown" class="font-bold">30</span> seconds...</p>
+                    <div class="flex gap-2">
+                        <button
+                            onclick="refreshNow()"
+                            class="flex-1 px-4 py-2 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition font-semibold text-sm"
+                        >
+                            Refresh Now
+                        </button>
+                        <button
+                            onclick="hideUpdateNotification()"
+                            class="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition font-semibold text-sm"
+                        >
+                            Hide
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes slide-down {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+        
+        .animate-slide-down {
+            animation: slide-down 0.4s ease-out;
+        }
+    </style>
+
     <!-- Burger Menu -->
     <div id="menuOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30" onclick="toggleMenu()">
         <div class="absolute left-0 top-0 bottom-0 w-full sm:w-80 shadow-xl overflow-y-auto" style="background-color: rgb(18, 18, 20);" onclick="event.stopPropagation()">
@@ -92,8 +140,7 @@
                 </div>
 
                 <!-- Timer Display (Mobile) -->
-                {% if not session.get('is_subscribed') and not session.get('is_admin') %}
-                <div class="sm:hidden mb-4 p-3 bg-gray-800 rounded-lg border border-gray-700">
+                <div id="mobileTimerDisplay" class="sm:hidden mb-4 p-3 bg-gray-800 rounded-lg border border-gray-700">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -102,7 +149,6 @@
                         <span id="timerDisplayMobile" class="text-sm font-mono font-semibold text-white">--:--</span>
                     </div>
                 </div>
-                {% endif %}
 
                 <!-- Favorites Counter (Mobile) -->
                 <div class="sm:hidden mb-4 p-3 bg-gray-800 rounded-lg border border-gray-700">
@@ -191,9 +237,15 @@
                             </button>
 
                             <a 
-                                href="{% if session.get('is_admin') or session.get('is_subscribed') or category.is_free %}/category/{{ category._id }}{% else %}#{% endif %}"
-                                {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}onclick="event.preventDefault(); window.location.href='/premium';"{% endif %}
-                                class="sidebar-category-link w-full flex items-center justify-between pl-8 pr-3 sm:pr-4 py-2.5 sm:py-3 hover:bg-gray-700/50 rounded-lg transition"
+                                href="{% if session.get('is_admin') or session.get('is_subscribed') or category.is_free %}/category/{{ category._id }}{% else %}javascript:void(0);{% endif %}"
+                                {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
+                                onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/premium';"
+                                style="cursor: pointer;"
+                                data-locked="true"
+                                {% else %}
+                                data-locked="false"
+                                {% endif %}
+                                class="sidebar-category-link w-full flex items-center justify-between pl-8 pr-3 sm:pr-4 py-2.5 sm:py-3 {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}opacity-60{% endif %} hover:bg-gray-700/50 rounded-lg transition"
                             >
                                 <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                                     <div 
@@ -433,11 +485,12 @@
         }
 
         // Global Access Timer System
-        {% if session.get('user_id') and not session.get('is_subscribed') and not session.get('is_admin') %}
+        {% if session.get('user_id') %}
         (function() {
             let timeRemaining = 0;
             let timerInterval = null;
             let isExpired = false;
+            let isSubscribedOrAdmin = {{ 'true' if session.get('is_subscribed') or session.get('is_admin') else 'false' }};
 
             function formatTime(seconds) {
                 const hours = Math.floor(seconds / 3600);
@@ -475,6 +528,59 @@
                     displayMobile.textContent = timeStr;
                 }
             }
+
+            function updateTimerVisibility(isSubscribed) {
+                const navbarTimer = document.getElementById('navbarTimerDisplay');
+                const mobileTimer = document.getElementById('mobileTimerDisplay');
+                
+                if (isSubscribed) {
+                    // Hide timer for subscribed users
+                    if (navbarTimer) navbarTimer.classList.add('hidden');
+                    if (mobileTimer) mobileTimer.classList.add('hidden');
+                } else {
+                    // Show timer for non-subscribed users
+                    if (navbarTimer) navbarTimer.classList.remove('hidden');
+                    if (mobileTimer) mobileTimer.classList.remove('hidden');
+                }
+            }
+
+            function refreshTimerStatus() {
+                // Fetch latest timer status and update visibility
+                fetch('/api/timer/get')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const wasSubscribed = isSubscribedOrAdmin;
+                            isSubscribedOrAdmin = data.is_subscribed || data.is_admin;
+                            
+                            // Update timer visibility if subscription status changed
+                            if (wasSubscribed !== isSubscribedOrAdmin) {
+                                updateTimerVisibility(isSubscribedOrAdmin);
+                            }
+                            
+                            if (!isSubscribedOrAdmin) {
+                                timeRemaining = data.time_remaining;
+                                updateTimerDisplay();
+                                
+                                if (timeRemaining <= 0) {
+                                    showExpiredModal();
+                                } else if (!isExpired) {
+                                    startTimer();
+                                }
+                            } else {
+                                // Stop timer if user became subscribed
+                                if (timerInterval) {
+                                    clearInterval(timerInterval);
+                                    timerInterval = null;
+                                }
+                            }
+                        }
+                    })
+                    .catch(err => console.error('Timer refresh error:', err));
+            }
+
+            // Expose refresh function globally
+            window.refreshTimerStatus = refreshTimerStatus;
 
             function showExpiredModal() {
                 // Don't show modal on premium or settings pages
@@ -567,14 +673,19 @@
             fetch('/api/timer/get')
                 .then(res => res.json())
                 .then(data => {
-                    if (data.success && !data.is_subscribed) {
-                        timeRemaining = data.time_remaining;
-                        updateTimerDisplay();
+                    if (data.success) {
+                        isSubscribedOrAdmin = data.is_subscribed || data.is_admin;
+                        updateTimerVisibility(isSubscribedOrAdmin);
                         
-                        if (timeRemaining <= 0) {
-                            showExpiredModal();
-                        } else {
-                            startTimer();
+                        if (!isSubscribedOrAdmin) {
+                            timeRemaining = data.time_remaining;
+                            updateTimerDisplay();
+                            
+                            if (timeRemaining <= 0) {
+                                showExpiredModal();
+                            } else {
+                                startTimer();
+                            }
                         }
                     }
                 })
@@ -599,14 +710,24 @@
                     fetch('/api/timer/get')
                         .then(res => res.json())
                         .then(data => {
-                            if (data.success && !data.is_subscribed) {
-                                timeRemaining = data.time_remaining;
-                                updateTimerDisplay();
+                            if (data.success) {
+                                const wasSubscribed = isSubscribedOrAdmin;
+                                isSubscribedOrAdmin = data.is_subscribed || data.is_admin;
                                 
-                                if (timeRemaining <= 0) {
-                                    showExpiredModal();
-                                } else if (!isExpired) {
-                                    startTimer();
+                                // Update timer visibility if subscription status changed
+                                if (wasSubscribed !== isSubscribedOrAdmin) {
+                                    updateTimerVisibility(isSubscribedOrAdmin);
+                                }
+                                
+                                if (!isSubscribedOrAdmin) {
+                                    timeRemaining = data.time_remaining;
+                                    updateTimerDisplay();
+                                    
+                                    if (timeRemaining <= 0) {
+                                        showExpiredModal();
+                                    } else if (!isExpired) {
+                                        startTimer();
+                                    }
                                 }
                             }
                         })
@@ -696,6 +817,147 @@
 
             // Expose function globally so other pages can call it
             window.updateFavoritesCounter = updateFavoritesCounter;
+        })();
+    </script>
+
+    <!-- Account Update Checker -->
+    <script>
+        (function() {
+            let refreshCountdownInterval = null;
+            let refreshTimeout = null;
+            let checkInterval = null;
+            let notificationHidden = false;
+
+            function checkForAccountUpdates() {
+                fetch('/api/account/check-update')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.needs_refresh && !notificationHidden) {
+                            showUpdateNotification();
+                            
+                            // Check if user is currently on a premium page without access
+                            // This will catch cases where user is viewing a category that's now locked
+                            const currentPath = window.location.pathname;
+                            
+                            // Only redirect if on a non-admin premium page
+                            // Admin users should stay on admin page if they're still admin
+                            if (currentPath.startsWith('/category/')) {
+                                // Force immediate redirect to avoid showing error page for categories
+                                setTimeout(() => {
+                                    fetch('/api/account/mark-refreshed', { 
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' }
+                                    })
+                                        .then(() => {
+                                            window.location.href = '/';
+                                        })
+                                        .catch(() => {
+                                            window.location.href = '/';
+                                        });
+                                }, 2000); // Give user 2 seconds to see the notification
+                            }
+                            // For admin page, let the normal refresh happen (stays on same page)
+                        }
+                        
+                        // Also update timer and favorites counter to reflect any subscription changes
+                        // This allows the UI to update even before the page refresh
+                        if (typeof window.updateFavoritesCounter === 'function') {
+                            window.updateFavoritesCounter();
+                        }
+                        
+                        // Refresh timer status
+                        if (typeof window.refreshTimerStatus === 'function') {
+                            window.refreshTimerStatus();
+                        }
+                    })
+                    .catch(error => console.error('Error checking account updates:', error));
+            }
+
+            function showUpdateNotification() {
+                const notification = document.getElementById('accountUpdateNotification');
+                notification.classList.remove('hidden');
+                
+                let countdown = 30;
+                const countdownElement = document.getElementById('refreshCountdown');
+                
+                // Clear any existing intervals
+                if (refreshCountdownInterval) clearInterval(refreshCountdownInterval);
+                if (refreshTimeout) clearTimeout(refreshTimeout);
+                
+                // Start countdown
+                refreshCountdownInterval = setInterval(() => {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(refreshCountdownInterval);
+                    }
+                }, 1000);
+                
+                // Auto refresh after 30 seconds
+                refreshTimeout = setTimeout(() => {
+                    fetch('/api/account/mark-refreshed', { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                        .then(() => {
+                            setTimeout(() => window.location.reload(), 100);
+                        })
+                        .catch(() => {
+                            window.location.reload();
+                        });
+                }, 30000);
+                
+                // Stop checking for updates once notification is shown
+                if (checkInterval) {
+                    clearInterval(checkInterval);
+                }
+            }
+
+            window.refreshNow = function() {
+                // Mark as refreshed in database and update session
+                fetch('/api/account/mark-refreshed', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Small delay to ensure session is saved
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 100);
+                        } else {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(() => {
+                        window.location.reload();
+                    });
+            };
+
+            window.hideUpdateNotification = function() {
+                const notification = document.getElementById('accountUpdateNotification');
+                notification.classList.add('hidden');
+                notificationHidden = true;
+                
+                // Clear intervals
+                if (refreshCountdownInterval) clearInterval(refreshCountdownInterval);
+                if (refreshTimeout) clearTimeout(refreshTimeout);
+                
+                // Mark as refreshed in database (without reload)
+                fetch('/api/account/mark-refreshed', { method: 'POST' })
+                    .catch(error => console.error('Error marking as refreshed:', error));
+                
+                // Restart checking in case user hides but hasn't refreshed
+                checkInterval = setInterval(checkForAccountUpdates, 10000);
+            };
+
+            // Check for updates every 10 seconds
+            checkInterval = setInterval(checkForAccountUpdates, 10000);
+            
+            // Initial check on page load
+            checkForAccountUpdates();
         })();
     </script>
 

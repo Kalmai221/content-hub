@@ -631,11 +631,11 @@ def category_detail(category_id):
     category = categories_collection.find_one({'_id': ObjectId(category_id)})
 
     if not category:
-        return "Category not found", 404
+        return render_template('no_access.html'), 404
 
     # Check access
     if not is_admin and not is_subscribed and not category.get('is_free', False):
-        return "Subscription required", 403
+        return render_template('no_access.html'), 403
 
     # Fetch folders for this category and convert ObjectId to string
     folders = list(folders_collection.find({'category_id': category_id}))
@@ -652,8 +652,12 @@ def category_detail(category_id):
                          is_admin=is_admin)
 
 @app.route('/admin')
-@admin_required
+@login_required
 def admin_panel():
+    user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+    if not user.get('is_admin', False):
+        return render_template('admin_access_denied.html'), 403
+
     users = list(users_collection.find())
     categories = list(categories_collection.find())
 
@@ -686,8 +690,12 @@ def update_user(user_id):
 
     if 'is_subscribed' in data:
         update_data['is_subscribed'] = data['is_subscribed']
+        update_data['needs_refresh'] = True
+        update_data['updated_at'] = datetime.utcnow()
     if 'is_admin' in data:
         update_data['is_admin'] = data['is_admin']
+        update_data['needs_refresh'] = True
+        update_data['updated_at'] = datetime.utcnow()
 
     users_collection.update_one(
         {'_id': ObjectId(user_id)},
@@ -696,10 +704,122 @@ def update_user(user_id):
 
     return jsonify({'success': True})
 
+@app.route('/api/users/<user_id>/subscription', methods=['PUT'])
+@admin_required
+def update_subscription(user_id):
+    """Update user subscription status"""
+    data = request.json
+    is_subscribed = data.get('is_subscribed', False)
+
+    users_collection.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {
+            'is_subscribed': is_subscribed,
+            'needs_refresh': True,
+            'updated_at': datetime.utcnow()
+        }}
+    )
+
+    return jsonify({'success': True})
+
 @app.route('/api/users/<user_id>', methods=['DELETE'])
 @admin_required
 def delete_user(user_id):
+    # Also delete user's favorites when deleting user
+    favorites_collection.delete_many({'user_id': user_id})
     users_collection.delete_one({'_id': ObjectId(user_id)})
+    return jsonify({'success': True})
+
+@app.route('/api/admin/verify-password', methods=['POST'])
+@admin_required
+def verify_admin_password():
+    """Verify admin password for advanced settings"""
+    data = request.json
+    provided_password = data.get('password', '')
+
+    # Get admin password from secrets collection
+    admin_password_doc = db['secrets'].find_one({'key': 'admin_password'})
+
+    if not admin_password_doc:
+        # If no admin password is set, create a default one
+        default_password = 'Admin123!'
+        db['secrets'].insert_one({
+            'key': 'admin_password',
+            'value': default_password,
+            'created_at': datetime.utcnow()
+        })
+        return jsonify({'success': provided_password == default_password})
+
+    correct_password = admin_password_doc.get('value', '')
+    return jsonify({'success': provided_password == correct_password})
+
+@app.route('/api/admin/users/<user_id>/admin-status', methods=['PUT'])
+@admin_required
+def toggle_admin_status(user_id):
+    """Promote or demote user to/from admin"""
+    data = request.json
+    is_admin = data.get('is_admin', False)
+
+    users_collection.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {
+            'is_admin': is_admin,
+            'needs_refresh': True,
+            'updated_at': datetime.utcnow()
+        }}
+    )
+
+    return jsonify({'success': True})
+
+@app.route('/api/admin/users/<user_id>/reset-password', methods=['POST'])
+@admin_required
+def reset_user_password(user_id):
+    """Reset user password to default P@$$w0rd"""
+    default_password = 'P@$$w0rd'
+    hashed_password = generate_password_hash(default_password)
+
+    users_collection.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {
+            'password': hashed_password,
+            'needs_refresh': True,
+            'updated_at': datetime.utcnow()
+        }}
+    )
+
+    return jsonify({'success': True})
+
+@app.route('/api/account/check-update', methods=['GET'])
+@login_required
+def check_account_update():
+    """Check if user account needs to be refreshed"""
+    user_id = session.get('user_id')
+    user = users_collection.find_one({'_id': ObjectId(user_id)})
+
+    needs_refresh = user.get('needs_refresh', False) if user else False
+
+    return jsonify({'needs_refresh': needs_refresh})
+
+@app.route('/api/account/mark-refreshed', methods=['POST'])
+@login_required
+def mark_account_refreshed():
+    """Mark that user has refreshed their account"""
+    user_id = session.get('user_id')
+
+    # Update user record
+    users_collection.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {'needs_refresh': False}}
+    )
+
+    # Update session with latest data
+    user = users_collection.find_one({'_id': ObjectId(user_id)})
+    if user:
+        session['is_admin'] = user.get('is_admin', False)
+        session['is_subscribed'] = user.get('is_subscribed', False)
+        session['username'] = user.get('username')
+        session.modified = True  # Ensure session is saved
+
     return jsonify({'success': True})
 
 @app.route('/api/categories', methods=['GET'])
