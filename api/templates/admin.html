@@ -289,13 +289,22 @@
                     <!-- Status Display -->
                     <div class="p-3 rounded-lg {% if beta_settings.mode %}bg-purple-500/20 border border-purple-500/30{% else %}bg-gray-700/50 border border-gray-600{% endif %}">
                         <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 {% if beta_settings.mode %}text-purple-400{% else %}text-gray-500{% endif %}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg class="w-5 h-5 {% if beta_settings.mode %}text-purple-400{% else %}text-gray-500{% endif %}" 
+                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
+
                             <p class="text-sm {% if beta_settings.mode %}text-purple-400{% else %}text-gray-400{% endif %}">
-                                Beta mode is currently <strong>{% if beta_settings.mode %}ENABLED{% else %}DISABLED{% endif %}</strong>
+                                <span class="max-[640px]:hidden">
+                                    Beta mode is currently <strong>{% if beta_settings.mode %}ENABLED{% else %}DISABLED{% endif %}</strong>
+                                </span>
+                                <span class="hidden max-[640px]:inline">
+                                    Beta mode <strong>{% if beta_settings.mode %}ENABLED{% else %}DISABLED{% endif %}</strong>
+                                </span>
                             </p>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -322,7 +331,27 @@
                                 placeholder="3600"
                                 class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
                             />
-                            <p class="text-xs text-gray-500 mt-1">Examples: 1800 (30 minuites), 3600 (1 hour), 7200 (2 hours)</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <!-- Short text for ≤745px -->
+                                <span class="inline max-[745px]:inline min-[746px]:hidden">
+                                    '1800' = 30m
+                                    <span class="max-[358px]:hidden">, '3600' = 1h</span>
+                                    <span class="max-[500px]:hidden">, '7200' = 2h</span>
+                                </span>
+
+                                <!-- Full text for >745px -->
+                                <span class="hidden min-[746px]:inline max-[745px]:hidden">
+                                    Examples: 1800 (30 minutes)
+                                    <span class="max-[358px]:hidden">, 3600 (1 hour)</span>
+                                    <span class="max-[500px]:hidden">, 7200 (2 hours)</span>
+                                </span>
+                            </p>
+
+
+
+
+
+
                         </div>
                         <div class="flex-1">
                             <label class="block text-sm font-semibold text-gray-300 mb-2">Human Readable</label>
@@ -338,21 +367,45 @@
                     </div>
 
                     <div class="flex gap-2">
+                        <!-- Update button (desktop) -->
                         <button
                             onclick="updateAccessTimeLimit()"
-                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                            class="hidden sm:flex px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition items-center gap-2"
                         >
-                            Update Time
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Apply</span>
                         </button>
+                        <!-- Update button (mobile - checkmark only) -->
+                        <button
+                            onclick="updateAccessTimeLimit()"
+                            class="sm:hidden w-10 h-10 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center"
+                            title="Apply"
+                        >
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </button>
+                        <!-- Refresh button (desktop) -->
                         <button
                             onclick="loadAccessTimeLimit()"
-                            class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition"
+                            class="hidden sm:flex px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition items-center gap-2"
+                            title="Reload current value"
                         >
                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-
-                            
+                        </button>
+                        <!-- Refresh button (mobile - icon only) -->
+                        <button
+                            onclick="loadAccessTimeLimit()"
+                            class="sm:hidden w-10 h-10 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition flex items-center justify-center"
+                            title="Reload current value"
+                        >
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
                         </button>
                     </div>
 
@@ -362,113 +415,175 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <p class="text-sm text-blue-400">
-                                Changes will apply to all unsubscribed users on their next daily reset (midnight)
+                                <span class="max-[655px]:hidden">
+                                    Changes will apply to all unsubscribed users on their next daily reset (midnight)
+                                </span>
+                                <span class="hidden max-[655px]:inline">
+                                    Changes will take effect on next reset
+                                </span>
                             </p>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
 
-        <!-- Category Management -->
-        <div class="mb-8">
-            <h3 class="text-lg font-semibold mb-3 text-gray-300">Category Management</h3>
-            
-            <!-- Add Category Form -->
-            <div class="mb-4 p-4 bg-gray-800/50 rounded-lg">
-                <h4 class="font-medium mb-3 text-gray-300">Add New Category</h4>
-                <div class="space-y-2">
+        <!-- Add Category Form -->
+        <div class="mb-4 p-4 bg-gray-800/50 rounded-lg">
+            <h4 class="font-medium mb-3 text-gray-300">Add New Category</h4>
+            <div class="space-y-2">
+                <!-- Category Name -->
+                <input
+                    type="text"
+                    id="newCategoryName"
+                    placeholder=""
+                    class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                    placeholder-text=""
+                />
+                <span class="sr-only">Category Name Label</span>
+                <script>
+                    // Dynamically handle placeholder swap
+                    const nameInput = document.getElementById('newCategoryName');
+                    function updateNamePlaceholder() {
+                        if (window.innerWidth <= 470) {
+                            nameInput.placeholder = 'Name';
+                        } else {
+                            nameInput.placeholder = 'Category name';
+                        }
+                    }
+                    updateNamePlaceholder();
+                    window.addEventListener('resize', updateNamePlaceholder);
+                </script>
+
+                <!-- Category Description -->
+                <textarea
+                    id="newCategoryDescription"
+                    class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                    style="margin-top: 5px;"
+                ></textarea>
+                <script>
+                    const descInput = document.getElementById('newCategoryDescription');
+                    function updateDescPlaceholder() {
+                        if (window.innerWidth <= 470) {
+                            descInput.placeholder = 'Description (optional)';
+                        } else {
+                            descInput.placeholder = 'Category description (optional)';
+                        }
+                    }
+                    updateDescPlaceholder();
+                    window.addEventListener('resize', updateDescPlaceholder);
+                </script>
+
+                <!-- Color & Free / Add -->
+                <div class="flex gap-2 flex-wrap sm:flex-nowrap" style="margin-top: 0px">
+                    <!-- Color inputs container -->
+                    <div class="flex gap-2 flex-1 min-w-0">
+                        <!-- Text input (desktop only) -->
+                        <div class="relative hidden sm:block flex-1">
+                            <input
+                                type="text"
+                                id="newCategoryColor"
+                                placeholder="Accent Color (e.g., #4F46E5)"
+                                value="#4F46E5"
+                                class="w-full px-4 py-2 pr-8 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200"
+                            />
+                            <button
+                                onclick="clearColorInput('newCategoryColor', 'newCategoryColorPicker')"
+                                class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
+                                title="Clear color"
+                            >
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Color picker -->
+                        <input
+                            type="color"
+                            id="newCategoryColorPicker"
+                            value="#4F46E5"
+                            class="w-10 h-10 rounded border border-gray-600 cursor-pointer bg-gray-800"
+                            title="Pick a color"
+                            style="padding: 2px;"
+                        />
+                    </div>
+                    <!-- Free checkbox -->
+                    <label class="flex items-center gap-2 px-3 py-2 bg-gray-800/50 rounded-lg cursor-pointer border border-gray-600 whitespace-nowrap">
+                        <input
+                            type="checkbox"
+                            id="newCategoryFree"
+                            class="w-4 h-4"
+                        />
+                        <span class="text-sm text-gray-300">Free</span>
+                    </label>
+                    <!-- Add button (desktop) -->
+                    <button
+                        onclick="addCategory()"
+                        class="hidden sm:flex px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition whitespace-nowrap items-center gap-2"
+                    >
+                        <span>Add Category</span>
+                    </button>
+                    <!-- Add button (mobile - + icon) -->
+                    <button
+                        onclick="addCategory()"
+                        class="sm:hidden w-10 h-10 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center justify-center"
+                        title="Add Category"
+                    >
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Banner Image -->
+                <div class="relative">
                     <input
                         type="text"
-                        id="newCategoryName"
-                        placeholder="Category name"
-                        class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
+                        id="newCategoryBanner"
+                        class="w-full px-4 py-2 pr-8 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
                     />
-                    <textarea
-                        id="newCategoryDescription"
-                        placeholder="Category description (optional)"
-                        class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        style="margin-top: 5px;"
-                    ></textarea>
-                    <div class="flex gap-2 flex-wrap sm:flex-nowrap" style="margin-top: 0px">
-                        <!-- Color inputs container -->
-                        <div class="flex gap-2 flex-1 min-w-0">
-                            <!-- Text input (desktop only) -->
-                            <div class="relative hidden sm:block flex-1">
-                                <input
-                                    type="text"
-                                    id="newCategoryColor"
-                                    placeholder="Accent Color (e.g., #4F46E5)"
-                                    value="#4F46E5"
-                                    class="w-full px-4 py-2 pr-8 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200"
-                                />
-                                <button
-                                    onclick="clearColorInput('newCategoryColor', 'newCategoryColorPicker')"
-                                    class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
-                                    title="Clear color"
-                                >
-                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <!-- Color picker -->
-                            <input
-                                type="color"
-                                id="newCategoryColorPicker"
-                                value="#4F46E5"
-                                class="w-10 h-10 rounded border border-gray-600 cursor-pointer bg-gray-800"
-                                title="Pick a color"
-                                style="padding: 2px;"
-                            />
-                        </div>
-                        <!-- Free checkbox -->
-                        <label class="flex items-center gap-2 px-3 py-2 bg-gray-800/50 rounded-lg cursor-pointer border border-gray-600 whitespace-nowrap">
-                            <input
-                                type="checkbox"
-                                id="newCategoryFree"
-                                class="w-4 h-4"
-                            />
-                            <span class="text-sm text-gray-300">Free</span>
-                        </label>
-                        <!-- Add button (desktop) -->
-                        <button
-                            onclick="addCategory()"
-                            class="hidden sm:flex px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition whitespace-nowrap items-center gap-2"
-                        >
-                            <span>Add Category</span>
-                        </button>
-                        <!-- Add button (mobile - + icon) -->
-                        <button
-                            onclick="addCategory()"
-                            class="sm:hidden w-10 h-10 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center justify-center"
-                            title="Add Category"
-                        >
-                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="relative">
-                        <input
-                            type="text"
-                            id="newCategoryBanner"
-                            placeholder="Banner Image URL (optional)"
-                            class="w-full px-4 py-2 pr-8 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        />
-                        <button
-                            onclick="clearBannerInput('newCategoryBanner')"
-                            class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
-                            title="Clear banner URL"
-                        >
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                    <p class="text-xs text-gray-500">Recommended banner size: 1200×400 pixels (3:1 ratio)</p>
+                    <button
+                        onclick="clearBannerInput('newCategoryBanner')"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
+                        title="Clear banner URL"
+                    >
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
+
+                <!-- Recommended banner text -->
+                <p class="text-xs text-gray-500">
+                    <span class="max-[470px]:hidden">Recommended banner size: 1200×400 pixels (3:1 ratio)</span>
+                    <span class="hidden max-[470px]:inline">Recommended 1200×400p (3:1)</span>
+                </p>
             </div>
+        </div>
+
+        <script>
+            // Handle responsive placeholders for category name and description
+            function updateCategoryPlaceholders() {
+                const width = window.innerWidth;
+                const name = document.getElementById('newCategoryName');
+                const desc = document.getElementById('newCategoryDescription');
+                const banner = document.getElementById('newCategoryBanner');
+
+                if(width <= 470){
+                    name.placeholder = 'Name';
+                    desc.placeholder = 'Description (optional)';
+                    banner.placeholder = 'Banner URL (optional)';
+                } else {
+                    name.placeholder = 'Category name';
+                    desc.placeholder = 'Category description (optional)';
+                    banner.placeholder = 'Banner Image URL (optional)';
+                }
+            }
+            updateCategoryPlaceholders();
+            window.addEventListener('resize', updateCategoryPlaceholders);
+        </script>
+
             
             <!-- Categories List -->
             <div class="space-y-2">
@@ -478,7 +593,7 @@
                         <div class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: {{ category.accent_color }}"></div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
-                                <p class="font-medium text-gray-200 truncate">{{ category.name }}</p>
+                                <a href="/category/{{ category._id }}" class="font-medium text-gray-200 hover:text-indigo-400 truncate transition">{{ category.name }}</a>
                                 {% if category.get('is_pinned', False) %}
                                 <svg class="w-4 h-4 text-yellow-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
@@ -494,9 +609,19 @@
                         </span>
                     </div>
                     <div class="flex items-center gap-1 ml-2 flex-shrink-0">
+                        <a
+                            href="/category/{{ category._id }}"
+                            class="p-1.5 text-indigo-400 hover:bg-indigo-500/20 rounded transition-colors"
+                            title="Edit Category"
+                        >
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </a>
                         <button
                             onclick="deleteCategory('{{ category._id }}')"
                             class="p-1.5 text-red-400 hover:bg-red-500/20 rounded transition-colors"
+                            title="Delete Category"
                         >
                             <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

@@ -214,7 +214,8 @@
 <div class="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
     <div class="rounded-lg sm:rounded-xl shadow-lg overflow-hidden" style="background-color: rgb(18, 18, 20);">
         <!-- Category Header -->
-        <div class="relative overflow-hidden" style="min-height: 200px;">
+        <div class="relative overflow-hidden" style="min-height: 150px;">
+            <!-- Mobile: 150px, Desktop keeps larger height via responsive padding -->
             <!-- Background: Banner Image or Gradient -->
             {% if category.banner_image %}
             <div class="absolute inset-0">
@@ -229,7 +230,7 @@
             {% endif %}
             
             <!-- Content -->
-            <div class="px-4 sm:px-6 py-6 sm:py-8 text-white relative z-10">
+            <div class="px-4 sm:px-6 py-4 sm:py-8 text-white relative z-10">
             
             <div class="flex flex-col sm:flex-row justify-between items-start gap-4 relative z-10">
                 <div class="flex-1">
