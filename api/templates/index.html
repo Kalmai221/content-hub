@@ -450,7 +450,107 @@
             </div>
         </div>
     </section>
+
+    <!-- Cookie Consent Popup -->
+    <div id="cookieConsent" class="hidden fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 animate-slide-up">
+        <div class="max-w-4xl mx-auto rounded-2xl shadow-2xl border border-gray-700" style="background-color: rgb(18, 18, 20);">
+            <div class="p-6 sm:p-8">
+                <div class="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+                    <!-- Icon -->
+                    <div class="flex-shrink-0">
+                        <div class="bg-gradient-to-br from-purple-500 to-pink-600 p-3 rounded-xl shadow-lg">
+                            <svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-white mb-2">Cookie Preferences</h3>
+                        <p class="text-gray-400 text-sm sm:text-base leading-relaxed">
+                            We use essential cookies to provide our service and keep you logged in. We don't use any non-essential or tracking cookies. 
+                            By using our platform, you agree to our use of essential cookies for authentication and session management.
+                        </p>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                        <button
+                            onclick="acceptCookies()"
+                            class="px-6 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition shadow-lg whitespace-nowrap"
+                        >
+                            Accept All
+                        </button>
+                        <button
+                            onclick="rejectNonEssential()"
+                            class="px-6 py-3 rounded-lg font-semibold text-gray-300 bg-gray-800 hover:bg-gray-700 transition border border-gray-700 whitespace-nowrap"
+                        >
+                            Reject Non-Essential
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    @keyframes slide-up {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .animate-slide-up {
+        animation: slide-up 0.4s ease-out;
+    }
+</style>
+
+<script>
+    // Cookie consent functions
+    function setCookie(name, value, days) {
+        const d = new Date();
+        d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + d.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function acceptCookies() {
+        setCookie('cookie_consent', 'accepted', 365);
+        document.getElementById('cookieConsent').classList.add('hidden');
+    }
+
+    function rejectNonEssential() {
+        // Since we only use essential cookies, this does the same as accept
+        setCookie('cookie_consent', 'rejected_non_essential', 365);
+        document.getElementById('cookieConsent').classList.add('hidden');
+    }
+
+    // Show cookie consent if not already set
+    document.addEventListener('DOMContentLoaded', function() {
+        const consent = getCookie('cookie_consent');
+        if (!consent) {
+            document.getElementById('cookieConsent').classList.remove('hidden');
+        }
+    });
+</script>
 
 {% else %}
 <!-- Dashboard for Logged-in Users -->

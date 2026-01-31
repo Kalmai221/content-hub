@@ -235,6 +235,11 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/privacy')
+def privacy():
+    """Privacy policy page"""
+    return render_template('privacy.html')
+
 @app.route('/verify-beta-key', methods=['POST'])
 def verify_beta_key():
     """Verify beta key against stored secret"""
