@@ -197,21 +197,25 @@
                     </a>
                 </div>
 
+                {% if not session.get('is_subscribed') %}
                 <div class="grid gap-3 sm:gap-4 max-sm:grid-cols-2 pb-[10px] sm:pb-[20px]">
 
-                    <!-- Timer Display (for non-subscribed users) -->
-                    {% if not session.get('is_subscribed') %}
+                    <!-- Timer Display (non-subscribed users only) -->
                     <div class="p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                         <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 max-sm:w-3 max-sm:h-3 text-orange-400 flex-shrink-0"
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 fill="none"
-                                 viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg
+                                class="w-4 h-4 max-sm:w-3 max-sm:h-3 text-orange-400 flex-shrink-0"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
                             </svg>
 
                             <span class="text-xs sm:text-sm text-gray-400">
@@ -219,22 +223,34 @@
                                 <span class="hidden max-[321px]:inline">Time:</span>
                             </span>
 
-                            <span id="timerDisplayMobile"
-                                  class="text-xs sm:text-sm font-mono font-semibold text-white ml-auto">
+                            <span
+                                id="timerDisplayMobile"
+                                class="text-xs sm:text-sm font-mono font-semibold text-white ml-auto"
+                            >
                                 --:--
                             </span>
                         </div>
                     </div>
-                    {% endif %}
+                {% else %}
+                <div class="pb-[10px] sm:pb-[20px]">
+                {% endif %}
 
                     <!-- Favorites Counter -->
                     <div class="p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                         <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 max-sm:w-3 max-sm:h-3 text-red-400 flex-shrink-0"
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 fill="currentColor"
-                                 viewBox="0 0 24 24">
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            <svg
+                                class="w-4 h-4 max-sm:w-3 max-sm:h-3 text-red-400 flex-shrink-0"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                                       2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                                       C13.09 3.81 14.76 3 16.5 3
+                                       19.58 3 22 5.42 22 8.5
+                                       c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                                />
                             </svg>
 
                             <span class="text-xs sm:text-sm text-gray-400">
@@ -242,14 +258,17 @@
                                 <span class="hidden max-[321px]:inline">Favs:</span>
                             </span>
 
-                            <span id="favoritesCountDisplayMobile"
-                                  class="text-xs sm:text-sm font-semibold text-white ml-auto">
+                            <span
+                                id="favoritesCountDisplayMobile"
+                                class="text-xs sm:text-sm font-semibold text-white ml-auto"
+                            >
                                 --/--
                             </span>
                         </div>
                     </div>
 
                 </div>
+
 
 
 
