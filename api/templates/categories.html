@@ -3,9 +3,78 @@
 {% block title %}Categories - Effexor Hub{% endblock %}
 
 {% block content %}
+
+<!-- Create Category Modal (admin only) -->
+{% if is_admin %}
+<div id="createCategoryModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-700">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl font-bold text-gray-200">Create New Category</h3>
+                <button onclick="closeCreateCategoryModal()" class="p-2 hover:bg-gray-700 rounded-lg transition">
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Category Name *</label>
+                    <input type="text" id="createCategoryName" placeholder="Category name" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Description</label>
+                    <textarea id="createCategoryDesc" placeholder="Category description (optional)" class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Banner Image URL</label>
+                    <input type="url" id="createCategoryBanner" placeholder="https://example.com/banner.jpg (optional)" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                    <p class="text-xs text-gray-500 mt-1">Recommended: 1200×400 pixels (3:1 ratio)</p>
+                </div>
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Accent Color</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="createCategoryColor" value="#4F46E5" placeholder="#4F46E5" class="flex-1 px-4 py-2 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200" />
+                            <input type="color" id="createCategoryColorPicker" value="#4F46E5" class="w-10 h-10 rounded border border-gray-600 cursor-pointer bg-gray-800" style="padding:2px;" title="Pick color" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Access</label>
+                        <label class="flex items-center gap-2 h-10 px-4 bg-gray-800/50 rounded-lg cursor-pointer border border-gray-600">
+                            <input type="checkbox" id="createCategoryFree" class="w-4 h-4" />
+                            <span class="text-sm text-gray-300">Free</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="submitCreateCategory()" class="flex-1 py-2.5 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition font-semibold">
+                    Create Category
+                </button>
+                <button onclick="closeCreateCategoryModal()" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
     <div class="mb-6 sm:mb-8">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-200 mb-2">Categories</h2>
+        <div class="flex items-center justify-between mb-2">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-200">Categories</h2>
+            {% if is_admin %}
+            <button onclick="openCreateCategoryModal()" class="flex items-center gap-2 px-4 py-2 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition text-sm font-semibold">
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span class="hidden sm:inline">Create Category</span>
+                <span class="sm:hidden">Create</span>
+            </button>
+            {% endif %}
+        </div>
         <p class="text-sm sm:text-base text-gray-400">Browse our content categories</p>
     </div>
 
@@ -247,13 +316,13 @@
         </div>
         <h3 class="text-xl font-semibold text-gray-300 mb-2">No categories available</h3>
         <p class="text-gray-500 mb-4">There are no categories to display at the moment.</p>
-        {% if session.get('is_admin') %}
-        <a href="/admin" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+        {% if is_admin %}
+        <button onclick="openCreateCategoryModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             Create Your First Category
-        </a>
+        </button>
         {% endif %}
     </div>
     {% endif %}
@@ -318,5 +387,78 @@
             separator.style.display = 'block';
         }
     }
+
+    // ===== CREATE CATEGORY MODAL =====
+    {% if is_admin %}
+    function openCreateCategoryModal() {
+        document.getElementById('createCategoryName').value = '';
+        document.getElementById('createCategoryDesc').value = '';
+        document.getElementById('createCategoryBanner').value = '';
+        document.getElementById('createCategoryColor').value = '#4F46E5';
+        document.getElementById('createCategoryColorPicker').value = '#4F46E5';
+        document.getElementById('createCategoryFree').checked = false;
+        document.getElementById('createCategoryModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeCreateCategoryModal() {
+        document.getElementById('createCategoryModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    // Close modal on background click
+    document.getElementById('createCategoryModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeCreateCategoryModal();
+    });
+
+    // Sync color picker <-> text input
+    document.getElementById('createCategoryColor')?.addEventListener('input', function() {
+        if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+            document.getElementById('createCategoryColorPicker').value = this.value;
+        }
+    });
+    document.getElementById('createCategoryColorPicker')?.addEventListener('input', function() {
+        document.getElementById('createCategoryColor').value = this.value.toUpperCase();
+    });
+
+    async function submitCreateCategory() {
+        const name = document.getElementById('createCategoryName').value.trim();
+        const description = document.getElementById('createCategoryDesc').value.trim();
+        const bannerImage = document.getElementById('createCategoryBanner').value.trim();
+        const accentColor = document.getElementById('createCategoryColor').value.trim();
+        const isFree = document.getElementById('createCategoryFree').checked;
+
+        if (!name) {
+            alert('Please enter a category name');
+            return;
+        }
+        if (!/^#[0-9A-F]{6}$/i.test(accentColor)) {
+            alert('Please enter a valid hex color (e.g. #4F46E5)');
+            return;
+        }
+
+        const btn = event.target;
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+
+        try {
+            const response = await fetch('/api/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, description, accent_color: accentColor, is_free: isFree, banner_image: bannerImage })
+            });
+            const data = await response.json();
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to create category');
+            }
+        } catch (e) {
+            alert('Error creating category');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Create Category';
+    }
+    {% endif %}
 </script>
 {% endblock %}

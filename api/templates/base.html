@@ -11,9 +11,97 @@
         .gradient-bg {
             background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
         }
-        body {
-            background-color: rgb(26, 26, 30);
+        body { background-color: rgb(26, 26, 30); }
+
+        /* ── Global Modal System ── */
+        .modal-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(6px);
+            z-index: 9990;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s ease;
         }
+        .modal-backdrop.open { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: rgb(22, 22, 26);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 1.25rem;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(49,120,136,0.12);
+            width: 100%; max-width: 26rem;
+            transform: scale(0.93) translateY(12px);
+            transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            overflow: hidden;
+        }
+        .modal-backdrop.open .modal-box { transform: scale(1) translateY(0); }
+        .modal-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem 1.5rem 0; }
+        .modal-icon {
+            width: 2.75rem; height: 2.75rem; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .modal-body { padding: 0.75rem 1.5rem 1.5rem; }
+        .modal-actions { display: flex; gap: 0.5rem; flex-direction: row-reverse; flex-wrap: wrap; margin-top: 1.25rem; }
+        .modal-btn {
+            padding: 0.6rem 1.25rem; border-radius: 0.625rem; font-weight: 600;
+            font-size: 0.875rem; cursor: pointer; transition: all 0.15s ease; border: none;
+            white-space: nowrap;
+        }
+        .modal-btn-primary { background: linear-gradient(135deg, #21525D, #317888); color: #fff; }
+        .modal-btn-primary:hover { filter: brightness(1.15); }
+        .modal-btn-danger { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .modal-btn-danger:hover { background: rgba(239,68,68,0.3); }
+        .modal-btn-cancel { background: rgba(255,255,255,0.06); color: #9ca3af; border: 1px solid rgba(255,255,255,0.08); }
+        .modal-btn-cancel:hover { background: rgba(255,255,255,0.1); color: #e5e7eb; }
+        .modal-input {
+            width: 100%; padding: 0.75rem 1rem; background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem;
+            color: #e5e7eb; font-size: 0.875rem; outline: none;
+            transition: border-color 0.15s ease;
+        }
+        .modal-input:focus { border-color: #317888; box-shadow: 0 0 0 3px rgba(49,120,136,0.15); }
+        .modal-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0 -1.5rem; }
+
+        /* ── Toast Notifications ── */
+        #toastContainer {
+            position: fixed; top: 1.25rem; right: 1rem; z-index: 9999;
+            display: flex; flex-direction: column; gap: 0.5rem;
+            max-width: 22rem; width: calc(100vw - 2rem);
+            pointer-events: none;
+        }
+        .toast {
+            background: rgb(28,28,32); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 0.875rem; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            padding: 0.875rem 1rem; display: flex; align-items: flex-start; gap: 0.75rem;
+            transform: translateX(120%); position: relative; overflow: hidden;
+            transition: transform 0.35s cubic-bezier(0.34,1.4,0.64,1);
+            pointer-events: all; cursor: pointer;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.hide { transform: translateX(120%); }
+        .toast-icon {
+            width: 2rem; height: 2rem; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .toast-success .toast-icon { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .toast-error .toast-icon { background: rgba(239,68,68,0.15); color: #f87171; }
+        .toast-warning .toast-icon { background: rgba(234,179,8,0.15); color: #facc15; }
+        .toast-info .toast-icon { background: rgba(49,120,136,0.2); color: #5eead4; }
+        .toast-title { font-size: 0.875rem; font-weight: 600; color: #e5e7eb; }
+        .toast-msg { font-size: 0.8125rem; color: #9ca3af; margin-top: 0.125rem; line-height: 1.4; }
+        .toast-bar {
+            position: absolute; bottom: 0; left: 0; height: 2px;
+            background: linear-gradient(90deg, #21525D, #317888);
+            animation: toastBarShrink linear forwards;
+        }
+        @keyframes toastBarShrink { from { width: 100%; } to { width: 0%; } }
+
+        @keyframes slide-down {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        .animate-slide-down { animation: slide-down 0.4s ease-out; }
     </style>
 </head>
 <body class="min-h-screen" style="background-color: rgb(26, 26, 30);">
@@ -1028,6 +1116,140 @@
             // Initial check on page load
             checkForAccountUpdates();
         })();
+    </script>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Global Modal/Toast JS -->
+    <script>
+    // ── Toast System ──
+    window.showToast = function(message, type = 'info', title = null, duration = 4000) {
+        const container = document.getElementById('toastContainer');
+        const icons = {
+            success: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+            error:   '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>',
+            warning: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            info:    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+        };
+        const defaultTitles = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Notice' };
+        const t = document.createElement('div');
+        t.className = `toast toast-${type}`;
+        t.innerHTML = `
+            <div class="toast-icon">${icons[type] || icons.info}</div>
+            <div class="flex-1 min-w-0">
+                <div class="toast-title">${title || defaultTitles[type] || 'Notice'}</div>
+                ${message ? `<div class="toast-msg">${message}</div>` : ''}
+            </div>
+            <button onclick="this.closest('.toast').remove()" class="text-gray-600 hover:text-gray-400 ml-1 flex-shrink-0" style="background:none;border:none;cursor:pointer;font-size:1.1rem;line-height:1">×</button>
+            <div class="toast-bar" style="animation-duration:${duration}ms"></div>
+        `;
+        t.addEventListener('click', () => { t.classList.add('hide'); setTimeout(() => t.remove(), 350); });
+        container.appendChild(t);
+        requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add('show')); });
+        setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 350); }, duration);
+        return t;
+    };
+
+    // ── Modal System (replaces alert/confirm/prompt) ──
+    window.showModal = function({ title, message, type = 'info', buttons = [], input = null }) {
+        return new Promise(resolve => {
+            const icons = {
+                success: { bg: 'rgba(34,197,94,0.15)', color: '#4ade80', svg: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>' },
+                error:   { bg: 'rgba(239,68,68,0.15)', color: '#f87171', svg: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>' },
+                warning: { bg: 'rgba(234,179,8,0.15)', color: '#facc15', svg: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>' },
+                info:    { bg: 'rgba(49,120,136,0.2)', color: '#5eead4', svg: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>' },
+                danger:  { bg: 'rgba(239,68,68,0.15)', color: '#f87171', svg: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>' }
+            };
+            const ic = icons[type] || icons.info;
+            if (!buttons.length) buttons = [{ text: 'OK', value: true, cls: 'modal-btn-primary' }];
+
+            const btnHTML = buttons.map(b =>
+                `<button class="modal-btn ${b.cls || 'modal-btn-cancel'}" data-val="${b.value ?? ''}">${b.text}</button>`
+            ).join('');
+
+            const inputHTML = input ? `
+                <div style="margin-top:0.75rem">
+                    ${input.label ? `<label style="display:block;font-size:0.8125rem;font-weight:600;color:#d1d5db;margin-bottom:0.5rem">${input.label}</label>` : ''}
+                    <input id="_modalInput" type="${input.type || 'text'}" placeholder="${input.placeholder || ''}"
+                        value="${input.value || ''}" class="modal-input"
+                        style="font-family:${input.mono ? 'monospace' : 'inherit'};text-transform:${input.upper ? 'uppercase' : 'none'}">
+                    ${input.hint ? `<p style="font-size:0.75rem;color:#6b7280;margin-top:0.375rem">${input.hint}</p>` : ''}
+                </div>` : '';
+
+            const el = document.createElement('div');
+            el.className = 'modal-backdrop';
+            el.innerHTML = `
+                <div class="modal-box" role="dialog" aria-modal="true">
+                    <div class="modal-header">
+                        <div class="modal-icon" style="background:${ic.bg}">
+                            <svg class="w-5 h-5" style="color:${ic.color}" fill="none" stroke="currentColor" viewBox="0 0 24 24">${ic.svg}</svg>
+                        </div>
+                        <h3 style="font-size:1.0625rem;font-weight:700;color:#f3f4f6;flex:1">${title || ''}</h3>
+                    </div>
+                    <div class="modal-body">
+                        ${message ? `<p style="color:#9ca3af;font-size:0.875rem;line-height:1.6;white-space:pre-wrap">${message}</p>` : ''}
+                        ${inputHTML}
+                        <div class="modal-actions">${btnHTML}</div>
+                    </div>
+                </div>`;
+
+            document.body.appendChild(el);
+            requestAnimationFrame(() => { requestAnimationFrame(() => el.classList.add('open')); });
+
+            const close = (val) => {
+                el.classList.remove('open');
+                setTimeout(() => { el.remove(); resolve(val); }, 200);
+            };
+
+            el.querySelectorAll('.modal-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const raw = btn.dataset.val;
+                    let val = raw === 'true' ? true : raw === 'false' ? false : raw === '' ? null : raw;
+                    if (input && val !== false && val !== null) {
+                        val = document.getElementById('_modalInput')?.value ?? '';
+                    }
+                    close(val);
+                });
+            });
+
+            el.addEventListener('click', e => { if (e.target === el) close(null); });
+            if (input) {
+                setTimeout(() => document.getElementById('_modalInput')?.focus(), 250);
+                document.getElementById('_modalInput')?.addEventListener('keydown', e => {
+                    if (e.key === 'Enter') { close(document.getElementById('_modalInput').value); }
+                });
+            } else {
+                const firstPrimary = el.querySelector('.modal-btn-primary, .modal-btn-danger');
+                setTimeout(() => firstPrimary?.focus(), 250);
+            }
+        });
+    };
+
+    // Convenience wrappers
+    window.showAlert = async (message, title = 'Notice', type = 'info') => {
+        return window.showModal({ title, message, type, buttons: [{ text: 'OK', value: true, cls: 'modal-btn-primary' }] });
+    };
+    window.showConfirm = async (message, title = 'Confirm', type = 'warning', confirmText = 'Confirm', cancelText = 'Cancel') => {
+        const dangerBtn = type === 'danger' ? 'modal-btn-danger' : 'modal-btn-primary';
+        return window.showModal({
+            title, message, type,
+            buttons: [
+                { text: confirmText, value: true, cls: dangerBtn },
+                { text: cancelText, value: false, cls: 'modal-btn-cancel' }
+            ]
+        });
+    };
+    window.showPrompt = async (message, title = 'Input', defaultValue = '') => {
+        return window.showModal({
+            title, message: '', type: 'info',
+            input: { placeholder: message, value: defaultValue },
+            buttons: [
+                { text: 'OK', value: true, cls: 'modal-btn-primary' },
+                { text: 'Cancel', value: false, cls: 'modal-btn-cancel' }
+            ]
+        });
+    };
     </script>
 
     {% block scripts %}{% endblock %}

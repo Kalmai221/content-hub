@@ -366,25 +366,7 @@
         <div class="p-4 sm:p-6 border-b border-gray-700">
             <div class="flex flex-wrap gap-2">
                 <button
-                    onclick="toggleAddContent()"
-                    class="flex items-center gap-2 px-3 sm:px-4 py-2 category-accent-btn text-white rounded-lg hover:opacity-90 text-sm sm:text-base"
-                >
-                    <svg class="w-4 sm:w-5 h-4 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Content
-                </button>
-                <button
-                    onclick="toggleBulkUpload()"
-                    class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] text-sm sm:text-base"
-                >
-                    <svg class="w-4 sm:w-5 h-4 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                    Bulk Upload
-                </button>
-                <button
-                    onclick="toggleAddFolder()"
+                    onclick="openCreateFolderModal(null)"
                     class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] text-sm sm:text-base"
                 >
                     <svg class="w-4 sm:w-5 h-4 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -393,196 +375,63 @@
                     Add Folder
                 </button>
             </div>
-
-            <!-- Add Content Form -->
-            <div id="addContentForm" class="hidden mt-4 p-4 bg-gray-800/50 rounded-lg">
-                <h3 class="font-medium mb-3 text-gray-300 text-sm sm:text-base">Add New Content</h3>
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Content Type</label>
-                        <select id="newContentType" class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200" onchange="toggleContentFields()">
-                            <option value="image">Image</option>
-                            <option value="video">Video</option>
-                            <option value="text">Text</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Folder (optional)</label>
-                        <select id="newContentFolder" class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200">
-                            <option value="">Root (No Folder)</option>
-                            {% for folder in folders %}
-                            <option value="{{ folder._id }}">{{ folder.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Title (optional)</label>
-                        <input
-                            type="text"
-                            id="newContentTitle"
-                            placeholder="Content title"
-                            class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        />
-                    </div>
-                    <div id="contentUrlField">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Media URL</label>
-                        <input
-                            type="url"
-                            id="newContentUrl"
-                            placeholder="https://example.com/image.jpg"
-                            class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Caption/Text</label>
-                        <textarea
-                            id="newContentCaption"
-                            placeholder="Content caption or description"
-                            class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg h-20 text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        ></textarea>
-                    </div>
-                    <div class="flex gap-2">
-                        <button
-                            onclick="addContent()"
-                            class="px-4 py-2 category-accent-btn text-white rounded-lg hover:opacity-90 text-sm sm:text-base"
-                        >
-                            Add Content
-                        </button>
-                        <button
-                            onclick="toggleAddContent()"
-                            class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm sm:text-base"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bulk Upload Form -->
-            <div id="bulkUploadForm" class="hidden mt-4 p-4 bg-gray-800/50 rounded-lg">
-                <h3 class="font-medium mb-3 text-gray-300 text-sm sm:text-base">Bulk Upload URLs</h3>
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Media Type</label>
-                        <select id="bulkMediaType" class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200">
-                            <option value="image">Images</option>
-                            <option value="video">Videos</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Folder (optional)</label>
-                        <select id="bulkContentFolder" class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200">
-                            <option value="">Root (No Folder)</option>
-                            {% for folder in folders %}
-                            <option value="{{ folder._id }}">{{ folder.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">URLs (one per line)</label>
-                        <textarea
-                            id="bulkUrls"
-                            placeholder="https://example.com/image1.jpg
-https://example.com/image2.jpg
-https://example.com/image3.jpg"
-                            class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg h-32 text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500 font-mono"
-                        ></textarea>
-                    </div>
-                    <div class="flex gap-2">
-                        <button
-                            onclick="bulkUpload()"
-                            class="px-4 py-2 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] text-sm sm:text-base"
-                        >
-                            Upload All
-                        </button>
-                        <button
-                            onclick="toggleBulkUpload()"
-                            class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm sm:text-base"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Add Folder Form -->
-            <div id="addFolderForm" class="hidden mt-4 p-4 bg-gray-800/50 rounded-lg">
-                <h3 class="font-medium mb-3 text-gray-300 text-sm sm:text-base">Create New Folder</h3>
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Folder Name</label>
-                        <input
-                            type="text"
-                            id="newFolderName"
-                            placeholder="Enter folder name"
-                            class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Description (optional)</label>
-                        <textarea
-                            id="newFolderDescription"
-                            placeholder="Folder description"
-                            class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg h-20 text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        ></textarea>
-                    </div>
-                    <div class="flex gap-2">
-                        <button
-                            onclick="addFolder()"
-                            class="px-4 py-2 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] text-sm sm:text-base"
-                        >
-                            Create Folder
-                        </button>
-                        <button
-                            onclick="toggleAddFolder()"
-                            class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm sm:text-base"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
         {% endif %}
 
         <!-- Folders Section -->
-        {% if folders|length > 0 %}
+        {% if root_folders|length > 0 %}
         <div class="p-4 sm:p-6 border-b border-gray-700">
             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-300">Folders</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                {% for folder in folders %}
-                <div class="group relative bg-gray-800/50 rounded-lg p-4 hover:bg-gray-700/50 transition cursor-pointer" onclick="openFolder('{{ folder._id }}')">
-                    <div class="flex items-start justify-between mb-2">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12 category-accent-text" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {% for folder in root_folders %}
+                <div class="group relative bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-700/50 transition cursor-pointer" onclick="openFolder('{{ folder._id }}')">
+                    {% if folder.thumbnail_url %}
+                    <div class="w-full h-24 overflow-hidden relative">
+                        <img src="{{ folder.thumbnail_url }}" alt="{{ folder.name }}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/30"></div>
+                    </div>
+                    {% else %}
+                    <div class="w-full h-16 flex items-center justify-center" style="background-color: {{ folder.accent_color or '#21525D' }}20;">
+                        <svg class="w-10 h-10" style="color: {{ folder.accent_color or category.accent_color }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
-                        {% if is_admin %}
-                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition" onclick="event.stopPropagation()">
-                            <button
-                                onclick="editFolder('{{ folder._id }}', '{{ folder.name }}', '{{ folder.description }}')"
-                                class="p-1 text-gray-400 hover:text-white hover:bg-gray-600 rounded"
-                                title="Edit folder"
-                            >
-                                <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                            </button>
-                            <button
-                                onclick="deleteFolder('{{ folder._id }}')"
-                                class="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded"
-                                title="Delete folder"
-                            >
-                                <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
-                        {% endif %}
                     </div>
-                    <h4 class="font-semibold text-gray-200 text-sm sm:text-base truncate">{{ folder.name }}</h4>
-                    {% if folder.description %}
-                    <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ folder.description }}</p>
                     {% endif %}
+                    <div class="p-3">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-semibold text-gray-200 text-sm sm:text-base truncate">{{ folder.name }}</h4>
+                                {% if folder.description %}
+                                <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ folder.description }}</p>
+                                {% endif %}
+                                {% if folder.children|length > 0 %}
+                                <p class="text-xs mt-1" style="color: {{ folder.accent_color or category.accent_color }}">{{ folder.children|length }} subfolder{{ 's' if folder.children|length != 1 else '' }}</p>
+                                {% endif %}
+                            </div>
+                            {% if is_admin %}
+                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition flex-shrink-0 ml-1" onclick="event.stopPropagation()">
+                                <button
+                                    onclick="openEditFolderModal('{{ folder._id }}', '{{ folder.name }}', '{{ folder.description | replace("'", "\\'")|replace('"', '\\"') }}', '{{ folder.accent_color or '' }}', '{{ folder.thumbnail_url or '' }}')"
+                                    class="p-1 text-gray-400 hover:text-white hover:bg-gray-600 rounded"
+                                    title="Edit folder"
+                                >
+                                    <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </button>
+                                <button
+                                    onclick="deleteFolder('{{ folder._id }}')"
+                                    class="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded"
+                                    title="Delete folder"
+                                >
+                                    <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -725,7 +574,7 @@ https://example.com/image3.jpg"
                 </svg>
                 <p class="text-gray-500 text-sm sm:text-base">No content in this category yet.</p>
                 {% if is_admin %}
-                <p class="text-gray-600 text-xs sm:text-sm mt-2">Click "Add Content" to get started</p>
+                <p class="text-gray-600 text-xs sm:text-sm mt-2">Create a folder and upload content to it</p>
                 {% endif %}
             </div>
             {% endif %}
@@ -747,15 +596,43 @@ https://example.com/image3.jpg"
 <div id="folderModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeFolderModal()">
     <div class="bg-gray-900 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col" style="background-color: rgb(18, 18, 20);" onclick="event.stopPropagation()">
         <div class="sticky top-0 z-10 flex justify-between items-center p-4 sm:p-6 border-b border-gray-700 flex-shrink-0" style="background-color: rgb(18, 18, 20);">
-            <div>
-                <h3 id="folderModalTitle" class="text-xl sm:text-2xl font-bold text-gray-200"></h3>
+            <div class="flex-1 min-w-0">
+                <h3 id="folderModalTitle" class="text-xl sm:text-2xl font-bold text-gray-200 truncate"></h3>
                 <p id="folderModalDescription" class="text-sm text-gray-500 mt-1"></p>
             </div>
-            <button onclick="closeFolderModal()" class="p-2 hover:bg-gray-700 rounded-lg">
-                <svg class="w-6 h-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+            <div class="flex items-center gap-2 ml-4 flex-shrink-0">
+                {% if is_admin %}
+                <button onclick="openCreateFolderModal(currentFolderId)" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] text-sm transition">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    </svg>
+                    Subfolder
+                </button>
+                <button onclick="openUploadImageModal()" class="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm transition">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Image
+                </button>
+                <button onclick="openUploadVideoModal()" class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm transition">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Video
+                </button>
+                {% endif %}
+                <button onclick="closeFolderModal()" class="p-2 hover:bg-gray-700 rounded-lg">
+                    <svg class="w-6 h-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- Subfolders navigation breadcrumb -->
+        <div id="folderBreadcrumb" class="hidden px-4 sm:px-6 py-2 border-b border-gray-800 flex-shrink-0 text-sm text-gray-400">
+        </div>
+        <!-- Subfolders list (if any) -->
+        <div id="folderSubfolders" class="hidden px-4 sm:px-6 pt-4 flex-shrink-0">
         </div>
         <div id="folderContent" class="p-4 sm:p-6 overflow-y-auto flex-1">
             <div class="text-center py-8">
@@ -765,39 +642,175 @@ https://example.com/image3.jpg"
     </div>
 </div>
 
-<!-- Edit Folder Modal -->
 {% if is_admin %}
-<div id="editFolderModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" onclick="closeEditFolderModal()">
-    <div class="bg-gray-900 rounded-lg max-w-md w-full p-6" style="background-color: rgb(18, 18, 20);" onclick="event.stopPropagation()">
-        <h3 class="text-xl font-bold text-gray-200 mb-4">Edit Folder</h3>
-        <input type="hidden" id="editFolderId">
-        <div class="space-y-3">
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Folder Name</label>
-                <input
-                    type="text"
-                    id="editFolderName"
-                    class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                />
+<!-- Create Folder Modal -->
+<div id="createFolderModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-700" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h3 id="createFolderModalTitle" class="text-xl font-bold text-gray-200">Create Folder</h3>
+                <button onclick="closeCreateFolderModal()" class="p-2 hover:bg-gray-700 rounded-lg transition">
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Description</label>
-                <textarea
-                    id="editFolderDescription"
-                    class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                ></textarea>
+            <input type="hidden" id="createFolderParentId" value="" />
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Folder Name *</label>
+                    <input type="text" id="createFolderName" placeholder="Enter folder name" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Description</label>
+                    <textarea id="createFolderDesc" placeholder="Folder description (optional)" class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Thumbnail Image URL</label>
+                    <input type="url" id="createFolderThumbnail" placeholder="https://example.com/thumb.jpg (optional)" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Accent Color</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="createFolderColor" value="{{ category.accent_color }}" class="flex-1 px-4 py-2 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200" />
+                        <input type="color" id="createFolderColorPicker" value="{{ category.accent_color }}" class="w-10 h-10 rounded border border-gray-600 cursor-pointer bg-gray-800" style="padding:2px;" />
+                    </div>
+                </div>
             </div>
-            <div class="flex gap-2">
-                <button
-                    onclick="saveEditFolder()"
-                    class="px-4 py-2 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E]"
-                >
+            <div class="flex gap-3 mt-6">
+                <button onclick="submitCreateFolder()" class="flex-1 py-2.5 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition font-semibold">
+                    Create Folder
+                </button>
+                <button onclick="closeCreateFolderModal()" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Folder Modal -->
+<div id="editFolderModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-700" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl font-bold text-gray-200">Edit Folder</h3>
+                <button onclick="closeEditFolderModal()" class="p-2 hover:bg-gray-700 rounded-lg transition">
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <input type="hidden" id="editFolderId">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Folder Name *</label>
+                    <input type="text" id="editFolderName" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Description</label>
+                    <textarea id="editFolderDescription" class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Thumbnail Image URL</label>
+                    <input type="url" id="editFolderThumbnail" placeholder="https://example.com/thumb.jpg" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Accent Color</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="editFolderColor" class="flex-1 px-4 py-2 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200" />
+                        <input type="color" id="editFolderColorPicker" class="w-10 h-10 rounded border border-gray-600 cursor-pointer bg-gray-800" style="padding:2px;" />
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="saveEditFolder()" class="flex-1 py-2.5 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition font-semibold">
                     Save Changes
                 </button>
-                <button
-                    onclick="closeEditFolderModal()"
-                    class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-                >
+                <button onclick="closeEditFolderModal()" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Image Modal -->
+<div id="uploadImageModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-700" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl font-bold text-gray-200">Upload Image</h3>
+                <button onclick="closeUploadImageModal()" class="p-2 hover:bg-gray-700 rounded-lg transition">
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4">
+                <p class="text-yellow-400 text-sm">Uploading to: <span id="uploadImageFolderName" class="font-semibold"></span></p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Title (optional)</label>
+                    <input type="text" id="uploadImageTitle" placeholder="Image title" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Image URL *</label>
+                    <input type="url" id="uploadImageUrl" placeholder="https://example.com/image.jpg" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Bulk URLs (one per line, optional)</label>
+                    <textarea id="uploadImageBulkUrls" placeholder="Leave empty to use single URL above, or paste multiple URLs here..." class="w-full px-4 py-2 border border-gray-600 rounded-lg h-24 bg-gray-800/50 text-gray-200 placeholder-gray-500 font-mono text-sm"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">If bulk URLs provided, they override the single URL above</p>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="submitUploadImage()" class="flex-1 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-semibold">
+                    Upload Image(s)
+                </button>
+                <button onclick="closeUploadImageModal()" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Video Modal -->
+<div id="uploadVideoModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-700" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl font-bold text-gray-200">Upload Video</h3>
+                <button onclick="closeUploadVideoModal()" class="p-2 hover:bg-gray-700 rounded-lg transition">
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-4">
+                <p class="text-blue-400 text-sm">Uploading to: <span id="uploadVideoFolderName" class="font-semibold"></span></p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Title (optional)</label>
+                    <input type="text" id="uploadVideoTitle" placeholder="Video title" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Video URL *</label>
+                    <input type="url" id="uploadVideoUrl" placeholder="https://example.com/video.mp4" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Bulk URLs (one per line, optional)</label>
+                    <textarea id="uploadVideoBulkUrls" placeholder="Leave empty to use single URL above, or paste multiple URLs here..." class="w-full px-4 py-2 border border-gray-600 rounded-lg h-24 bg-gray-800/50 text-gray-200 placeholder-gray-500 font-mono text-sm"></textarea>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="submitUploadVideo()" class="flex-1 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                    Upload Video(s)
+                </button>
+                <button onclick="closeUploadVideoModal()" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
                     Cancel
                 </button>
             </div>
@@ -806,55 +819,45 @@ https://example.com/image3.jpg"
 </div>
 
 <!-- Edit Content Modal (for folder content) -->
-<div id="editContentModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" onclick="closeEditContentModal()">
-    <div class="bg-gray-900 rounded-lg max-w-md w-full p-6" style="background-color: rgb(18, 18, 20);" onclick="event.stopPropagation()">
-        <h3 class="text-xl font-bold text-gray-200 mb-4">Edit Content</h3>
-        <input type="hidden" id="editContentId">
-        <input type="hidden" id="editContentType">
-        <div class="space-y-3">
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Title</label>
-                <input
-                    type="text"
-                    id="editContentTitle"
-                    class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                />
+<div id="editContentModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-700" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl font-bold text-gray-200">Edit Content</h3>
+                <button onclick="closeEditContentModal()" class="p-2 hover:bg-gray-700 rounded-lg transition">
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
-            <div id="editContentUrlField">
-                <label class="block text-sm font-medium text-gray-400 mb-1">Media URL</label>
-                <input
-                    type="url"
-                    id="editContentUrl"
-                    class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                />
+            <input type="hidden" id="editContentId">
+            <input type="hidden" id="editContentType">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Title</label>
+                    <input type="text" id="editContentTitle" placeholder="Content title" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div id="editContentUrlField">
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Media URL</label>
+                    <input type="url" id="editContentUrl" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Caption/Text</label>
+                    <textarea id="editContentCaption" class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Move to Folder</label>
+                    <div id="editContentFolderTree" class="max-h-40 overflow-y-auto border border-gray-600 rounded-lg bg-gray-800/50 p-2 space-y-1">
+                        <!-- Folder tree rendered by JS -->
+                    </div>
+                    <input type="hidden" id="editContentFolder" value="" />
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Caption/Text</label>
-                <textarea
-                    id="editContentCaption"
-                    class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                ></textarea>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Move to Folder</label>
-                <select id="editContentFolder" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200">
-                    <option value="">Root (No Folder)</option>
-                    {% for folder in folders %}
-                    <option value="{{ folder._id }}">{{ folder.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="flex gap-2">
-                <button
-                    onclick="saveEditContent()"
-                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                >
+            <div class="flex gap-3 mt-6">
+                <button onclick="saveEditContent()" class="flex-1 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
                     Save Changes
                 </button>
-                <button
-                    onclick="closeEditContentModal()"
-                    class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-                >
+                <button onclick="closeEditContentModal()" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
                     Cancel
                 </button>
             </div>
@@ -868,56 +871,19 @@ https://example.com/image3.jpg"
 {% block scripts %}
 <script>
     const categoryId = '{{ category._id }}';
+    const isAdmin = {{ 'true' if is_admin else 'false' }};
     let currentFolderId = null;
+    let currentFolderName = '';
+    const allFolders = {{ folders|tojson }};
+    const folderTree = {{ folder_tree|tojson }};
 
-    // Close all admin forms
-    function closeAllForms() {
-        document.getElementById('addContentForm').classList.add('hidden');
-        document.getElementById('bulkUploadForm').classList.add('hidden');
-        document.getElementById('addFolderForm').classList.add('hidden');
-    }
+    // ============================
+    // CATEGORY EDIT FUNCTIONS
+    // ============================
 
     function toggleEditCategory() {
         const form = document.getElementById('editCategoryForm');
         form.classList.toggle('hidden');
-    }
-
-    function toggleAddContent() {
-        const form = document.getElementById('addContentForm');
-        const isHidden = form.classList.contains('hidden');
-        closeAllForms();
-        if (isHidden) {
-            form.classList.remove('hidden');
-        }
-    }
-
-    function toggleBulkUpload() {
-        const form = document.getElementById('bulkUploadForm');
-        const isHidden = form.classList.contains('hidden');
-        closeAllForms();
-        if (isHidden) {
-            form.classList.remove('hidden');
-        }
-    }
-
-    function toggleAddFolder() {
-        const form = document.getElementById('addFolderForm');
-        const isHidden = form.classList.contains('hidden');
-        closeAllForms();
-        if (isHidden) {
-            form.classList.remove('hidden');
-        }
-    }
-
-    function toggleContentFields() {
-        const type = document.getElementById('newContentType').value;
-        const urlField = document.getElementById('contentUrlField');
-        
-        if (type === 'text') {
-            urlField.style.display = 'none';
-        } else {
-            urlField.style.display = 'block';
-        }
     }
 
     function saveCategory() {
@@ -930,27 +896,13 @@ https://example.com/image3.jpg"
         fetch(`/api/categories/${categoryId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                name, 
-                description,
-                banner_image: bannerImage,
-                accent_color: accentColor, 
-                is_free: isFree 
-            })
+            body: JSON.stringify({ name, description, banner_image: bannerImage, accent_color: accentColor, is_free: isFree })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to update category');
-        });
+        .then(r => r.json())
+        .then(data => { if (data.success) location.reload(); })
+        .catch(() => alert('Failed to update category'));
     }
 
-    // Clear input functions
     function clearColorInput(textInputId, pickerInputId) {
         const defaultColor = '#4F46E5';
         document.getElementById(textInputId).value = defaultColor;
@@ -961,40 +913,85 @@ https://example.com/image3.jpg"
         document.getElementById(inputId).value = '';
     }
 
-    function addFolder() {
-        const name = document.getElementById('newFolderName').value;
-        const description = document.getElementById('newFolderDescription').value;
+    // Sync color inputs for edit category
+    const catColorInput = document.getElementById('categoryColor');
+    const catColorPicker = document.getElementById('categoryColorPicker');
+    if (catColorInput && catColorPicker) {
+        catColorInput.addEventListener('input', function() {
+            if (/^#[0-9A-F]{6}$/i.test(this.value)) catColorPicker.value = this.value;
+        });
+        catColorPicker.addEventListener('input', function() {
+            catColorInput.value = this.value.toUpperCase();
+        });
+    }
 
-        if (!name) {
-            alert('Please enter a folder name');
-            return;
-        }
+    // ============================
+    // CREATE FOLDER MODAL
+    // ============================
+
+    function openCreateFolderModal(parentFolderId) {
+        document.getElementById('createFolderParentId').value = parentFolderId || '';
+        document.getElementById('createFolderName').value = '';
+        document.getElementById('createFolderDesc').value = '';
+        document.getElementById('createFolderThumbnail').value = '';
+        document.getElementById('createFolderColor').value = '{{ category.accent_color }}';
+        document.getElementById('createFolderColorPicker').value = '{{ category.accent_color }}';
+
+        const title = parentFolderId ? 'Create Subfolder' : 'Create Folder';
+        document.getElementById('createFolderModalTitle').textContent = title;
+
+        document.getElementById('createFolderModal').classList.remove('hidden');
+    }
+
+    function closeCreateFolderModal() {
+        document.getElementById('createFolderModal').classList.add('hidden');
+    }
+
+    document.getElementById('createFolderColor')?.addEventListener('input', function() {
+        if (/^#[0-9A-F]{6}$/i.test(this.value)) document.getElementById('createFolderColorPicker').value = this.value;
+    });
+    document.getElementById('createFolderColorPicker')?.addEventListener('input', function() {
+        document.getElementById('createFolderColor').value = this.value.toUpperCase();
+    });
+
+    function submitCreateFolder() {
+        const name = document.getElementById('createFolderName').value.trim();
+        const description = document.getElementById('createFolderDesc').value.trim();
+        const thumbnail = document.getElementById('createFolderThumbnail').value.trim();
+        const accentColor = document.getElementById('createFolderColor').value.trim();
+        const parentId = document.getElementById('createFolderParentId').value || null;
+
+        if (!name) { alert('Please enter a folder name'); return; }
 
         fetch('/api/folders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                category_id: categoryId,
-                name: name,
-                description: description
-            })
+            body: JSON.stringify({ category_id: categoryId, parent_folder_id: parentId, name, description, accent_color: accentColor, thumbnail_url: thumbnail })
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
             if (data.success) {
+                closeCreateFolderModal();
                 location.reload();
+            } else {
+                alert('Failed to create folder');
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to create folder');
-        });
+        .catch(() => alert('Failed to create folder'));
     }
 
-    function editFolder(folderId, name, description) {
+    // ============================
+    // EDIT FOLDER MODAL
+    // ============================
+
+    function openEditFolderModal(folderId, name, description, accentColor, thumbnailUrl) {
         document.getElementById('editFolderId').value = folderId;
         document.getElementById('editFolderName').value = name;
         document.getElementById('editFolderDescription').value = description || '';
+        document.getElementById('editFolderThumbnail').value = thumbnailUrl || '';
+        const color = accentColor || '{{ category.accent_color }}';
+        document.getElementById('editFolderColor').value = color;
+        document.getElementById('editFolderColorPicker').value = color;
         document.getElementById('editFolderModal').classList.remove('hidden');
     }
 
@@ -1002,58 +999,234 @@ https://example.com/image3.jpg"
         document.getElementById('editFolderModal').classList.add('hidden');
     }
 
+    document.getElementById('editFolderColor')?.addEventListener('input', function() {
+        if (/^#[0-9A-F]{6}$/i.test(this.value)) document.getElementById('editFolderColorPicker').value = this.value;
+    });
+    document.getElementById('editFolderColorPicker')?.addEventListener('input', function() {
+        document.getElementById('editFolderColor').value = this.value.toUpperCase();
+    });
+
     function saveEditFolder() {
         const folderId = document.getElementById('editFolderId').value;
-        const name = document.getElementById('editFolderName').value;
-        const description = document.getElementById('editFolderDescription').value;
+        const name = document.getElementById('editFolderName').value.trim();
+        const description = document.getElementById('editFolderDescription').value.trim();
+        const thumbnail = document.getElementById('editFolderThumbnail').value.trim();
+        const accentColor = document.getElementById('editFolderColor').value.trim();
+
+        if (!name) { alert('Please enter a folder name'); return; }
 
         fetch(`/api/folders/${folderId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, description })
+            body: JSON.stringify({ name, description, accent_color: accentColor, thumbnail_url: thumbnail })
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
-            if (data.success) {
-                location.reload();
-            }
+            if (data.success) { closeEditFolderModal(); location.reload(); }
+            else alert('Failed to update folder');
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to update folder');
-        });
+        .catch(() => alert('Failed to update folder'));
     }
 
     function deleteFolder(folderId) {
-        if (!confirm('Delete this folder and all its content?')) return;
+        if (!confirm('Delete this folder and all its content (including subfolders)?')) return;
 
-        fetch(`/api/folders/${folderId}`, {
-            method: 'DELETE'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to delete folder');
-        });
+        fetch(`/api/folders/${folderId}`, { method: 'DELETE' })
+        .then(r => r.json())
+        .then(data => { if (data.success) location.reload(); })
+        .catch(() => alert('Failed to delete folder'));
     }
 
+    // ============================
+    // UPLOAD IMAGE MODAL
+    // ============================
+
+    function openUploadImageModal() {
+        if (!currentFolderId) return;
+        document.getElementById('uploadImageTitle').value = '';
+        document.getElementById('uploadImageUrl').value = '';
+        document.getElementById('uploadImageBulkUrls').value = '';
+        document.getElementById('uploadImageFolderName').textContent = currentFolderName;
+        document.getElementById('uploadImageModal').classList.remove('hidden');
+    }
+
+    function closeUploadImageModal() {
+        document.getElementById('uploadImageModal').classList.add('hidden');
+    }
+
+    async function submitUploadImage() {
+        const title = document.getElementById('uploadImageTitle').value.trim();
+        const singleUrl = document.getElementById('uploadImageUrl').value.trim();
+        const bulkText = document.getElementById('uploadImageBulkUrls').value.trim();
+
+        if (!currentFolderId) { alert('No folder selected'); return; }
+
+        const bulkUrls = bulkText ? bulkText.split('\n').map(u => u.trim()).filter(Boolean) : [];
+
+        if (bulkUrls.length > 0) {
+            // Bulk upload
+            const response = await fetch('/api/content/bulk', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category_id: categoryId, folder_id: currentFolderId, media_type: 'image', urls: bulkUrls })
+            });
+            const data = await response.json();
+            if (data.success) {
+                closeUploadImageModal();
+                loadFolderContent(currentFolderId);
+            } else {
+                alert('Bulk upload failed');
+            }
+        } else if (singleUrl) {
+            const response = await fetch('/api/content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category_id: categoryId, folder_id: currentFolderId, media_type: 'image', media_url: singleUrl, title })
+            });
+            const data = await response.json();
+            if (data.success) {
+                closeUploadImageModal();
+                loadFolderContent(currentFolderId);
+            } else {
+                alert('Upload failed');
+            }
+        } else {
+            alert('Please enter an image URL');
+        }
+    }
+
+    // ============================
+    // UPLOAD VIDEO MODAL
+    // ============================
+
+    function openUploadVideoModal() {
+        if (!currentFolderId) return;
+        document.getElementById('uploadVideoTitle').value = '';
+        document.getElementById('uploadVideoUrl').value = '';
+        document.getElementById('uploadVideoBulkUrls').value = '';
+        document.getElementById('uploadVideoFolderName').textContent = currentFolderName;
+        document.getElementById('uploadVideoModal').classList.remove('hidden');
+    }
+
+    function closeUploadVideoModal() {
+        document.getElementById('uploadVideoModal').classList.add('hidden');
+    }
+
+    async function submitUploadVideo() {
+        const title = document.getElementById('uploadVideoTitle').value.trim();
+        const singleUrl = document.getElementById('uploadVideoUrl').value.trim();
+        const bulkText = document.getElementById('uploadVideoBulkUrls').value.trim();
+
+        if (!currentFolderId) { alert('No folder selected'); return; }
+
+        const bulkUrls = bulkText ? bulkText.split('\n').map(u => u.trim()).filter(Boolean) : [];
+
+        if (bulkUrls.length > 0) {
+            const response = await fetch('/api/content/bulk', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category_id: categoryId, folder_id: currentFolderId, media_type: 'video', urls: bulkUrls })
+            });
+            const data = await response.json();
+            if (data.success) {
+                closeUploadVideoModal();
+                loadFolderContent(currentFolderId);
+            } else {
+                alert('Bulk upload failed');
+            }
+        } else if (singleUrl) {
+            const response = await fetch('/api/content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category_id: categoryId, folder_id: currentFolderId, media_type: 'video', media_url: singleUrl, title })
+            });
+            const data = await response.json();
+            if (data.success) {
+                closeUploadVideoModal();
+                loadFolderContent(currentFolderId);
+            } else {
+                alert('Upload failed');
+            }
+        } else {
+            alert('Please enter a video URL');
+        }
+    }
+
+    // ============================
+    // FOLDER MODAL
+    // ============================
+
     function openFolder(folderId) {
+        const folder = allFolders.find(f => f._id === folderId);
+        if (!folder) return;
+
         currentFolderId = folderId;
-        const folder = {{ folders|tojson }}.find(f => f._id === folderId);
-        
+        currentFolderName = folder.name;
+
         document.getElementById('folderModalTitle').textContent = folder.name;
         document.getElementById('folderModalDescription').textContent = folder.description || '';
         document.getElementById('folderModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
 
-        // Fetch folder content
+        // Show subfolders
+        renderSubfolders(folderId);
+
+        // Load content
+        loadFolderContent(folderId);
+    }
+
+    function renderSubfolders(parentFolderId) {
+        const subfolders = allFolders.filter(f => f.parent_folder_id === parentFolderId);
+        const container = document.getElementById('folderSubfolders');
+        const breadcrumb = document.getElementById('folderBreadcrumb');
+        
+        if (subfolders.length > 0) {
+            container.classList.remove('hidden');
+            let html = '<h4 class="text-sm font-semibold text-gray-400 mb-2">Subfolders</h4>';
+            html += '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 pb-4">';
+            subfolders.forEach(sf => {
+                html += `
+                <div class="group relative bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-700/50 transition cursor-pointer text-sm" onclick="navigateToSubfolder('${sf._id}')">
+                    ${sf.thumbnail_url ? `<div class="w-full h-12 overflow-hidden"><img src="${sf.thumbnail_url}" class="w-full h-full object-cover"></div>` : 
+                    `<div class="w-full h-10 flex items-center justify-center" style="background-color:${sf.accent_color || '{{ category.accent_color }}'}20;"><svg class="w-6 h-6" style="color:${sf.accent_color || '{{ category.accent_color }}'}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg></div>`}
+                    <div class="p-2">
+                        <span class="text-gray-200 font-medium truncate block text-xs">${sf.name}</span>
+                    </div>
+                    ${isAdmin ? `
+                    <div class="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition" onclick="event.stopPropagation()">
+                        <button onclick="openEditFolderModal('${sf._id}', '${sf.name.replace(/'/g,"\\'")}', '${(sf.description||'').replace(/'/g,"\\'")}', '${sf.accent_color||''}', '${sf.thumbnail_url||''}')" class="p-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600" title="Edit">
+                            <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        </button>
+                        <button onclick="deleteFolder('${sf._id}')" class="p-1 bg-red-700 text-white rounded hover:bg-red-600" title="Delete">
+                            <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                    </div>` : ''}
+                </div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    function navigateToSubfolder(folderId) {
+        const folder = allFolders.find(f => f._id === folderId);
+        if (!folder) return;
+        
+        currentFolderId = folderId;
+        currentFolderName = folder.name;
+        document.getElementById('folderModalTitle').textContent = folder.name;
+        document.getElementById('folderModalDescription').textContent = folder.description || '';
+        renderSubfolders(folderId);
+        loadFolderContent(folderId);
+    }
+
+    function loadFolderContent(folderId) {
+        document.getElementById('folderContent').innerHTML = '<div class="text-center py-8"><p class="text-gray-500">Loading...</p></div>';
+        
         fetch(`/api/folders/${folderId}/content`)
-            .then(response => response.json())
+            .then(r => r.json())
             .then(items => {
                 const container = document.getElementById('folderContent');
                 
@@ -1064,6 +1237,7 @@ https://example.com/image3.jpg"
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                             </svg>
                             <p class="text-gray-500">This folder is empty</p>
+                            ${isAdmin ? '<p class="text-gray-600 text-sm mt-2">Use the Image/Video buttons above to add content</p>' : ''}
                         </div>
                     `;
                     return;
@@ -1071,395 +1245,122 @@ https://example.com/image3.jpg"
 
                 let html = '<div class="content-grid grid gap-3 sm:gap-4">';
                 items.forEach(item => {
-                    html += `
-                        <div id="content-${item._id}" class="content-card group relative bg-gray-800/50 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
-                    `;
+                    html += `<div id="content-${item._id}" class="content-card group relative bg-gray-800/50 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">`;
 
                     if (item.media_type === 'image') {
                         html += `
-                            <div class="media-item" onclick="openLightbox('${item.media_url}', 'image', '${item.title || ''}', '${item.caption || ''}')">
-                                <img src="${item.media_url}" alt="${item.title || ''}" loading="lazy" class="w-full h-auto">
-                                ${(item.title || item.caption) ? `
-                                    <div class="content-overlay">
-                                        ${item.title ? `<div class="content-overlay-title">${item.title}</div>` : ''}
-                                        ${item.caption ? `<div class="content-overlay-caption">${item.caption}</div>` : ''}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
+                            <div class="media-item" onclick="openLightbox('${escapeHtml(item.media_url)}', 'image', '${escapeHtml(item.title||'')}', '${escapeHtml(item.caption||'')}')">
+                                <img src="${escapeHtml(item.media_url)}" alt="${escapeHtml(item.title||'')}" loading="lazy" class="w-full h-auto">
+                                ${(item.title||item.caption) ? `<div class="content-overlay">${item.title?`<div class="content-overlay-title">${escapeHtml(item.title)}</div>`:''} ${item.caption?`<div class="content-overlay-caption">${escapeHtml(item.caption)}</div>`:''}</div>` : ''}
+                            </div>`;
                     } else if (item.media_type === 'video') {
                         html += `
                             <div class="relative">
-                                <video controls class="w-full h-auto">
-                                    <source src="${item.media_url}" type="video/mp4">
-                                </video>
-                                ${(item.title || item.caption) ? `
-                                    <div class="content-overlay">
-                                        ${item.title ? `<div class="content-overlay-title">${item.title}</div>` : ''}
-                                        ${item.caption ? `<div class="content-overlay-caption">${item.caption}</div>` : ''}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
+                                <video controls class="w-full h-auto"><source src="${escapeHtml(item.media_url)}" type="video/mp4"></video>
+                                ${(item.title||item.caption) ? `<div class="content-overlay">${item.title?`<div class="content-overlay-title">${escapeHtml(item.title)}</div>`:''} ${item.caption?`<div class="content-overlay-caption">${escapeHtml(item.caption)}</div>`:''}</div>` : ''}
+                            </div>`;
                     } else {
-                        html += `
-                            <div class="p-4">
-                                ${item.title ? `<h4 class="font-semibold text-gray-200 text-base mb-2">${item.title}</h4>` : ''}
-                                <p class="text-gray-400 text-sm whitespace-pre-wrap">${item.text || item.caption || ''}</p>
-                            </div>
-                        `;
+                        html += `<div class="p-4">${item.title?`<h4 class="font-semibold text-gray-200 text-base mb-2">${escapeHtml(item.title)}</h4>`:''}<p class="text-gray-400 text-sm whitespace-pre-wrap">${escapeHtml(item.text||item.caption||'')}</p></div>`;
                     }
 
-                    // Add favorite button for all users
+                    // Favorite button
                     html += `
-                        <button 
-                            onclick="toggleFavorite('${item._id}', this)"
+                        <button onclick="toggleFavorite('${item._id}', this)"
                             class="favorite-btn absolute top-2 left-2 w-9 h-9 rounded-full bg-black/70 hover:bg-black/90 flex items-center justify-center transition-all shadow-lg z-20"
-                            data-favorited="false"
-                            data-content-id="${item._id}"
-                        >
+                            data-favorited="false" data-content-id="${item._id}">
                             <svg class="heart-icon w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
-                        </button>
-                    `;
+                        </button>`;
 
-                    {% if is_admin %}
-                    html += `
-                        <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition z-20">
-                            <button
-                                onclick="editFolderContent('${item._id}', '${item.title || ''}', '${item.media_url || ''}', '${item.caption || ''}', '${item.media_type}', '${item.folder_id || ''}')"
-                                class="p-2 bg-gray-900/90 text-white rounded hover:bg-gray-800"
-                                title="Edit"
-                            >
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                            </button>
-                            <button
-                                onclick="deleteFolderContent('${item._id}')"
-                                class="p-2 bg-red-600/90 text-white rounded hover:bg-red-700"
-                                title="Delete"
-                            >
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
-                    `;
-                    {% endif %}
+                    if (isAdmin) {
+                        html += `
+                            <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition z-20">
+                                <button onclick="editFolderContent('${item._id}','${escapeHtml(item.title||'')}','${escapeHtml(item.media_url||'')}','${escapeHtml(item.caption||'')}','${item.media_type}','${item.folder_id||''}')"
+                                    class="p-2 bg-gray-900/90 text-white rounded hover:bg-gray-800" title="Edit">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                </button>
+                                <button onclick="deleteFolderContent('${item._id}')"
+                                    class="p-2 bg-red-600/90 text-white rounded hover:bg-red-700" title="Delete">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                            </div>`;
+                    }
 
                     html += '</div>';
                 });
                 html += '</div>';
-
                 container.innerHTML = html;
-                
-                // Setup scroll listener to hide controls when content is under header
-                const folderContentContainer = document.getElementById('folderContent');
-                const folderModalHeader = document.querySelector('#folderModal .sticky');
-                
-                function updateControlsVisibility() {
-                    const headerRect = folderModalHeader.getBoundingClientRect();
-                    const headerBottom = headerRect.bottom;
-                    
-                    // Get all content cards
-                    const contentCards = folderContentContainer.querySelectorAll('.content-card');
-                    
-                    contentCards.forEach(card => {
-                        const cardRect = card.getBoundingClientRect();
-                        const controls = card.querySelectorAll('.favorite-btn, .absolute.top-2.right-2');
-                        
-                        // If the top of the card is under the header, hide controls
-                        if (cardRect.top < headerBottom) {
-                            controls.forEach(control => {
-                                control.style.opacity = '0';
-                                control.style.pointerEvents = 'none';
-                            });
-                        } else {
-                            controls.forEach(control => {
-                                control.style.opacity = '';
-                                control.style.pointerEvents = '';
-                            });
-                        }
-                    });
-                }
-                
-                // Add scroll listener
-                folderContentContainer.addEventListener('scroll', updateControlsVisibility);
-                
-                // Initial check
-                updateControlsVisibility();
-                
-                // Check favorite status for all content in folder
-                const favoriteButtons = container.querySelectorAll('.favorite-btn');
-                favoriteButtons.forEach(button => {
-                    const contentId = button.dataset.contentId;
-                    
+
+                // Check favorites for newly loaded items
+                container.querySelectorAll('.favorite-btn').forEach(btn => {
+                    const contentId = btn.dataset.contentId;
                     fetch(`/api/favorites/check/${contentId}`)
-                        .then(response => response.json())
+                        .then(r => r.json())
                         .then(data => {
                             if (data.is_favorited) {
-                                button.dataset.favorited = 'true';
-                                button.classList.remove('bg-black/70', 'hover:bg-black/90');
-                                button.classList.add('bg-red-500', 'hover:bg-red-600');
-                                const heartIcon = button.querySelector('.heart-icon');
-                                heartIcon.setAttribute('fill', 'currentColor');
+                                btn.dataset.favorited = 'true';
+                                btn.classList.remove('bg-black/70','hover:bg-black/90');
+                                btn.classList.add('bg-red-500','hover:bg-red-600');
+                                btn.querySelector('.heart-icon').setAttribute('fill','currentColor');
                             }
-                        })
-                        .catch(error => console.error('Error checking favorite:', error));
+                        }).catch(() => {});
                 });
             })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('folderContent').innerHTML = `
-                    <div class="text-center py-12">
-                        <p class="text-red-500">Error loading folder content</p>
-                    </div>
-                `;
+            .catch(() => {
+                document.getElementById('folderContent').innerHTML = '<div class="text-center py-8"><p class="text-red-400">Failed to load content</p></div>';
             });
     }
 
     function closeFolderModal() {
-        const folderContentContainer = document.getElementById('folderContent');
-        const folderModal = document.getElementById('folderModal');
-        
-        // Remove scroll listener by cloning and replacing the element
-        const newContent = folderContentContainer.cloneNode(false);
-        newContent.id = 'folderContent';
-        newContent.className = folderContentContainer.className;
-        newContent.innerHTML = `
-            <div class="text-center py-8">
-                <p class="text-gray-500">Loading...</p>
-            </div>
-        `;
-        folderContentContainer.parentNode.replaceChild(newContent, folderContentContainer);
-        
-        folderModal.classList.add('hidden');
+        document.getElementById('folderModal').classList.add('hidden');
         document.body.style.overflow = '';
         currentFolderId = null;
+        currentFolderName = '';
     }
 
-    function bulkUpload() {
-        const urls = document.getElementById('bulkUrls').value.split('\n');
-        const mediaType = document.getElementById('bulkMediaType').value;
-        const folderId = document.getElementById('bulkContentFolder').value;
+    // ============================
+    // EDIT CONTENT MODAL
+    // ============================
 
-        if (urls.length === 0 || !urls[0].trim()) {
-            alert('Please enter at least one URL');
-            return;
-        }
-
-        fetch('/api/content/bulk', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                category_id: categoryId,
-                folder_id: folderId || null,
-                media_type: mediaType,
-                urls: urls
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(`Successfully uploaded ${data.created} items${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to bulk upload');
-        });
-    }
-
-    function addContent() {
-        const type = document.getElementById('newContentType').value;
-        const folderId = document.getElementById('newContentFolder').value;
-        const title = document.getElementById('newContentTitle').value;
-        const url = type !== 'text' ? document.getElementById('newContentUrl').value : '';
-        const caption = document.getElementById('newContentCaption').value;
-
-        if (type !== 'text' && !url) {
-            alert('Please enter a media URL');
-            return;
-        }
-
-        fetch('/api/content', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                category_id: categoryId,
-                folder_id: folderId || null,
-                title: title,
-                media_type: type,
-                media_url: url,
-                caption: caption,
-                text: type === 'text' ? caption : ''
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to add content');
-        });
-    }
-
-    function toggleEdit(contentId) {
-        const editForm = document.getElementById(`edit-form-${contentId}`);
-        const contentDisplay = document.getElementById(`content-display-${contentId}`);
+    function renderFolderTreeForPicker(folders, selectedId) {
+        let html = `<label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-700 cursor-pointer text-sm ${!selectedId ? 'bg-gray-700' : ''}">
+            <input type="radio" name="editContentFolderRadio" value="" ${!selectedId ? 'checked' : ''} onchange="document.getElementById('editContentFolder').value='';" class="sr-only">
+            <span class="text-gray-400">Root (No Folder)</span>
+        </label>`;
         
-        editForm.classList.toggle('hidden');
-        contentDisplay.classList.toggle('hidden');
-    }
-
-    function cancelEdit(contentId) {
-        const editForm = document.getElementById(`edit-form-${contentId}`);
-        const contentDisplay = document.getElementById(`content-display-${contentId}`);
-        
-        editForm.classList.add('hidden');
-        contentDisplay.classList.remove('hidden');
-    }
-
-    function saveContentEdit(contentId) {
-        const title = document.getElementById(`edit-title-${contentId}`).value;
-        const urlField = document.getElementById(`edit-url-${contentId}`);
-        const url = urlField ? urlField.value : '';
-        const caption = document.getElementById(`edit-caption-${contentId}`).value;
-        const folderId = document.getElementById(`edit-folder-${contentId}`).value;
-
-        fetch(`/api/content/${contentId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                title: title,
-                media_url: url,
-                caption: caption,
-                text: caption,
-                folder_id: folderId || null
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to update content');
-        });
-    }
-
-    function deleteContent(contentId) {
-        if (!confirm('Delete this content?')) return;
-
-        fetch(`/api/content/${contentId}`, {
-            method: 'DELETE'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const element = document.getElementById(`content-${contentId}`);
-                element.style.opacity = '0';
-                element.style.transform = 'scale(0.9)';
-                setTimeout(() => element.remove(), 300);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to delete content');
-        });
-    }
-
-    // Update color preview
-    document.addEventListener('DOMContentLoaded', function() {
-        const colorInput = document.getElementById('categoryColor');
-        const colorPicker = document.getElementById('categoryColorPicker');
-        
-        if (colorInput && colorPicker) {
-            // Update picker when text input changes
-            colorInput.addEventListener('input', function() {
-                if (/^#[0-9A-F]{6}$/i.test(this.value)) {
-                    colorPicker.value = this.value;
-                }
-            });
-            
-            // Update text input when color picker changes
-            colorPicker.addEventListener('input', function() {
-                colorInput.value = this.value.toUpperCase();
+        function renderNodes(nodes, depth) {
+            nodes.forEach(f => {
+                const indent = depth * 12;
+                html += `<label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-700 cursor-pointer text-sm ${selectedId===f._id ? 'bg-gray-700' : ''}" style="padding-left:${8+indent}px">
+                    <input type="radio" name="editContentFolderRadio" value="${f._id}" ${selectedId===f._id ? 'checked' : ''} onchange="document.getElementById('editContentFolder').value='${f._id}';" class="sr-only">
+                    <svg class="w-3 h-3 text-gray-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
+                    <span class="text-gray-300 truncate">${escapeHtml(f.name)}</span>
+                </label>`;
+                if (f.children && f.children.length > 0) renderNodes(f.children, depth + 1);
             });
         }
-    });
-
-    // Lightbox functions
-    function openLightbox(url, type, title, caption) {
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImage = document.getElementById('lightbox-image');
-        const lightboxInfo = document.getElementById('lightbox-info');
-        const lightboxTitle = document.getElementById('lightbox-title');
-        const lightboxCaption = document.getElementById('lightbox-caption');
-        
-        // Only handle images
-        if (type !== 'image') return;
-        
-        // Set image
-        lightboxImage.src = url;
-        
-        // Show info if title or caption exists
-        if (title || caption) {
-            lightboxTitle.textContent = title || '';
-            lightboxCaption.textContent = caption || '';
-            lightboxInfo.style.display = 'block';
-            
-            // Hide empty elements
-            lightboxTitle.style.display = title ? 'block' : 'none';
-            lightboxCaption.style.display = caption ? 'block' : 'none';
-        } else {
-            lightboxInfo.style.display = 'none';
-        }
-        
-        lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
+        renderNodes(folderTree, 0);
+        return html;
     }
 
-    function closeLightbox() {
-        const lightbox = document.getElementById('lightbox');
-        lightbox.classList.remove('active');
-        document.body.style.overflow = ''; // Restore scrolling
-    }
-
-    // Close lightbox with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeLightbox();
-        }
-    });
-
-    // Functions for editing/deleting content in folders
     function editFolderContent(contentId, title, url, caption, mediaType, currentFolder) {
         document.getElementById('editContentId').value = contentId;
         document.getElementById('editContentType').value = mediaType;
         document.getElementById('editContentTitle').value = title;
         document.getElementById('editContentUrl').value = url;
         document.getElementById('editContentCaption').value = caption;
-        
-        // Set current folder in dropdown
-        const folderSelect = document.getElementById('editContentFolder');
-        folderSelect.value = currentFolder || '';
-        
-        // Hide URL field for text content
+        document.getElementById('editContentFolder').value = currentFolder || '';
+
         if (mediaType === 'text') {
             document.getElementById('editContentUrlField').style.display = 'none';
         } else {
             document.getElementById('editContentUrlField').style.display = 'block';
         }
-        
+
+        // Render folder picker tree
+        document.getElementById('editContentFolderTree').innerHTML = renderFolderTreeForPicker(folderTree, currentFolder);
+
         document.getElementById('editContentModal').classList.remove('hidden');
     }
 
@@ -1478,54 +1379,105 @@ https://example.com/image3.jpg"
         fetch(`/api/content/${contentId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                title: title,
-                media_url: url,
-                caption: caption,
-                text: caption,
-                folder_id: folderId || null
-            })
+            body: JSON.stringify({ title, media_url: url, caption, text: caption, folder_id: folderId || null })
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
             if (data.success) {
                 closeEditContentModal();
-                // Always reload page to show new position of content
                 location.reload();
+            } else {
+                alert('Failed to update content');
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to update content');
-        });
+        .catch(() => alert('Failed to update content'));
     }
 
     function deleteFolderContent(contentId) {
         if (!confirm('Delete this content?')) return;
-
-        fetch(`/api/content/${contentId}`, {
-            method: 'DELETE'
-        })
-        .then(response => response.json())
+        fetch(`/api/content/${contentId}`, { method: 'DELETE' })
+        .then(r => r.json())
         .then(data => {
             if (data.success) {
-                // Remove the element from the folder modal
-                const element = document.getElementById(`content-${contentId}`);
-                if (element) {
-                    element.style.opacity = '0';
-                    element.style.transform = 'scale(0.9)';
-                    setTimeout(() => element.remove(), 300);
-                }
+                const el = document.getElementById(`content-${contentId}`);
+                if (el) { el.style.opacity = '0'; el.style.transform = 'scale(0.9)'; setTimeout(() => el.remove(), 300); }
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to delete content');
-        });
+        .catch(() => alert('Failed to delete content'));
+    }
+
+    // Edit root content (inline forms)
+    function toggleEdit(contentId) {
+        const display = document.getElementById(`content-display-${contentId}`);
+        const form = document.getElementById(`edit-form-${contentId}`);
+        display.classList.toggle('hidden');
+        form.classList.toggle('hidden');
+    }
+
+    function cancelEdit(contentId) {
+        document.getElementById(`content-display-${contentId}`).classList.remove('hidden');
+        document.getElementById(`edit-form-${contentId}`).classList.add('hidden');
+    }
+
+    function saveContentEdit(contentId) {
+        const title = document.getElementById(`edit-title-${contentId}`).value;
+        const urlEl = document.getElementById(`edit-url-${contentId}`);
+        const url = urlEl ? urlEl.value : '';
+        const caption = document.getElementById(`edit-caption-${contentId}`).value;
+        const folderId = document.getElementById(`edit-folder-${contentId}`).value;
+
+        fetch(`/api/content/${contentId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, media_url: url, caption, text: caption, folder_id: folderId || null })
+        })
+        .then(r => r.json())
+        .then(data => { if (data.success) location.reload(); })
+        .catch(() => alert('Failed to update content'));
+    }
+
+    function deleteContent(contentId) {
+        if (!confirm('Delete this content?')) return;
+        fetch(`/api/content/${contentId}`, { method: 'DELETE' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const el = document.getElementById(`content-${contentId}`);
+                if (el) { el.style.opacity = '0'; el.style.transform = 'scale(0.9)'; setTimeout(() => el.remove(), 300); }
+            }
+        })
+        .catch(() => alert('Failed to delete content'));
     }
 
     // ============================
-    // FAVORITES FUNCTIONALITY
+    // LIGHTBOX
+    // ============================
+
+    function openLightbox(url, type, title, caption) {
+        if (type !== 'image') return;
+        const lightbox = document.getElementById('lightbox');
+        document.getElementById('lightbox-image').src = url;
+        const hasInfo = title || caption;
+        document.getElementById('lightbox-info').style.display = hasInfo ? 'block' : 'none';
+        if (title) { document.getElementById('lightbox-title').textContent = title; document.getElementById('lightbox-title').style.display='block'; }
+        else document.getElementById('lightbox-title').style.display='none';
+        if (caption) { document.getElementById('lightbox-caption').textContent = caption; document.getElementById('lightbox-caption').style.display='block'; }
+        else document.getElementById('lightbox-caption').style.display='none';
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') { closeLightbox(); closeFolderModal(); }
+    });
+
+    // ============================
+    // FAVORITES
     // ============================
 
     function toggleFavorite(contentId, button) {
@@ -1533,70 +1485,61 @@ https://example.com/image3.jpg"
         const method = isFavorited ? 'DELETE' : 'POST';
 
         fetch(`/api/favorites/${contentId}`, { method })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    // Toggle state
                     button.dataset.favorited = (!isFavorited).toString();
-                    
-                    // Update button appearance
                     const heartIcon = button.querySelector('.heart-icon');
                     if (!isFavorited) {
-                        // Now favorited - filled heart
-                        button.classList.remove('bg-black/70', 'hover:bg-black/90');
-                        button.classList.add('bg-red-500', 'hover:bg-red-600');
-                        heartIcon.setAttribute('fill', 'currentColor');
+                        button.classList.remove('bg-black/70','hover:bg-black/90');
+                        button.classList.add('bg-red-500','hover:bg-red-600');
+                        heartIcon.setAttribute('fill','currentColor');
                     } else {
-                        // Now unfavorited - outline heart
-                        button.classList.remove('bg-red-500', 'hover:bg-red-600');
-                        button.classList.add('bg-black/70', 'hover:bg-black/90');
-                        heartIcon.setAttribute('fill', 'none');
+                        button.classList.remove('bg-red-500','hover:bg-red-600');
+                        button.classList.add('bg-black/70','hover:bg-black/90');
+                        heartIcon.setAttribute('fill','none');
                     }
-                    
-                    // Add animation
                     button.classList.add('scale-125');
                     setTimeout(() => button.classList.remove('scale-125'), 200);
-                    
-                    // Update favorites counter if function exists
-                    if (typeof window.updateFavoritesCounter === 'function') {
-                        window.updateFavoritesCounter();
-                    }
+                    if (typeof window.updateFavoritesCounter === 'function') window.updateFavoritesCounter();
                 } else if (data.limit_reached) {
-                    // Show favorites limit modal
-                    if (typeof window.showFavoritesLimitModal === 'function') {
-                        window.showFavoritesLimitModal();
-                    } else {
-                        // Fallback to alert if modal function not available
-                        alert(data.message || 'You have reached the maximum of 50 favorites. Upgrade to premium for unlimited favorites!');
-                    }
-                } else {
-                    console.error('Error toggling favorite:', data.error);
+                    if (typeof window.showFavoritesLimitModal === 'function') window.showFavoritesLimitModal();
+                    else alert(data.message || 'Favorites limit reached. Upgrade to premium for unlimited favorites!');
                 }
             })
             .catch(error => console.error('Error:', error));
     }
 
-    // Check favorite status for all content on page load
+    // Check favorites on page load
     document.addEventListener('DOMContentLoaded', function() {
-        const favoriteButtons = document.querySelectorAll('.favorite-btn');
-        
-        favoriteButtons.forEach(button => {
+        document.querySelectorAll('.favorite-btn').forEach(button => {
             const contentId = button.dataset.contentId;
-            
             fetch(`/api/favorites/check/${contentId}`)
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.is_favorited) {
                         button.dataset.favorited = 'true';
-                        button.classList.remove('bg-black/70', 'hover:bg-black/90');
-                        button.classList.add('bg-red-500', 'hover:bg-red-600');
-                        const heartIcon = button.querySelector('.heart-icon');
-                        heartIcon.setAttribute('fill', 'currentColor');
+                        button.classList.remove('bg-black/70','hover:bg-black/90');
+                        button.classList.add('bg-red-500','hover:bg-red-600');
+                        button.querySelector('.heart-icon').setAttribute('fill','currentColor');
                     }
-                })
-                .catch(error => console.error('Error checking favorite:', error));
+                }).catch(() => {});
         });
     });
+
+    // ============================
+    // HELPER
+    // ============================
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;')
+            .replace(/'/g,'&#039;');
+    }
 
 </script>
 {% endblock %}

@@ -6,17 +6,45 @@
     <title>Login - Effexor Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            background-color: rgb(26, 26, 30);
-        }
-        /* Hide Edge/IE password reveal button */
+        body { background-color: rgb(26, 26, 30); }
         input[type="password"]::-ms-reveal,
-        input[type="password"]::-ms-clear {
-            display: none;
+        input[type="password"]::-ms-clear { display: none; }
+
+        /* Toast */
+        #toastContainer {
+            position:fixed; top:1.25rem; right:1rem; z-index:9999;
+            display:flex; flex-direction:column; gap:0.5rem;
+            max-width:22rem; width:calc(100vw - 2rem); pointer-events:none;
         }
+        .toast {
+            background:rgb(28,28,32); border:1px solid rgba(255,255,255,0.07);
+            border-radius:0.875rem; box-shadow:0 8px 24px rgba(0,0,0,0.4);
+            padding:0.875rem 1rem; display:flex; align-items:flex-start; gap:0.75rem;
+            transform:translateX(120%); position:relative; overflow:hidden;
+            transition:transform 0.35s cubic-bezier(0.34,1.4,0.64,1);
+            pointer-events:all; cursor:pointer;
+        }
+        .toast.show { transform:translateX(0); }
+        .toast.hide { transform:translateX(120%); }
+        .toast-icon {
+            width:2rem; height:2rem; border-radius:50%;
+            display:flex; align-items:center; justify-content:center; flex-shrink:0;
+        }
+        .toast-success .toast-icon { background:rgba(34,197,94,0.15); color:#4ade80; }
+        .toast-error .toast-icon { background:rgba(239,68,68,0.15); color:#f87171; }
+        .toast-info .toast-icon { background:rgba(49,120,136,0.2); color:#5eead4; }
+        .toast-title { font-size:0.875rem; font-weight:600; color:#e5e7eb; }
+        .toast-msg { font-size:0.8125rem; color:#9ca3af; margin-top:0.125rem; }
+        .toast-bar {
+            position:absolute; bottom:0; left:0; height:2px;
+            background:linear-gradient(90deg,#21525D,#317888);
+            animation:toastBarS linear forwards;
+        }
+        @keyframes toastBarS { from{width:100%} to{width:0%} }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4" style="background-color: rgb(26, 26, 30);">
+    <div id="toastContainer"></div>
     <div class="relative rounded-2xl shadow-2xl p-8 w-full max-w-md" style="background-color: rgb(18, 18, 20);">
         <!-- Logo -->
         <div class="flex items-center justify-center mb-6">
@@ -256,6 +284,25 @@
     </div>
 
     <script>
+        // Toast system
+        function showToast(message, type='info', duration=4000) {
+            let c = document.getElementById('toastContainer');
+            if (!c) { c = document.createElement('div'); c.id='toastContainer'; document.body.appendChild(c); }
+            const icons = {
+                success:'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+                error:'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>',
+                info:'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+            };
+            const titles = {success:'Success', error:'Error', info:'Info'};
+            const t = document.createElement('div');
+            t.className = `toast toast-${type}`;
+            t.innerHTML = `<div class="toast-icon">${icons[type]||icons.info}</div><div class="flex-1 min-w-0"><div class="toast-title">${titles[type]||'Notice'}</div><div class="toast-msg">${message}</div></div><div class="toast-bar" style="animation-duration:${duration}ms"></div>`;
+            t.addEventListener('click', ()=>{ t.classList.add('hide'); setTimeout(()=>t.remove(),350); });
+            c.appendChild(t);
+            requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+            setTimeout(()=>{ t.classList.add('hide'); setTimeout(()=>t.remove(),350); }, duration);
+        }
+
         let resetEmailAddress = null;
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -269,9 +316,7 @@
             try {
                 const response = await fetch('/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
                 
@@ -313,31 +358,23 @@
 
         async function sendResetCode() {
             const email = document.getElementById('resetEmail').value;
-
-            if (!email) {
-                alert('Please enter your email');
-                return;
-            }
-
+            if (!email) { showToast('Please enter your email', 'error'); return; }
             try {
                 const response = await fetch('/forgot-password', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     resetEmailAddress = email;
                     showResetPassword();
-                    alert('Reset code sent! Check your email.');
+                    showToast('Reset code sent! Check your email.', 'success');
+                } else {
+                    showToast(data.message || 'Failed to send reset code', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                showToast('An error occurred. Please try again.', 'error');
             }
         }
 
@@ -350,44 +387,29 @@
 
             if (code.length !== 6) {
                 errorText.textContent = 'Please enter a 6-digit code';
-                errorMessage.classList.remove('hidden');
-                return;
+                errorMessage.classList.remove('hidden'); return;
             }
-
             if (newPassword !== confirmNewPassword) {
                 errorText.textContent = 'Passwords do not match';
-                errorMessage.classList.remove('hidden');
-                return;
+                errorMessage.classList.remove('hidden'); return;
             }
-
             if (newPassword.length < 6) {
                 errorText.textContent = 'Password must be at least 6 characters';
-                errorMessage.classList.remove('hidden');
-                return;
+                errorMessage.classList.remove('hidden'); return;
             }
 
             try {
                 const response = await fetch('/reset-password', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        email: resetEmailAddress, 
-                        code, 
-                        new_password: newPassword 
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: resetEmailAddress, code, new_password: newPassword })
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
-                    alert('Password reset successfully! Please log in.');
+                    showToast('Password reset successfully! Please log in.', 'success');
                     showLogin();
-                    // Clear form fields
-                    document.getElementById('resetCode').value = '';
-                    document.getElementById('newPassword').value = '';
-                    document.getElementById('confirmNewPassword').value = '';
+                    document.getElementById('resetCode').value='';
+                    document.getElementById('newPassword').value='';
+                    document.getElementById('confirmNewPassword').value='';
                 } else {
                     errorText.textContent = data.message || 'Invalid or expired code';
                     errorMessage.classList.remove('hidden');
@@ -399,23 +421,18 @@
             }
         }
 
-        // Auto-format code input
-        document.getElementById('resetCode')?.addEventListener('input', function(e) {
+        document.getElementById('resetCode')?.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
 
-        // Toggle password visibility
         function togglePasswordVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
-            
             if (input.type === 'password') {
                 input.type = 'text';
-                // Change to eye-slash icon (hidden)
                 icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />';
             } else {
                 input.type = 'password';
-                // Change back to eye icon (visible)
                 icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
             }
         }

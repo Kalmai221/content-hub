@@ -642,6 +642,20 @@ def category_detail(category_id):
     for folder in folders:
         folder['_id'] = str(folder['_id'])
 
+    # Build folder tree (root folders only - parent_folder_id is None)
+    def build_folder_tree(parent_id=None):
+        children = []
+        for f in folders:
+            fp = f.get('parent_folder_id')
+            if fp == parent_id:
+                node = dict(f)
+                node['children'] = build_folder_tree(f['_id'])
+                children.append(node)
+        return children
+
+    root_folders = [f for f in folders if not f.get('parent_folder_id')]
+    folder_tree = build_folder_tree(None)
+
     # Fetch content for this category (root level only - no folder_id)
     content_items = list(content_collection.find({'category_id': category_id, 'folder_id': None}))
 
@@ -649,6 +663,8 @@ def category_detail(category_id):
                          category=category, 
                          content_items=content_items,
                          folders=folders,
+                         root_folders=root_folders,
+                         folder_tree=folder_tree,
                          is_admin=is_admin)
 
 @app.route('/admin')
@@ -924,8 +940,11 @@ def create_folder():
     data = request.json
     folder_data = {
         'category_id': data['category_id'],
+        'parent_folder_id': data.get('parent_folder_id'),  # None = root folder
         'name': data['name'],
         'description': data.get('description', ''),
+        'accent_color': data.get('accent_color', '#4F46E5'),
+        'thumbnail_url': data.get('thumbnail_url', ''),
         'created_at': datetime.utcnow()
     }
 
@@ -942,6 +961,10 @@ def update_folder(folder_id):
         update_data['name'] = data['name']
     if 'description' in data:
         update_data['description'] = data['description']
+    if 'accent_color' in data:
+        update_data['accent_color'] = data['accent_color']
+    if 'thumbnail_url' in data:
+        update_data['thumbnail_url'] = data['thumbnail_url']
 
     folders_collection.update_one(
         {'_id': ObjectId(folder_id)},
@@ -953,9 +976,15 @@ def update_folder(folder_id):
 @app.route('/api/folders/<folder_id>', methods=['DELETE'])
 @admin_required
 def delete_folder(folder_id):
-    folders_collection.delete_one({'_id': ObjectId(folder_id)})
-    # Delete all content in this folder
-    content_collection.delete_many({'folder_id': folder_id})
+    # Recursively delete all subfolders and their content
+    def delete_folder_recursive(fid):
+        subfolders = list(folders_collection.find({'parent_folder_id': fid}))
+        for sf in subfolders:
+            delete_folder_recursive(str(sf['_id']))
+        folders_collection.delete_one({'_id': ObjectId(fid)})
+        content_collection.delete_many({'folder_id': fid})
+
+    delete_folder_recursive(folder_id)
     return jsonify({'success': True})
 
 @app.route('/api/folders/<folder_id>/content', methods=['GET'])
@@ -965,6 +994,27 @@ def get_folder_content(folder_id):
     for item in content_items:
         item['_id'] = str(item['_id'])
     return jsonify(content_items)
+
+@app.route('/api/categories/<category_id>/folder-tree', methods=['GET'])
+@login_required
+def get_folder_tree(category_id):
+    """Get all folders for a category as a tree structure"""
+    all_folders = list(folders_collection.find({'category_id': category_id}))
+    for f in all_folders:
+        f['_id'] = str(f['_id'])
+
+    def build_tree(parent_id=None):
+        children = []
+        for f in all_folders:
+            fp = f.get('parent_folder_id')
+            if fp == parent_id:
+                node = dict(f)
+                node['children'] = build_tree(f['_id'])
+                children.append(node)
+        return children
+
+    tree = build_tree(None)
+    return jsonify(tree)
 
 # Content API Routes
 @app.route('/api/content', methods=['POST'])

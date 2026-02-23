@@ -3,1313 +3,407 @@
 {% block title %}Admin Panel - Effexor Hub{% endblock %}
 
 {% block content %}
-<!-- Custom Alert Modal -->
-<div id="customAlert" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full border border-gray-700 transform transition-all scale-95 opacity-0" id="customAlertContent">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-4">
-                <div id="alertIcon" class="w-12 h-12 rounded-full flex items-center justify-center">
-                    <!-- Icon will be inserted here -->
-                </div>
-                <h3 id="alertTitle" class="text-xl font-bold text-gray-200"></h3>
-            </div>
-            <p id="alertMessage" class="text-gray-400 mb-6 whitespace-pre-wrap"></p>
-            <div class="flex justify-end">
-                <button onclick="closeAlert()" class="px-6 py-2.5 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition font-semibold">
-                    OK
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Custom Confirm Modal -->
-<div id="customConfirm" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full border border-gray-700 transform transition-all scale-95 opacity-0" id="customConfirmContent">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-4">
-                <div id="confirmIcon" class="w-12 h-12 rounded-full flex items-center justify-center">
-                    <!-- Icon will be inserted here -->
-                </div>
-                <h3 id="confirmTitle" class="text-xl font-bold text-gray-200"></h3>
-            </div>
-            <p id="confirmMessage" class="text-gray-400 mb-6 whitespace-pre-wrap"></p>
-            <div class="flex gap-3 justify-end">
-                <button onclick="closeConfirm(false)" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
-                    Cancel
-                </button>
-                <button id="confirmButton" onclick="closeConfirm(true)" class="px-6 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold">
-                    Confirm
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Custom Prompt Modal -->
-<div id="customPrompt" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full border border-gray-700 transform transition-all scale-95 opacity-0" id="customPromptContent">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-                <h3 id="promptTitle" class="text-xl font-bold text-gray-200"></h3>
-            </div>
-            <p id="promptMessage" class="text-gray-400 mb-4 whitespace-pre-wrap"></p>
-            <input type="text" id="promptInput" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-gray-200 placeholder-gray-500 mb-6 focus:outline-none focus:ring-2 focus:ring-[#317888]" placeholder="Type here...">
-            <div class="flex gap-3 justify-end">
-                <button onclick="closePrompt(null)" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
-                    Cancel
-                </button>
-                <button onclick="closePrompt(document.getElementById('promptInput').value)" class="px-6 py-2.5 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition font-semibold">
-                    OK
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
-    <div class="rounded-lg shadow p-4 sm:p-6" style="background-color: rgb(18, 18, 20);">
-        <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-200">Admin Panel</h2>
-        
-        <!-- User Management -->
-        <div class="mb-6 sm:mb-8">
-            <h3 class="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-300">User Management</h3>
-            <div class="mb-3">
-                <div class="relative">
-                    <svg class="absolute left-3 top-2.5 sm:top-3 w-4 sm:w-5 h-4 sm:h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input
-                        type="text"
-                        id="userSearch"
-                        placeholder="Search users..."
-                        class="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        onkeyup="filterUsers()"
-                    />
-                </div>
+    <div class="rounded-xl shadow p-4 sm:p-6" style="background-color: rgb(18, 18, 20);">
+
+        <!-- Header -->
+        <div class="flex items-center gap-3 mb-6 sm:mb-8">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#21525D] to-[#317888] flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
             </div>
-            <div id="usersList" class="space-y-2 max-h-96 overflow-y-auto">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-100">Admin Panel</h2>
+                <p class="text-xs text-gray-500">Users, settings &amp; categories</p>
+            </div>
+        </div>
+
+        <!-- ===== USERS ===== -->
+        <section class="mb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#21525D] to-[#317888]"></span>
+                <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Users</h3>
+                <span class="ml-auto text-xs text-gray-600">{{ users|length }} total</span>
+            </div>
+            <div class="relative mb-3">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input type="text" id="userSearch" placeholder="Search users..."
+                    class="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm bg-gray-800/60 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-[#317888] focus:ring-1 focus:ring-[#317888]"
+                    onkeyup="filterUsers()"/>
+            </div>
+            <div id="usersList" class="space-y-2 max-h-[500px] overflow-y-auto pr-1">
                 {% for user in users %}
-                <div class="user-row bg-gray-800/50 rounded-lg p-3 border border-gray-700" data-username="{{ user.username.lower() }}" data-user-id="{{ user._id }}">
-                    <!-- User Header -->
-                    <div class="flex items-center justify-between mb-3 gap-3">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#317888] to-[#447F8E] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                                {{ user.username[0].upper() }}
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="font-semibold text-gray-200 truncate">{{ user.username }}</p>
-                                <p class="text-xs text-gray-500 truncate">
-                                    {% if user.get('protected_email', False) %}
-                                        <span class="text-gray-600 italic">Email Hidden</span>
-                                    {% else %}
-                                        {{ user.email }}
-                                    {% endif %}
-                                </p>
-                            </div>
+                <div class="user-row rounded-xl border border-gray-700/50 overflow-hidden"
+                     data-username="{{ user.username.lower() }}" data-user-id="{{ user._id }}"
+                     style="background: rgba(255,255,255,0.022)">
+                    <div class="flex items-center gap-3 px-3 py-3">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#317888] to-[#447F8E] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">{{ user.username[0].upper() }}</div>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-semibold text-gray-100 truncate text-sm">{{ user.username }}</p>
+                            <p class="text-xs text-gray-500 truncate">{% if user.get('protected_email', False) %}<span class="italic">Hidden</span>{% else %}{{ user.email }}{% endif %}</p>
                         </div>
-                        <div class="flex items-center gap-2 flex-shrink-0">
-                            {% if user.is_admin %}
-                            <span class="admin-badge px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-400 border border-purple-500/30 whitespace-nowrap">Admin</span>
-                            {% else %}
-                            <span class="admin-badge px-2 py-1 text-xs rounded bg-gray-700 text-gray-400 whitespace-nowrap">User</span>
-                            {% endif %}
-                            <button
-                                onclick="toggleSubscription('{{ user._id }}', {{ 'true' if user.is_subscribed else 'false' }})"
-                                class="subscription-badge px-2 py-1 text-xs rounded font-semibold whitespace-nowrap {% if user.is_subscribed %}bg-green-500/20 text-green-400{% else %}bg-gray-700 text-gray-300{% endif %}"
-                            >
-                                {% if user.is_subscribed %}Premium{% else %}Free{% endif %}
-                            </button>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <span class="admin-badge px-2 py-0.5 text-xs rounded-full font-medium {% if user.is_admin %}bg-purple-500/20 text-purple-400{% else %}bg-gray-700/80 text-gray-500{% endif %}">{% if user.is_admin %}Admin{% else %}User{% endif %}</span>
+                            <span class="subscription-badge px-2 py-0.5 text-xs rounded-full font-medium {% if user.is_subscribed %}bg-green-500/20 text-green-400{% else %}bg-gray-700/80 text-gray-500{% endif %}">{% if user.is_subscribed %}Premium{% else %}Free{% endif %}</span>
                         </div>
                     </div>
-
-                    <!-- Action Buttons -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        {% if user._id|string != session.get('user_id')|string %}
-                        <!-- Toggle Admin -->
-                        <button
-                            onclick="toggleAdminStatus('{{ user._id }}', '{{ 'true' if user.is_admin else 'false' }}')"
-                            class="admin-toggle-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition {% if user.is_admin %}bg-red-600/20 text-red-400 hover:bg-red-600/30{% else %}bg-[#317888]/20 text-[#317888] hover:bg-[#21525D]/30{% endif %}"
-                            title="{% if user.is_admin %}Demote to User{% else %}Promote to Admin{% endif %}"
-                        >
-                            <svg class="w-4 h-4 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                {% if user.is_admin %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                                {% else %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                                {% endif %}
+                    {% if user._id|string != session.get('user_id')|string %}
+                    <div class="grid grid-cols-4 border-t border-gray-700/30">
+                        <button onclick="toggleAdminStatus('{{ user._id }}', '{{ 'true' if user.is_admin else 'false' }}')"
+                            title="{% if user.is_admin %}Demote{% else %}Promote to Admin{% endif %}"
+                            class="admin-toggle-btn flex flex-col items-center justify-center gap-1 py-3 text-xs font-medium transition-colors
+                                   {% if user.is_admin %}text-red-400 hover:bg-red-500/10{% else %}text-[#5eead4] hover:bg-[#317888]/10{% endif %}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {% if user.is_admin %}<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                                {% else %}<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>{% endif %}
                             </svg>
-                            <span class="hidden sm:inline">{% if user.is_admin %}Demote{% else %}Promote{% endif %}</span>
+                            <span class="hidden sm:block">{% if user.is_admin %}Demote{% else %}Promote{% endif %}</span>
                         </button>
-                        
-                        <!-- Toggle Subscription -->
-                        <button
-                            onclick="toggleSubscription('{{ user._id }}', {{ 'true' if user.is_subscribed else 'false' }})"
-                            class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition {% if user.is_subscribed %}bg-orange-600/20 text-orange-400 hover:bg-orange-600/30{% else %}bg-green-600/20 text-green-400 hover:bg-green-600/30{% endif %}"
+                        <button onclick="toggleSubscription('{{ user._id }}', {{ 'true' if user.is_subscribed else 'false' }})"
                             title="{% if user.is_subscribed %}Revoke Premium{% else %}Grant Premium{% endif %}"
-                        >
-                            <svg class="w-4 h-4 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                {% if user.is_subscribed %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                {% else %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                {% endif %}
+                            class="sub-toggle-btn flex flex-col items-center justify-center gap-1 py-3 text-xs font-medium transition-colors border-l border-gray-700/30
+                                   {% if user.is_subscribed %}text-orange-400 hover:bg-orange-500/10{% else %}text-green-400 hover:bg-green-500/10{% endif %}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {% if user.is_subscribed %}<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                {% else %}<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>{% endif %}
                             </svg>
-                            <span class="hidden sm:inline">{% if user.is_subscribed %}Revoke{% else %}Grant{% endif %}</span>
+                            <span class="hidden sm:block">{% if user.is_subscribed %}Revoke{% else %}Grant{% endif %}</span>
                         </button>
-                        
-                        <!-- Reset Password -->
-                        <button
-                            onclick="resetUserPassword('{{ user._id }}', '{{ user.username }}')"
-                            class="px-3 py-2 bg-yellow-600/20 text-yellow-400 rounded-lg hover:bg-yellow-600/30 transition text-xs sm:text-sm font-semibold"
+                        <button onclick="resetUserPassword('{{ user._id }}', '{{ user.username }}')"
                             title="Reset Password"
-                        >
-                            <svg class="w-4 h-4 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                            </svg>
-                            <span class="hidden sm:inline">Reset</span>
+                            class="flex flex-col items-center justify-center gap-1 py-3 text-xs font-medium text-yellow-400 hover:bg-yellow-500/10 transition-colors border-l border-gray-700/30">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                            <span class="hidden sm:block">Reset PW</span>
                         </button>
-                        
-                        <!-- Delete User -->
-                        <button
-                            onclick="deleteUser('{{ user._id }}', '{{ user.username }}')"
-                            class="px-3 py-2 bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition text-xs sm:text-sm font-semibold"
+                        <button onclick="deleteUser('{{ user._id }}', '{{ user.username }}')"
                             title="Delete User"
-                        >
-                            <svg class="w-4 h-4 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            <span class="hidden sm:inline">Delete</span>
+                            class="flex flex-col items-center justify-center gap-1 py-3 text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors border-l border-gray-700/30">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <span class="hidden sm:block">Delete</span>
                         </button>
-                        {% else %}
-                        <!-- Current User - No Actions -->
-                        <div class="col-span-2 sm:col-span-4 px-3 py-2 bg-gray-900/50 text-gray-500 rounded-lg text-xs sm:text-sm text-center border border-gray-700">
-                            (You - Cannot modify your own account)
-                        </div>
+                    </div>
+                    {% else %}
+                    <div class="px-3 py-2 border-t border-gray-700/30 text-center">
+                        <span class="text-xs text-gray-600">Your account — cannot modify</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- ===== BETA SETTINGS ===== -->
+        <section class="mb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-1.5 h-5 rounded-full bg-gradient-to-b from-purple-500 to-purple-700"></span>
+                <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Beta Access</h3>
+            </div>
+            <div class="rounded-xl border border-gray-700/50 p-4 space-y-4" style="background: rgba(255,255,255,0.022)">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-200">Beta Mode</p>
+                        <p class="text-xs text-gray-500">Require key for new registrations</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="betaModeToggle" {% if beta_settings.mode %}checked{% endif %}
+                            onchange="toggleBetaMode(this.checked)" class="sr-only peer"/>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-[#317888]/40 rounded-full peer
+                                    peer-checked:after:translate-x-full peer-checked:after:border-white
+                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                    after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21525D]"></div>
+                    </label>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1.5">Beta Key (12 chars, A-Z 0-9)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="betaKeyInput" maxlength="12" value="{{ beta_settings.key }}"
+                            class="flex-1 px-3 py-2.5 rounded-lg bg-gray-800/60 border border-gray-700 text-gray-200 font-mono uppercase text-sm focus:outline-none focus:border-[#317888] focus:ring-1 focus:ring-[#317888]"
+                            placeholder="XXXXXXXXXXXX"/>
+                        <button onclick="updateBetaKey()" title="Save key"
+                            class="w-10 h-10 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#21525D] to-[#317888] text-white hover:opacity-90 transition flex-shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        </button>
+                        <button onclick="generateBetaKey()" title="Generate random key"
+                            class="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition flex-shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg {% if beta_settings.mode %}bg-[#317888]/15 border border-[#317888]/25{% else %}bg-gray-800/40 border border-gray-700/40{% endif %}">
+                    <div class="w-2 h-2 rounded-full {% if beta_settings.mode %}bg-[#317888]{% else %}bg-gray-600{% endif %}"></div>
+                    <p class="text-xs {% if beta_settings.mode %}text-[#5eead4]{% else %}text-gray-500{% endif %}">Beta mode <strong>{% if beta_settings.mode %}ENABLED{% else %}DISABLED{% endif %}</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ACCESS TIME ===== -->
+        <section class="mb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-1.5 h-5 rounded-full bg-gradient-to-b from-blue-500 to-blue-700"></span>
+                <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Free User Timer</h3>
+            </div>
+            <div class="rounded-xl border border-gray-700/50 p-4 space-y-3" style="background: rgba(255,255,255,0.022)">
+                <p class="text-xs text-gray-500">Daily access limit for unsubscribed users (resets at midnight)</p>
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-500 mb-1.5">Seconds</label>
+                        <input type="number" id="accessTimeLimit" min="1" step="1" placeholder="3600"
+                            class="w-full px-3 py-2.5 rounded-lg bg-gray-800/60 border border-gray-700 text-gray-200 text-sm focus:outline-none focus:border-[#317888] focus:ring-1 focus:ring-[#317888]"/>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-500 mb-1.5">Readable</label>
+                        <input type="text" id="accessTimeDisplay" readonly placeholder="--"
+                            class="w-full px-3 py-2.5 rounded-lg bg-gray-800/30 border border-gray-700/50 text-gray-400 text-sm cursor-not-allowed"/>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="updateAccessTimeLimit()"
+                        class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-green-600/20 text-green-400 border border-green-600/30 hover:bg-green-600/30 transition text-sm font-semibold">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Apply
+                    </button>
+                    <button onclick="loadAccessTimeLimit()" title="Reload"
+                        class="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-700/50 border border-gray-700/40 text-gray-400 hover:bg-gray-700 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    </button>
+                </div>
+                <p class="text-xs text-blue-400/70">Changes apply on each user's next midnight reset</p>
+            </div>
+        </section>
+
+        <!-- ===== CATEGORIES ===== -->
+        <section>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#317888] to-[#447F8E]"></span>
+                <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Categories</h3>
+                <a href="/categories" class="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#21525D]/40 text-[#5eead4] border border-[#317888]/30 hover:bg-[#21525D]/60 transition text-xs font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    Manage
+                </a>
+            </div>
+            <div class="rounded-xl border border-gray-700/50 overflow-hidden" style="background: rgba(255,255,255,0.022)">
+                {% for category in categories %}
+                <div class="flex items-center gap-3 px-4 py-3 {% if not loop.last %}border-b border-gray-700/30{% endif %}">
+                    <div class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: {{ category.accent_color }}"></div>
+                    <div class="flex-1 min-w-0 flex items-center gap-2">
+                        <a href="/category/{{ category._id }}" class="font-medium text-gray-200 hover:text-[#5eead4] truncate text-sm transition">{{ category.name }}</a>
+                        {% if category.get('is_pinned', False) %}
+                        <svg class="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg>
                         {% endif %}
                     </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Beta Settings -->
-        <div class="mb-6 sm:mb-8">
-            <h3 class="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-300">Beta Settings</h3>
-            <div class="bg-gray-800/50 rounded-lg p-4">
-                <div class="space-y-4">
-                    <!-- Beta Mode Toggle -->
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="font-medium text-gray-200">Beta Mode</p>
-                            <p class="text-xs text-gray-500">Require beta key for new registrations</p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input 
-                                type="checkbox" 
-                                id="betaModeToggle"
-                                {% if beta_settings.mode %}checked{% endif %}
-                                onchange="toggleBetaMode(this.checked)"
-                                class="sr-only peer"
-                            />
-                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#21525D] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21525D]"></div>
-                        </label>
-                    </div>
-
-                    <!-- Beta Key Input -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-300 mb-2">Beta Key (12 characters)</label>
-                        <div class="flex gap-2">
-                            <div class="relative flex-1">
-                                <input
-                                    type="text"
-                                    id="betaKeyInput"
-                                    maxlength="12"
-                                    value="{{ beta_settings.key }}"
-                                    class="w-full px-4 py-2 pr-10 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500 font-mono uppercase"
-                                    placeholder="XXXXXXXXXXXX"
-                                />
-                                <!-- Clear button (mobile) -->
-                                <button
-                                    onclick="document.getElementById('betaKeyInput').value = '{{ beta_settings.key }}'"
-                                    class="sm:hidden absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
-                                    title="Revert changes"
-                                >
-                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <!-- Update button (desktop) -->
-                            <button
-                                onclick="updateBetaKey()"
-                                class="hidden sm:flex px-4 py-2 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition items-center gap-2"
-                            >
-                                <span>Update Key</span>
-                            </button>
-                            <!-- Update button (mobile - tick icon) -->
-                            <button
-                                onclick="updateBetaKey()"
-                                class="sm:hidden w-10 h-10 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition flex items-center justify-center"
-                                title="Update Key"
-                            >
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                </svg>
-                            </button>
-                            <!-- Generate button (desktop) -->
-                            <button
-                                onclick="generateBetaKey()"
-                                class="hidden sm:flex px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition items-center gap-2"
-                                title="Generate random key"
-                            >
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                            </button>
-                            <!-- Generate button (mobile) -->
-                            <button
-                                onclick="generateBetaKey()"
-                                class="sm:hidden w-10 h-10 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition flex items-center justify-center"
-                                title="Generate random key"
-                            >
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                            </button>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Use alphanumeric characters (A-Z, 0-9)</p>
-                    </div>
-
-                    <!-- Status Display -->
-                    <div class="p-3 rounded-lg {% if beta_settings.mode %}bg-[#317888]/20 border border-[#317888]/30{% else %}bg-gray-700/50 border border-gray-600{% endif %}">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 {% if beta_settings.mode %}text-[#317888]{% else %}text-gray-500{% endif %}" 
-                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-
-                            <p class="text-sm {% if beta_settings.mode %}text-[#317888]{% else %}text-gray-400{% endif %}">
-                                <span class="max-[640px]:hidden">
-                                    Beta mode is currently <strong>{% if beta_settings.mode %}ENABLED{% else %}DISABLED{% endif %}</strong>
-                                </span>
-                                <span class="hidden max-[640px]:inline">
-                                    Beta mode <strong>{% if beta_settings.mode %}ENABLED{% else %}DISABLED{% endif %}</strong>
-                                </span>
-                            </p>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Access Time Settings -->
-        <div class="mb-6 sm:mb-8">
-            <h3 class="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-300">Access Time Limit</h3>
-            <div class="bg-gray-800/50 rounded-lg p-4">
-                <div class="space-y-4">
-                    <div>
-                        <p class="font-medium text-gray-200 mb-2">Free User Daily Access Time</p>
-                        <p class="text-xs text-gray-500 mb-3">Set how long unsubscribed users can access the site per day (resets at midnight)</p>
-                    </div>
-                    
-                    <div class="flex gap-2">
-                        <div class="flex-1">
-                            <label class="block text-sm font-semibold text-gray-300 mb-2">Time in Seconds</label>
-                            <input
-                                type="number"
-                                id="accessTimeLimit"
-                                min="1"
-                                step="1"
-                                placeholder="3600"
-                                class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                            />
-                            <p class="text-xs text-gray-500 mt-1">
-                                <!-- Short text for ≤745px -->
-                                <span class="inline max-[745px]:inline min-[746px]:hidden">
-                                    '1800' = 30m
-                                    <span class="max-[358px]:hidden">, '3600' = 1h</span>
-                                    <span class="max-[500px]:hidden">, '7200' = 2h</span>
-                                </span>
-
-                                <!-- Full text for >745px -->
-                                <span class="hidden min-[746px]:inline max-[745px]:hidden">
-                                    Examples: 1800 (30 minutes)
-                                    <span class="max-[358px]:hidden">, 3600 (1 hour)</span>
-                                    <span class="max-[500px]:hidden">, 7200 (2 hours)</span>
-                                </span>
-                            </p>
-
-
-
-
-
-
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-sm font-semibold text-gray-300 mb-2">Human Readable</label>
-                            <input
-                                type="text"
-                                id="accessTimeDisplay"
-                                readonly
-                                class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700/50 text-gray-400 cursor-not-allowed"
-                                placeholder="--"
-                            />
-                            <p class="text-xs text-gray-500 mt-1">Calculated automatically</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <!-- Update button (desktop) -->
-                        <button
-                            onclick="updateAccessTimeLimit()"
-                            class="hidden sm:flex px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition items-center gap-2"
-                        >
-                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Apply</span>
-                        </button>
-                        <!-- Update button (mobile - checkmark only) -->
-                        <button
-                            onclick="updateAccessTimeLimit()"
-                            class="sm:hidden w-10 h-10 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center"
-                            title="Apply"
-                        >
-                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                        </button>
-                        <!-- Refresh button (desktop) -->
-                        <button
-                            onclick="loadAccessTimeLimit()"
-                            class="hidden sm:flex px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition items-center gap-2"
-                            title="Reload current value"
-                        >
-                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                        </button>
-                        <!-- Refresh button (mobile - icon only) -->
-                        <button
-                            onclick="loadAccessTimeLimit()"
-                            class="sm:hidden w-10 h-10 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition flex items-center justify-center"
-                            title="Reload current value"
-                        >
-                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="p-3 rounded-lg bg-blue-500/20 border border-blue-500/30">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <p class="text-sm text-blue-400">
-                                <span class="max-[655px]:hidden">
-                                    Changes will apply to all unsubscribed users on their next daily reset (midnight)
-                                </span>
-                                <span class="hidden max-[655px]:inline">
-                                    Changes will take effect on next reset
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- Add Category Form -->
-        <div class="mb-4 p-4 bg-gray-800/50 rounded-lg">
-            <h4 class="font-medium mb-3 text-gray-300">Add New Category</h4>
-            <div class="space-y-2">
-                <!-- Category Name -->
-                <input
-                    type="text"
-                    id="newCategoryName"
-                    placeholder=""
-                    class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                    placeholder-text=""
-                />
-                <span class="sr-only">Category Name Label</span>
-                <script>
-                    // Dynamically handle placeholder swap
-                    const nameInput = document.getElementById('newCategoryName');
-                    function updateNamePlaceholder() {
-                        if (window.innerWidth <= 470) {
-                            nameInput.placeholder = 'Name';
-                        } else {
-                            nameInput.placeholder = 'Category name';
-                        }
-                    }
-                    updateNamePlaceholder();
-                    window.addEventListener('resize', updateNamePlaceholder);
-                </script>
-
-                <!-- Category Description -->
-                <textarea
-                    id="newCategoryDescription"
-                    class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                    style="margin-top: 5px;"
-                ></textarea>
-                <script>
-                    const descInput = document.getElementById('newCategoryDescription');
-                    function updateDescPlaceholder() {
-                        if (window.innerWidth <= 470) {
-                            descInput.placeholder = 'Description (optional)';
-                        } else {
-                            descInput.placeholder = 'Category description (optional)';
-                        }
-                    }
-                    updateDescPlaceholder();
-                    window.addEventListener('resize', updateDescPlaceholder);
-                </script>
-
-                <!-- Color & Free / Add -->
-                <div class="flex gap-2 flex-wrap sm:flex-nowrap" style="margin-top: 0px">
-                    <!-- Color inputs container -->
-                    <div class="flex gap-2 flex-1 min-w-0">
-                        <!-- Text input (desktop only) -->
-                        <div class="relative hidden sm:block flex-1">
-                            <input
-                                type="text"
-                                id="newCategoryColor"
-                                placeholder="Accent Color (e.g., #4F46E5)"
-                                value="#4F46E5"
-                                class="w-full px-4 py-2 pr-8 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200"
-                            />
-                            <button
-                                onclick="clearColorInput('newCategoryColor', 'newCategoryColorPicker')"
-                                class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
-                                title="Clear color"
-                            >
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        <!-- Color picker -->
-                        <input
-                            type="color"
-                            id="newCategoryColorPicker"
-                            value="#3c7c8c"
-                            class="w-10 h-10 rounded border border-gray-600 cursor-pointer bg-gray-800"
-                            title="Pick a color"
-                            style="padding: 2px;"
-                        />
-                    </div>
-                    <!-- Free checkbox -->
-                    <label class="flex items-center gap-2 px-3 py-2 bg-gray-800/50 rounded-lg cursor-pointer border border-gray-600 whitespace-nowrap">
-                        <input
-                            type="checkbox"
-                            id="newCategoryFree"
-                            class="w-4 h-4"
-                        />
-                        <span class="text-sm text-gray-300">Free</span>
-                    </label>
-                    <!-- Add button (desktop) -->
-                    <button
-                        onclick="addCategory()"
-                        class="hidden sm:flex px-4 py-2 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition whitespace-nowrap items-center gap-2"
-                    >
-                        <span>Add Category</span>
-                    </button>
-                    <!-- Add button (mobile - + icon) -->
-                    <button
-                        onclick="addCategory()"
-                        class="sm:hidden w-10 h-10 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition flex items-center justify-center"
-                        title="Add Category"
-                    >
-                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Banner Image -->
-                <div class="relative">
-                    <input
-                        type="text"
-                        id="newCategoryBanner"
-                        class="w-full px-4 py-2 pr-8 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                    />
-                    <button
-                        onclick="clearBannerInput('newCategoryBanner')"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
-                        title="Clear banner URL"
-                    >
-                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Recommended banner text -->
-                <p class="text-xs text-gray-500">
-                    <span class="max-[470px]:hidden">Recommended banner size: 1200×400 pixels (3:1 ratio)</span>
-                    <span class="hidden max-[470px]:inline">Recommended 1200×400p (3:1)</span>
-                </p>
-            </div>
-        </div>
-
-        <script>
-            // Handle responsive placeholders for category name and description
-            function updateCategoryPlaceholders() {
-                const width = window.innerWidth;
-                const name = document.getElementById('newCategoryName');
-                const desc = document.getElementById('newCategoryDescription');
-                const banner = document.getElementById('newCategoryBanner');
-
-                if(width <= 470){
-                    name.placeholder = 'Name';
-                    desc.placeholder = 'Description (optional)';
-                    banner.placeholder = 'Banner URL (optional)';
-                } else {
-                    name.placeholder = 'Category name';
-                    desc.placeholder = 'Category description (optional)';
-                    banner.placeholder = 'Banner Image URL (optional)';
-                }
-            }
-            updateCategoryPlaceholders();
-            window.addEventListener('resize', updateCategoryPlaceholders);
-        </script>
-
-            
-            <!-- Categories List -->
-            <div class="space-y-2">
-                {% for category in categories %}
-                <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded">
-                    <div class="flex items-center gap-3 flex-1 min-w-0">
-                        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: {{ category.accent_color }}"></div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
-                                <a href="/category/{{ category._id }}" class="font-medium text-gray-200 hover:text-[#317888] truncate transition">{{ category.name }}</a>
-                                {% if category.get('is_pinned', False) %}
-                                <svg class="w-4 h-4 text-yellow-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
-                                </svg>
-                                {% endif %}
-                            </div>
-                            {% if category.description %}
-                            <p class="text-xs text-gray-500 truncate">{{ category.description }}</p>
-                            {% endif %}
-                        </div>
-                        <span class="px-2 py-1 text-xs rounded flex-shrink-0 {% if category.is_free %}bg-green-500/20 text-green-400{% else %}bg-purple-500/20 text-purple-400{% endif %}">
-                            {% if category.is_free %}Free{% else %}Premium{% endif %}
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-1 ml-2 flex-shrink-0">
-                        <a
-                            href="/category/{{ category._id }}"
-                            class="p-1.5 text-[#317888] hover:bg-[#317888]/20 rounded transition-colors"
-                            title="Edit Category"
-                        >
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
+                    <span class="px-2 py-0.5 text-xs rounded-full flex-shrink-0 {% if category.is_free %}bg-green-500/20 text-green-400{% else %}bg-purple-500/20 text-purple-400{% endif %}">{% if category.is_free %}Free{% else %}Premium{% endif %}</span>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <a href="/category/{{ category._id }}" class="p-1.5 text-[#317888] hover:bg-[#317888]/20 rounded-lg transition" title="Edit">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         </a>
-                        <button
-                            onclick="deleteCategory('{{ category._id }}')"
-                            class="p-1.5 text-red-400 hover:bg-red-500/20 rounded transition-colors"
-                            title="Delete Category"
-                        >
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
+                        <button onclick="deleteCategory('{{ category._id }}')" class="p-1.5 text-red-400 hover:bg-red-500/20 rounded-lg transition" title="Delete">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         </button>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-        </div>
+        </section>
+
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // Custom Modal Functions
-    let confirmResolve = null;
-    let promptResolve = null;
-
-    function showAlert(message, title = 'Notice', type = 'info') {
-        return new Promise((resolve) => {
-            const modal = document.getElementById('customAlert');
-            const content = document.getElementById('customAlertContent');
-            const iconDiv = document.getElementById('alertIcon');
-            const titleEl = document.getElementById('alertTitle');
-            const messageEl = document.getElementById('alertMessage');
-
-            // Set icon and colors based on type
-            let iconHTML = '';
-            let iconClass = '';
-            
-            if (type === 'success') {
-                iconClass = 'bg-green-500/20';
-                iconHTML = '<svg class="w-6 h-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>';
-            } else if (type === 'error') {
-                iconClass = 'bg-red-500/20';
-                iconHTML = '<svg class="w-6 h-6 text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
-            } else if (type === 'warning') {
-                iconClass = 'bg-yellow-500/20';
-                iconHTML = '<svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>';
-            } else {
-                iconClass = 'bg-[#317888]/20';
-                iconHTML = '<svg class="w-6 h-6 text-[#317888]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
-            }
-
-            iconDiv.className = `w-12 h-12 rounded-full flex items-center justify-center ${iconClass}`;
-            iconDiv.innerHTML = iconHTML;
-            titleEl.textContent = title;
-            messageEl.textContent = message;
-
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
-
-            window.closeAlert = () => {
-                content.classList.add('scale-95', 'opacity-0');
-                content.classList.remove('scale-100', 'opacity-100');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    resolve();
-                }, 200);
-            };
-        });
-    }
-
-    function showConfirm(message, title = 'Confirm', type = 'warning', confirmText = 'Confirm', cancelText = 'Cancel') {
-        return new Promise((resolve) => {
-            const modal = document.getElementById('customConfirm');
-            const content = document.getElementById('customConfirmContent');
-            const iconDiv = document.getElementById('confirmIcon');
-            const titleEl = document.getElementById('confirmTitle');
-            const messageEl = document.getElementById('confirmMessage');
-            const confirmBtn = document.getElementById('confirmButton');
-
-            // Set icon and colors based on type
-            let iconHTML = '';
-            let iconClass = '';
-            let btnClass = 'bg-red-600 hover:bg-red-700';
-            
-            if (type === 'danger') {
-                iconClass = 'bg-red-500/20';
-                iconHTML = '<svg class="w-6 h-6 text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>';
-                btnClass = 'bg-red-600 hover:bg-red-700';
-            } else if (type === 'warning') {
-                iconClass = 'bg-yellow-500/20';
-                iconHTML = '<svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>';
-                btnClass = 'bg-yellow-600 hover:bg-yellow-700';
-            } else {
-                iconClass = 'bg-[#317888]/20';
-                iconHTML = '<svg class="w-6 h-6 text-[#317888]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
-                btnClass = 'bg-[#21525D] hover:bg-[#1A1A1E]';
-            }
-
-            iconDiv.className = `w-12 h-12 rounded-full flex items-center justify-center ${iconClass}`;
-            iconDiv.innerHTML = iconHTML;
-            titleEl.textContent = title;
-            messageEl.textContent = message;
-            confirmBtn.textContent = confirmText;
-            confirmBtn.className = `px-6 py-2.5 text-white rounded-lg transition font-semibold ${btnClass}`;
-
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
-
-            window.closeConfirm = (result) => {
-                content.classList.add('scale-95', 'opacity-0');
-                content.classList.remove('scale-100', 'opacity-100');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    resolve(result);
-                }, 200);
-            };
-        });
-    }
-
-    function showPrompt(message, title = 'Input Required', placeholder = 'Type here...') {
-        return new Promise((resolve) => {
-            const modal = document.getElementById('customPrompt');
-            const content = document.getElementById('customPromptContent');
-            const titleEl = document.getElementById('promptTitle');
-            const messageEl = document.getElementById('promptMessage');
-            const inputEl = document.getElementById('promptInput');
-
-            titleEl.textContent = title;
-            messageEl.textContent = message;
-            inputEl.placeholder = placeholder;
-            inputEl.value = '';
-
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-                inputEl.focus();
-            }, 10);
-
-            // Handle Enter key
-            inputEl.onkeypress = (e) => {
-                if (e.key === 'Enter') {
-                    closePrompt(inputEl.value);
-                }
-            };
-
-            window.closePrompt = (result) => {
-                content.classList.add('scale-95', 'opacity-0');
-                content.classList.remove('scale-100', 'opacity-100');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    resolve(result);
-                }, 200);
-            };
-        });
-    }
-
     function filterUsers() {
-        const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-        const rows = document.querySelectorAll('.user-row');
-        
-        rows.forEach(row => {
-            const username = row.getAttribute('data-username');
-            if (username.includes(searchTerm)) {
-                row.style.display = 'flex';
-            } else {
-                row.style.display = 'none';
-            }
+        const q = document.getElementById('userSearch').value.toLowerCase();
+        document.querySelectorAll('.user-row').forEach(r => {
+            r.style.display = r.dataset.username.includes(q) ? '' : 'none';
         });
     }
 
     async function toggleSubscription(userId, currentStatus) {
         const newStatus = !JSON.parse(currentStatus);
-        const action = newStatus ? 'grant premium to' : 'revoke premium from';
-        
-        const confirmed = await showConfirm(
-            `Are you sure you want to ${action} this user?\n\n${newStatus ? 'They will get unlimited favorites and no time restrictions.' : 'They will lose premium benefits and return to free tier limits.'}`,
-            newStatus ? 'Grant Premium' : 'Revoke Premium',
-            'warning',
-            newStatus ? 'Grant Premium' : 'Revoke Premium'
+        const ok = await showConfirm(
+            newStatus ? 'Grant premium access to this user?' : 'Revoke premium from this user?',
+            newStatus ? 'Grant Premium' : 'Revoke Premium', 'warning', newStatus ? 'Grant' : 'Revoke'
         );
-        
-        if (!confirmed) return;
-
-        fetch(`/api/users/${userId}/subscription`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ is_subscribed: newStatus })
-        })
-        .then(response => response.json())
-        .then(async data => {
-            if (data.success) {
-                await showAlert(
-                    `Premium ${newStatus ? 'granted' : 'revoked'} successfully`,
-                    'Success',
-                    'success'
-                );
-                
-                // Update UI without page reload
+        if (!ok) return;
+        try {
+            const d = await fetch(`/api/users/${userId}/subscription`, {
+                method: 'PUT', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({is_subscribed: newStatus})
+            }).then(r=>r.json());
+            if (d.success) {
+                showToast(newStatus ? 'Premium granted' : 'Premium revoked', 'success');
                 const row = document.querySelector(`.user-row[data-user-id="${userId}"]`);
                 if (row) {
                     const badge = row.querySelector('.subscription-badge');
-                    
-                    // Update badge
-                    if (newStatus) {
-                        badge.className = 'subscription-badge px-2 py-1 text-xs rounded font-semibold bg-green-500/20 text-green-400';
-                        badge.textContent = 'Premium';
-                    } else {
-                        badge.className = 'subscription-badge px-2 py-1 text-xs rounded font-semibold bg-gray-700 text-gray-300';
-                        badge.textContent = 'Free';
-                    }
-                    
-                    // Update button onclick
-                    badge.setAttribute('onclick', `toggleSubscription('${userId}', ${newStatus})`);
-                    
-                    // Find and update the grant/revoke button
-                    const buttons = row.querySelectorAll('button');
-                    buttons.forEach(btn => {
-                        const onclickAttr = btn.getAttribute('onclick');
-                        if (onclickAttr && onclickAttr.includes('toggleSubscription') && btn !== badge) {
-                            btn.setAttribute('onclick', `toggleSubscription('${userId}', ${newStatus})`);
-                            btn.title = newStatus ? 'Revoke Premium' : 'Grant Premium';
-                            
-                            if (newStatus) {
-                                // User is now premium - show REVOKE button
-                                btn.className = 'px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition bg-orange-600/20 text-orange-400 hover:bg-orange-600/30';
-                                btn.innerHTML = '<svg class="w-4 h-4 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg><span class="hidden sm:inline">Revoke</span>';
-                            } else {
-                                // User is now free - show GRANT button
-                                btn.className = 'px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition bg-green-600/20 text-green-400 hover:bg-green-600/30';
-                                btn.innerHTML = '<svg class="w-4 h-4 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="hidden sm:inline">Grant</span>';
-                            }
+                    if (newStatus) { badge.className='subscription-badge px-2 py-0.5 text-xs rounded-full font-medium bg-green-500/20 text-green-400'; badge.textContent='Premium'; }
+                    else { badge.className='subscription-badge px-2 py-0.5 text-xs rounded-full font-medium bg-gray-700/80 text-gray-500'; badge.textContent='Free'; }
+                    const btn = row.querySelector('.sub-toggle-btn');
+                    if (btn) {
+                        btn.setAttribute('onclick',`toggleSubscription('${userId}', ${newStatus})`);
+                        btn.title = newStatus ? 'Revoke Premium' : 'Grant Premium';
+                        if (newStatus) {
+                            btn.className = btn.className.replace('text-green-400 hover:bg-green-500/10','text-orange-400 hover:bg-orange-500/10');
+                            btn.querySelector('svg').innerHTML='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+                            const sp=btn.querySelector('span'); if(sp) sp.textContent='Revoke';
+                        } else {
+                            btn.className = btn.className.replace('text-orange-400 hover:bg-orange-500/10','text-green-400 hover:bg-green-500/10');
+                            btn.querySelector('svg').innerHTML='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+                            const sp=btn.querySelector('span'); if(sp) sp.textContent='Grant';
                         }
-                    });
+                    }
                 }
-            } else {
-                await showAlert('Failed to update subscription', 'Error', 'error');
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to update subscription', 'Error', 'error');
-        });
+            } else showToast('Failed to update subscription','error');
+        } catch(e) { showToast('Network error','error'); }
     }
 
     async function deleteUser(userId, username) {
-        const confirmed = await showConfirm(
-            `You are about to permanently delete:\nUsername: ${username}\n\nThis will:\n• Delete the user account\n• Remove all their data\n• Remove their favorites\n• This CANNOT be undone\n\nAre you absolutely sure?`,
-            '⚠️ DANGER: DELETE USER ACCOUNT',
-            'danger',
-            'Continue'
+        const ok = await showConfirm(
+            `Permanently delete "${username}"?\n\nRemoves account, data and favorites. Cannot be undone.`,
+            'Delete User', 'danger', 'Continue'
         );
-        
-        if (!confirmed) return;
-
-        // Double confirmation with prompt
-        const typedUsername = await showPrompt(
-            `Type the username "${username}" exactly to confirm deletion:`,
-            'Final Confirmation',
-            'Type username here...'
-        );
-        
-        if (typedUsername !== username) {
-            await showAlert('Username did not match. Deletion cancelled.', 'Cancelled', 'info');
-            return;
-        }
-
-        fetch(`/api/users/${userId}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => response.json())
-        .then(async data => {
-            if (data.success) {
-                await showAlert(`User "${username}" has been permanently deleted.`, 'User Deleted', 'success');
-                
-                // Remove the user row from UI without page reload
+        if (!ok) return;
+        const typed = await showModal({
+            title: 'Confirm Deletion', message: '', type: 'danger',
+            input: {label: `Type "${username}" to confirm`, placeholder: 'Username...'},
+            buttons: [{text:'Delete', value:true, cls:'modal-btn-danger'}, {text:'Cancel', value:false, cls:'modal-btn-cancel'}]
+        });
+        if (!typed || typed === false) return;
+        if (typed !== username) { showToast('Username mismatch — cancelled','warning'); return; }
+        try {
+            const d = await fetch(`/api/users/${userId}`, {method:'DELETE', headers:{'Content-Type':'application/json'}}).then(r=>r.json());
+            if (d.success) {
+                showToast(`"${username}" deleted`,'success');
                 const row = document.querySelector(`.user-row[data-user-id="${userId}"]`);
-                if (row) {
-                    // Fade out animation
-                    row.style.transition = 'opacity 0.3s, transform 0.3s';
-                    row.style.opacity = '0';
-                    row.style.transform = 'scale(0.95)';
-                    
-                    setTimeout(() => {
-                        row.remove();
-                        
-                        // Check if there are any users left
-                        const remainingRows = document.querySelectorAll('.user-row');
-                        if (remainingRows.length === 0) {
-                            const usersList = document.getElementById('usersList');
-                            usersList.innerHTML = '<div class="text-center py-8 text-gray-500">No users found</div>';
-                        }
-                    }, 300);
-                }
-            } else {
-                await showAlert('Failed to delete user', 'Error', 'error');
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to delete user', 'Error', 'error');
-        });
+                if (row) { row.style.transition='opacity 0.3s,transform 0.3s'; row.style.opacity='0'; row.style.transform='scale(0.95)'; setTimeout(()=>row.remove(),300); }
+            } else showToast('Failed to delete user','error');
+        } catch(e) { showToast('Network error','error'); }
     }
 
-    async function addCategory() {
-        const name = document.getElementById('newCategoryName').value;
-        const description = document.getElementById('newCategoryDescription').value;
-        const colorInput = document.getElementById('newCategoryColor');
-        const colorPicker = document.getElementById('newCategoryColorPicker');
-        
-        // Get color from text input if visible, otherwise from color picker
-        const accentColor = window.innerWidth >= 640 && colorInput ? colorInput.value : colorPicker.value;
-        
-        const isFree = document.getElementById('newCategoryFree').checked;
-        const bannerImage = document.getElementById('newCategoryBanner').value;
-
-        if (!name) {
-            await showAlert('Please enter a category name', 'Missing Information', 'warning');
-            return;
-        }
-
-        if (!/^#[0-9A-F]{6}$/i.test(accentColor)) {
-            await showAlert('Please enter a valid hex color code (e.g., #4F46E5)', 'Invalid Color', 'warning');
-            return;
-        }
-
-        fetch('/api/categories', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                name, 
-                description, 
-                accent_color: accentColor, 
-                is_free: isFree,
-                banner_image: bannerImage
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to add category', 'Error', 'error');
-        });
+    function togglePinCategory(id, cur) {
+        fetch(`/api/categories/${id}/pin`, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({is_pinned:!JSON.parse(cur)})})
+        .then(r=>r.json()).then(d=>{ if(d.success) location.reload(); })
+        .catch(()=>showToast('Failed to update pin','error'));
     }
 
-    async function deleteCategory(categoryId) {
-        const confirmed = await showConfirm(
-            'Delete this category and all its content?\n\nThis action cannot be undone.',
-            'Delete Category',
-            'danger',
-            'Delete'
-        );
-        
-        if (!confirmed) return;
-
-        fetch(`/api/categories/${categoryId}`, {
-            method: 'DELETE'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to delete category', 'Error', 'error');
-        });
-    }
-
-    function togglePinCategory(categoryId, currentStatus) {
-        const newStatus = !JSON.parse(currentStatus);
-
-        fetch(`/api/categories/${categoryId}/pin`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ is_pinned: newStatus })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to update pin status', 'Error', 'error');
-        });
-    }
-
-    // Beta Settings Functions
     async function toggleBetaMode(enabled) {
-        fetch('/api/beta-settings/mode', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ enabled: enabled })
-        })
-        .then(response => response.json())
-        .then(async data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                await showAlert('Failed to update beta mode', 'Error', 'error');
-                location.reload();
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to update beta mode', 'Error', 'error');
-        });
+        try {
+            const d = await fetch('/api/beta-settings/mode', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({enabled})}).then(r=>r.json());
+            if (d.success) showToast(`Beta mode ${enabled?'enabled':'disabled'}`,'success');
+            else { showToast('Failed to update beta mode','error'); location.reload(); }
+        } catch(e) { showToast('Network error','error'); location.reload(); }
     }
 
     async function updateBetaKey() {
         const key = document.getElementById('betaKeyInput').value.trim().toUpperCase();
-        
-        if (key.length !== 12) {
-            await showAlert('Beta key must be exactly 12 characters', 'Invalid Key Length', 'warning');
-            return;
-        }
-
-        if (!/^[A-Z0-9]{12}$/.test(key)) {
-            await showAlert('Beta key must contain only letters and numbers', 'Invalid Characters', 'warning');
-            return;
-        }
-
-        fetch('/api/beta-settings/key', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: key })
-        })
-        .then(response => response.json())
-        .then(async data => {
-            if (data.success) {
-                await showAlert('Beta key updated successfully', 'Success', 'success');
-            } else {
-                await showAlert('Failed to update beta key', 'Error', 'error');
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to update beta key', 'Error', 'error');
-        });
+        if (key.length !== 12) { showToast('Key must be exactly 12 characters','warning'); return; }
+        if (!/^[A-Z0-9]{12}$/.test(key)) { showToast('Use letters and numbers only','warning'); return; }
+        try {
+            const d = await fetch('/api/beta-settings/key', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key})}).then(r=>r.json());
+            showToast(d.success ? 'Beta key updated' : 'Failed to update key', d.success ? 'success' : 'error');
+        } catch(e) { showToast('Network error','error'); }
     }
 
     function generateBetaKey() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let key = '';
-        for (let i = 0; i < 12; i++) {
-            key += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        document.getElementById('betaKeyInput').value = key;
+        const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        document.getElementById('betaKeyInput').value = Array.from({length:12},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
     }
 
-    // Clear input functions
-    function clearColorInput(textInputId, pickerInputId) {
-        const defaultColor = '#4F46E5';
-        document.getElementById(textInputId).value = defaultColor;
-        document.getElementById(pickerInputId).value = defaultColor;
-    }
-
-    function clearBannerInput(inputId) {
-        document.getElementById(inputId).value = '';
-    }
-
-    // Auto-format beta key input
-    document.getElementById('betaKeyInput')?.addEventListener('input', function(e) {
-        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 12);
+    document.getElementById('betaKeyInput')?.addEventListener('input', function() {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,12);
     });
 
-    // Access Time Limit Functions
-    function formatSeconds(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        
-        let result = [];
-        if (hours > 0) result.push(`${hours}h`);
-        if (minutes > 0) result.push(`${minutes}m`);
-        if (secs > 0 || result.length === 0) result.push(`${secs}s`);
-        
-        return result.join(' ');
+    function formatSeconds(s) {
+        const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
+        return [h&&`${h}h`, m&&`${m}m`, (sec||(!h&&!m))&&`${sec}s`].filter(Boolean).join(' ');
     }
 
     function updateAccessTimeDisplay() {
-        const input = document.getElementById('accessTimeLimit');
-        const display = document.getElementById('accessTimeDisplay');
-        
-        if (input && display) {
-            const seconds = parseInt(input.value) || 0;
-            display.value = formatSeconds(seconds);
-        }
+        const input=document.getElementById('accessTimeLimit'), display=document.getElementById('accessTimeDisplay');
+        if(input&&display) display.value=formatSeconds(parseInt(input.value)||0);
     }
 
     async function loadAccessTimeLimit() {
-        fetch('/api/settings/access-time')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('accessTimeLimit').value = data.access_time_limit;
-                    updateAccessTimeDisplay();
-                }
-            })
-            .catch(async error => {
-                console.error('Error:', error);
-                await showAlert('Failed to load access time limit', 'Error', 'error');
-            });
+        try {
+            const d = await fetch('/api/settings/access-time').then(r=>r.json());
+            if(d.success){ document.getElementById('accessTimeLimit').value=d.access_time_limit; updateAccessTimeDisplay(); }
+        } catch(e) { showToast('Failed to load timer','error'); }
     }
 
     async function updateAccessTimeLimit() {
-        const timeLimit = parseInt(document.getElementById('accessTimeLimit').value);
-        
-        if (!timeLimit || timeLimit < 1) {
-            await showAlert('Please enter a valid time limit (minimum 1 second)', 'Invalid Time Limit', 'warning');
-            return;
-        }
-
-        const confirmed = await showConfirm(
-            `Set access time to ${formatSeconds(timeLimit)} for all unsubscribed users?\n\nThis will take effect on their next daily reset (midnight).`,
-            'Update Access Time',
-            'warning',
-            'Update'
-        );
-        
-        if (!confirmed) return;
-
-        fetch('/api/settings/access-time', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ access_time_limit: timeLimit })
-        })
-        .then(response => response.json())
-        .then(async data => {
-            if (data.success) {
-                await showAlert(`Access time limit updated to ${formatSeconds(timeLimit)}`, 'Success', 'success');
-                updateAccessTimeDisplay();
-            } else {
-                await showAlert('Failed to update access time limit', 'Error', 'error');
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to update access time limit', 'Error', 'error');
-        });
+        const t = parseInt(document.getElementById('accessTimeLimit').value);
+        if(!t||t<1){ showToast('Enter a valid time (min 1s)','warning'); return; }
+        const ok = await showConfirm(`Set free user access to ${formatSeconds(t)} per day?`, 'Update Timer', 'warning', 'Apply');
+        if(!ok) return;
+        try {
+            const d = await fetch('/api/settings/access-time', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({access_time_limit:t})}).then(r=>r.json());
+            showToast(d.success?`Timer set to ${formatSeconds(t)}`:'Failed to update timer', d.success?'success':'error');
+            if(d.success) updateAccessTimeDisplay();
+        } catch(e) { showToast('Network error','error'); }
     }
 
-    // Update display when input changes
     document.getElementById('accessTimeLimit')?.addEventListener('input', updateAccessTimeDisplay);
-
-    // Load current access time limit on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        loadAccessTimeLimit();
-    });
-
-    // Update color preview
-    document.addEventListener('DOMContentLoaded', function() {
-        const colorInput = document.getElementById('newCategoryColor');
-        const colorPicker = document.getElementById('newCategoryColorPicker');
-        
-        if (colorInput && colorPicker) {
-            // Update picker when text input changes
-            colorInput.addEventListener('input', function() {
-                if (/^#[0-9A-F]{6}$/i.test(this.value)) {
-                    colorPicker.value = this.value;
-                }
-            });
-            
-            // Update text input when color picker changes (only if text input is visible)
-            colorPicker.addEventListener('input', function() {
-                if (window.innerWidth >= 640 && colorInput) {
-                    colorInput.value = this.value.toUpperCase();
-                }
-            });
-        }
-    });
+    document.addEventListener('DOMContentLoaded', loadAccessTimeLimit);
 
     async function toggleAdminStatus(userId, isCurrentlyAdmin) {
-        const action = isCurrentlyAdmin === 'true' ? 'demote from' : 'promote to';
-        
-        const confirmed = await showConfirm(
-            `Are you sure you want to ${action} administrator?\n\nThis will ${isCurrentlyAdmin === 'true' ? 'remove admin privileges' : 'grant full admin access'}.`,
-            isCurrentlyAdmin === 'true' ? 'Demote User' : 'Promote to Admin',
-            'warning',
-            isCurrentlyAdmin === 'true' ? 'Demote' : 'Promote'
+        const ok = await showConfirm(
+            isCurrentlyAdmin==='true' ? 'Remove admin privileges from this user?' : 'Grant full admin access to this user?',
+            isCurrentlyAdmin==='true' ? 'Demote User' : 'Promote to Admin',
+            isCurrentlyAdmin==='true' ? 'danger' : 'warning',
+            isCurrentlyAdmin==='true' ? 'Demote' : 'Promote'
         );
-        
-        if (!confirmed) return;
-
-        fetch(`/api/admin/users/${userId}/admin-status`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ is_admin: isCurrentlyAdmin !== 'true' })
-        })
-        .then(response => response.json())
-        .then(async data => {
-            if (data.success) {
-                await showAlert(
-                    `User ${isCurrentlyAdmin === 'true' ? 'demoted' : 'promoted'} successfully`,
-                    'Success',
-                    'success'
-                );
-                
-                // Update UI without page reload
+        if(!ok) return;
+        try {
+            const d = await fetch(`/api/admin/users/${userId}/admin-status`, {
+                method:'PUT', headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({is_admin: isCurrentlyAdmin!=='true'})
+            }).then(r=>r.json());
+            if(d.success) {
+                const newStatus = isCurrentlyAdmin!=='true';
+                showToast(newStatus?'Promoted to admin':'Demoted to user','success');
                 const row = document.querySelector(`.user-row[data-user-id="${userId}"]`);
-                if (row) {
-                    const newAdminStatus = isCurrentlyAdmin !== 'true';
-                    const badge = row.querySelector('.admin-badge');
-                    const adminButton = row.querySelector('.admin-toggle-btn');
-                    
-                    // Update badge
-                    if (newAdminStatus) {
-                        badge.className = 'admin-badge px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-400 border border-purple-500/30';
-                        badge.textContent = 'Admin';
+                if(row){
+                    const b=row.querySelector('.admin-badge'), btn=row.querySelector('.admin-toggle-btn');
+                    if(newStatus){ b.className='admin-badge px-2 py-0.5 text-xs rounded-full font-medium bg-purple-500/20 text-purple-400'; b.textContent='Admin'; }
+                    else { b.className='admin-badge px-2 py-0.5 text-xs rounded-full font-medium bg-gray-700/80 text-gray-500'; b.textContent='User'; }
+                    btn.setAttribute('onclick',`toggleAdminStatus('${userId}', '${newStatus}')`);
+                    btn.title = newStatus?'Demote':'Promote to Admin';
+                    if(newStatus){
+                        btn.className=btn.className.replace('text-[#5eead4] hover:bg-[#317888]/10','text-red-400 hover:bg-red-500/10');
+                        btn.querySelector('svg').innerHTML='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>';
+                        const sp=btn.querySelector('span'); if(sp) sp.textContent='Demote';
                     } else {
-                        badge.className = 'admin-badge px-2 py-1 text-xs rounded bg-gray-700 text-gray-400';
-                        badge.textContent = 'User';
-                    }
-                    
-                    // Update button
-                    adminButton.setAttribute('onclick', `toggleAdminStatus('${userId}', '${newAdminStatus}')`);
-                    adminButton.title = newAdminStatus ? 'Demote to User' : 'Promote to Admin';
-                    adminButton.innerHTML = newAdminStatus ? 
-                        '<svg class="w-4 h-4 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg><span class="hidden sm:inline">Demote</span>' :
-                        '<svg class="w-4 h-4 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg><span class="hidden sm:inline">Promote</span>';
-                    
-                    // Update button styling
-                    if (newAdminStatus) {
-                        adminButton.className = 'admin-toggle-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition bg-red-600/20 text-red-400 hover:bg-red-600/30';
-                    } else {
-                        adminButton.className = 'admin-toggle-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition bg-[#317888]/20 text-[#317888] hover:bg-[#21525D]/30';
+                        btn.className=btn.className.replace('text-red-400 hover:bg-red-500/10','text-[#5eead4] hover:bg-[#317888]/10');
+                        btn.querySelector('svg').innerHTML='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>';
+                        const sp=btn.querySelector('span'); if(sp) sp.textContent='Promote';
                     }
                 }
-            } else {
-                await showAlert('Failed to update admin status', 'Error', 'error');
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to update admin status', 'Error', 'error');
-        });
+            } else showToast('Failed to update admin status','error');
+        } catch(e) { showToast('Network error','error'); }
     }
 
     async function resetUserPassword(userId, username) {
-        const confirmed = await showConfirm(
-            `Are you sure you want to reset the password for "${username}"?\n\nTheir password will be set to: P@$$w0rd\n\nThis action cannot be undone.`,
-            'Reset Password',
-            'warning',
-            'Continue'
-        );
-        
-        if (!confirmed) return;
-
-        // Double confirmation for security
-        const finalConfirm = await showConfirm(
-            'FINAL WARNING: This will immediately change the user\'s password. Continue?',
-            'Final Confirmation',
-            'danger',
-            'Reset Password'
-        );
-        
-        if (!finalConfirm) return;
-
-        fetch(`/api/admin/users/${userId}/reset-password`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => response.json())
-        .then(async data => {
-            if (data.success) {
-                await showAlert(
-                    `Password reset successfully for "${username}".\n\nNew password: P@$$w0rd\n\nPlease inform the user to change it immediately after logging in.`,
-                    'Password Reset',
-                    'success'
-                );
-            } else {
-                await showAlert('Failed to reset password', 'Error', 'error');
-            }
-        })
-        .catch(async error => {
-            console.error('Error:', error);
-            await showAlert('Failed to reset password', 'Error', 'error');
-        });
+        const ok = await showConfirm(`Reset password for "${username}"?\n\nNew password: P@\$\$w0rd`, 'Reset Password', 'warning', 'Reset');
+        if(!ok) return;
+        const final = await showConfirm('This immediately changes the password. Continue?', 'Final Confirmation', 'danger', 'Reset Password');
+        if(!final) return;
+        try {
+            const d = await fetch(`/api/admin/users/${userId}/reset-password`, {method:'POST', headers:{'Content-Type':'application/json'}}).then(r=>r.json());
+            if(d.success) showToast(`Password reset for "${username}"`,'success', null, 6000);
+            else showToast('Failed to reset password','error');
+        } catch(e) { showToast('Network error','error'); }
     }
 
+    async function deleteCategory(categoryId) {
+        const ok = await showConfirm('Delete this category and all its content?', 'Delete Category', 'danger', 'Delete');
+        if(!ok) return;
+        try {
+            const d = await fetch(`/api/categories/${categoryId}`, {method:'DELETE'}).then(r=>r.json());
+            if(d.success){ showToast('Category deleted','success'); setTimeout(()=>location.reload(),800); }
+            else showToast('Failed to delete category','error');
+        } catch(e) { showToast('Network error','error'); }
+    }
 </script>
 {% endblock %}
