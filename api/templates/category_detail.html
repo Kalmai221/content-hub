@@ -22,32 +22,32 @@
     .category-accent-ring:focus {
         --tw-ring-color: {{ category.accent_color }};
     }
-    
+
     /* Mobile responsive grid */
     @media (max-width: 640px) {
         .content-grid {
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         }
     }
-    
+
     @media (min-width: 640px) {
         .content-grid {
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         }
     }
-    
+
     /* Make cards fit content */
     .content-card {
         height: fit-content;
     }
-    
+
     .content-card img,
     .content-card video {
         width: 100%;
         height: auto;
         display: block;
     }
-    
+
     /* Lightbox styles */
     .lightbox {
         display: none;
@@ -60,20 +60,20 @@
         background-color: rgba(0, 0, 0, 0.95);
         animation: fadeIn 0.2s ease-in;
     }
-    
+
     .lightbox.active {
         display: flex;
         align-items: center;
         justify-content: center;
     }
-    
+
     .lightbox-content {
         max-width: 95vw;
         max-height: 95vh;
         object-fit: contain;
         animation: zoomIn 0.3s ease-out;
     }
-    
+
     .lightbox-close {
         position: absolute;
         top: 20px;
@@ -94,11 +94,11 @@
         line-height: 1;
         padding: 0;
     }
-    
+
     .lightbox-close:hover {
         background: rgba(255, 255, 255, 0.2);
     }
-    
+
     .lightbox-info {
         position: absolute;
         bottom: 0;
@@ -109,34 +109,34 @@
         padding: 30px 20px 20px;
         text-align: center;
     }
-    
+
     .lightbox-title {
         font-size: 1.5rem;
         font-weight: bold;
         margin-bottom: 5px;
     }
-    
+
     .lightbox-caption {
         font-size: 1rem;
         opacity: 0.9;
     }
-    
+
     @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
     }
-    
+
     @keyframes zoomIn {
         from { transform: scale(0.8); opacity: 0; }
         to { transform: scale(1); opacity: 1; }
     }
-    
+
     /* Click indicator on hover */
     .media-item {
         cursor: pointer;
         position: relative;
     }
-    
+
     .media-item::after {
         content: '';
         position: absolute;
@@ -155,11 +155,11 @@
         background-position: center;
         background-repeat: no-repeat;
     }
-    
+
     .media-item:hover::after {
         opacity: 1;
     }
-    
+
     /* Hover overlay for titles and captions */
     .content-overlay {
         position: absolute;
@@ -174,18 +174,18 @@
         pointer-events: none;
         z-index: 10;
     }
-    
+
     .content-card:hover .content-overlay {
         opacity: 1;
     }
-    
+
     .content-overlay-title {
         font-weight: 600;
         font-size: 0.875rem;
         margin-bottom: 4px;
         line-height: 1.2;
     }
-    
+
     .content-overlay-caption {
         font-size: 0.75rem;
         opacity: 0.9;
@@ -195,20 +195,44 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    
+
     @media (min-width: 640px) {
         .content-overlay {
             padding: 16px;
         }
-        
+
         .content-overlay-title {
             font-size: 1rem;
         }
-        
+
         .content-overlay-caption {
             font-size: 0.875rem;
         }
     }
+
+    /* ── Custom Scrollbars ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(49, 120, 136, 0.35);
+        border-radius: 99px;
+        transition: background 0.2s;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(49, 120, 136, 0.65); }
+    ::-webkit-scrollbar-corner { background: transparent; }
+    * { scrollbar-width: thin; scrollbar-color: rgba(49,120,136,0.35) transparent; }
+
+    /* ── Folder picker selected state ── */
+    .picker-item-selected {
+        background: rgba(49,120,136,0.18);
+        border: 1px solid rgba(49,120,136,0.45);
+        color: #5eead4;
+    }
+    .picker-item-unselected {
+        border: 1px solid transparent;
+        color: #d1d5db;
+    }
+    .picker-item-unselected:hover { background: rgba(255,255,255,0.05); }
 </style>
 
 <div class="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
@@ -228,10 +252,10 @@
                 <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
             </div>
             {% endif %}
-            
+
             <!-- Content -->
             <div class="px-4 sm:px-6 py-4 sm:py-8 text-white relative z-10">
-            
+
             <div class="flex flex-col sm:flex-row justify-between items-start gap-4 relative z-10">
                 <div class="flex-1">
                     <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
@@ -259,103 +283,36 @@
 
         <!-- Edit Category Form -->
         {% if is_admin %}
-        <div id="editCategoryForm" class="hidden p-4 sm:p-6 bg-gray-800/50 border-b border-gray-700">
-            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-300">Edit Category</h3>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Category Name</label>
-                    <input
-                        type="text"
-                        id="categoryName"
-                        value="{{ category.name }}"
-                        class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                    />
-                </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Description</label>
-                    <textarea
-                        id="categoryDescription"
-                        class="w-full px-3 sm:px-4 py-2 border border-gray-600 rounded-lg h-20 text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                    >{{ category.description }}</textarea>
-                </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Banner Image URL (optional)</label>
-                    <div class="relative">
-                        <input
-                            type="url"
-                            id="categoryBannerImage"
-                            value="{{ category.banner_image if category.banner_image else '' }}"
-                            placeholder="https://example.com/banner.jpg"
-                            class="w-full px-3 sm:px-4 py-2 pr-8 border border-gray-600 rounded-lg text-sm sm:text-base bg-gray-800/50 text-gray-200 placeholder-gray-500"
-                        />
-                        <button
-                            onclick="clearBannerInput('categoryBannerImage')"
-                            class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
-                            title="Clear banner URL"
-                        >
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Recommended size: 1200×400 pixels (3:1 ratio)</p>
-                </div>
-                <div class="flex gap-2">
-                    <div class="flex-1">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Accent Color</label>
-                        <div class="relative">
-                            <input
-                                type="text"
-                                id="categoryColor"
-                                value="{{ category.accent_color }}"
-                                class="hidden min-[425px]:block w-full px-3 sm:px-4 py-2 pr-8 border border-gray-600 rounded-lg font-mono text-sm sm:text-base bg-gray-800/50 text-gray-200"
-                            />
-                            <button
-                                onclick="clearColorInput('categoryColor', 'categoryColorPicker')"
-                                class="hidden min-[425px]:flex absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
-                                title="Clear color"
-                            >
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Preview</label>
-                        <input
-                            type="color"
-                            id="categoryColorPicker"
-                            value="{{ category.accent_color }}"
-                            class="w-12 h-10 rounded border-2 border-gray-600 cursor-pointer bg-gray-800"
-                            style="padding: 2px; min-width: 2.5rem;"
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-400 mb-1">Free</label>
-                        <label class="flex items-center h-10 px-3 sm:px-4 bg-gray-800/50 rounded-lg cursor-pointer border border-gray-600">
-                            <input
-                                type="checkbox"
-                                id="categoryFree"
-                                {% if category.is_free %}checked{% endif %}
-                                class="w-4 h-4"
-                            />
-                        </label>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button
-                        onclick="saveCategory()"
-                        class="px-4 py-2 category-accent-btn text-white rounded-lg hover:opacity-90 text-sm sm:text-base"
-                    >
-                        Save Changes
+        <div id="editCategoryForm" class="hidden p-4 sm:p-5 bg-gray-800/40 border-b border-gray-700">
+            <div class="flex flex-wrap gap-3">
+                <!-- Name -->
+                <input type="text" id="categoryName" value="{{ category.name }}" placeholder="Name *"
+                    class="flex-1 min-w-[160px] px-3 py-2 border border-gray-600 rounded-lg text-sm bg-gray-800/70 text-gray-200 placeholder-gray-500 focus:border-[#317888] focus:outline-none" />
+                <!-- Description -->
+                <input type="text" id="categoryDescription" value="{{ category.description }}" placeholder="Description"
+                    class="flex-[2] min-w-[200px] px-3 py-2 border border-gray-600 rounded-lg text-sm bg-gray-800/70 text-gray-200 placeholder-gray-500 focus:border-[#317888] focus:outline-none" />
+                <!-- Banner URL -->
+                <div class="relative flex-[2] min-w-[200px]">
+                    <input type="url" id="categoryBannerImage" value="{{ category.banner_image if category.banner_image else '' }}" placeholder="Banner image URL"
+                        class="w-full px-3 py-2 pr-8 border border-gray-600 rounded-lg text-sm bg-gray-800/70 text-gray-200 placeholder-gray-500 focus:border-[#317888] focus:outline-none" />
+                    <button onclick="clearBannerInput('categoryBannerImage')" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
+                        <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
-                    <button
-                        onclick="toggleEditCategory()"
-                        class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm sm:text-base"
-                    >
-                        Cancel
-                    </button>
+                </div>
+                <!-- Color -->
+                <div class="flex items-center gap-2 bg-gray-800/70 border border-gray-600 rounded-lg px-3 py-1.5">
+                    <input type="color" id="categoryColorPicker" value="{{ category.accent_color }}" class="w-6 h-6 rounded cursor-pointer bg-transparent border-0 p-0" style="min-width:1.5rem;" />
+                    <input type="text" id="categoryColor" value="{{ category.accent_color }}" class="w-20 bg-transparent text-gray-200 text-sm font-mono focus:outline-none" />
+                </div>
+                <!-- Free toggle -->
+                <label class="flex items-center gap-2 bg-gray-800/70 border border-gray-600 rounded-lg px-3 py-2 cursor-pointer hover:border-green-600/50 transition">
+                    <input type="checkbox" id="categoryFree" {% if category.is_free %}checked{% endif %} class="w-4 h-4 accent-green-500" />
+                    <span class="text-sm text-gray-300 whitespace-nowrap">Free</span>
+                </label>
+                <!-- Actions -->
+                <div class="flex gap-2">
+                    <button onclick="saveCategory()" class="px-4 py-2 category-accent-btn text-white rounded-lg hover:opacity-90 text-sm font-semibold">Save</button>
+                    <button onclick="toggleEditCategory()" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm">Cancel</button>
                 </div>
             </div>
         </div>
@@ -363,16 +320,34 @@
 
         <!-- Admin Controls -->
         {% if is_admin %}
-        <div class="p-4 sm:p-6 border-b border-gray-700">
+        <div class="p-4 sm:p-5 border-b border-gray-700 bg-gray-900/30">
             <div class="flex flex-wrap gap-2">
                 <button
                     onclick="openCreateFolderModal(null)"
-                    class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] text-sm sm:text-base"
+                    class="flex items-center gap-1.5 px-3 py-1.5 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] text-sm transition"
                 >
-                    <svg class="w-4 sm:w-5 h-4 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                     </svg>
                     Add Folder
+                </button>
+                <button
+                    onclick="openRootUploadImageModal()"
+                    class="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm transition"
+                >
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Image
+                </button>
+                <button
+                    onclick="openRootUploadVideoModal()"
+                    class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm transition"
+                >
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Video
                 </button>
             </div>
         </div>
@@ -380,58 +355,59 @@
 
         <!-- Folders Section -->
         {% if root_folders|length > 0 %}
-        <div class="p-4 sm:p-6 border-b border-gray-700">
-            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-300">Folders</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="p-4 sm:p-5 border-b border-gray-700">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 {% for folder in root_folders %}
-                <div class="group relative bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-700/50 transition cursor-pointer" onclick="openFolder('{{ folder._id }}')">
+                <div class="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-xl" 
+                     style="background-color: {{ folder.accent_color or category.accent_color }}15; border: 1px solid {{ folder.accent_color or category.accent_color }}30;"
+                     onclick="openFolder('{{ folder._id }}')">
+                    <!-- Thumbnail or icon area -->
                     {% if folder.thumbnail_url %}
-                    <div class="w-full h-24 overflow-hidden relative">
+                    <div class="w-full aspect-video overflow-hidden relative">
                         <img src="{{ folder.thumbnail_url }}" alt="{{ folder.name }}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/30"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     </div>
                     {% else %}
-                    <div class="w-full h-16 flex items-center justify-center" style="background-color: {{ folder.accent_color or '#21525D' }}20;">
-                        <svg class="w-10 h-10" style="color: {{ folder.accent_color or category.accent_color }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    <div class="w-full aspect-video flex items-center justify-center relative overflow-hidden"
+                         style="background: linear-gradient(135deg, {{ folder.accent_color or category.accent_color }}25, {{ folder.accent_color or category.accent_color }}08);">
+                        <!-- Decorative circles -->
+                        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full opacity-10" style="background-color: {{ folder.accent_color or category.accent_color }}"></div>
+                        <div class="absolute -bottom-2 -left-2 w-12 h-12 rounded-full opacity-10" style="background-color: {{ folder.accent_color or category.accent_color }}"></div>
+                        <svg class="w-10 h-10 relative z-10 opacity-70" style="color: {{ folder.accent_color or category.accent_color }}" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
                         </svg>
                     </div>
                     {% endif %}
-                    <div class="p-3">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="font-semibold text-gray-200 text-sm sm:text-base truncate">{{ folder.name }}</h4>
-                                {% if folder.description %}
-                                <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ folder.description }}</p>
-                                {% endif %}
-                                {% if folder.children|length > 0 %}
-                                <p class="text-xs mt-1" style="color: {{ folder.accent_color or category.accent_color }}">{{ folder.children|length }} subfolder{{ 's' if folder.children|length != 1 else '' }}</p>
-                                {% endif %}
-                            </div>
-                            {% if is_admin %}
-                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition flex-shrink-0 ml-1" onclick="event.stopPropagation()">
-                                <button
-                                    onclick="openEditFolderModal('{{ folder._id }}', '{{ folder.name }}', '{{ folder.description | replace("'", "\\'")|replace('"', '\\"') }}', '{{ folder.accent_color or '' }}', '{{ folder.thumbnail_url or '' }}')"
-                                    class="p-1 text-gray-400 hover:text-white hover:bg-gray-600 rounded"
-                                    title="Edit folder"
-                                >
-                                    <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </button>
-                                <button
-                                    onclick="deleteFolder('{{ folder._id }}')"
-                                    class="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded"
-                                    title="Delete folder"
-                                >
-                                    <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
-                            </div>
-                            {% endif %}
-                        </div>
+                    <!-- Info bar -->
+                    <div class="p-2.5">
+                        <h4 class="font-semibold text-gray-200 text-sm truncate leading-tight">{{ folder.name }}</h4>
+                        {% if folder.children|length > 0 %}
+                        <p class="text-xs mt-0.5 opacity-70" style="color: {{ folder.accent_color or category.accent_color }}">{{ folder.children|length }} sub</p>
+                        {% endif %}
                     </div>
+                    <!-- Admin controls -->
+                    {% if is_admin %}
+                    <div class="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition" onclick="event.stopPropagation()">
+                        <button
+                            onclick="openEditFolderModal('{{ folder._id }}', '{{ folder.name }}', '{{ folder.description | replace("'", "\\'")|replace('"', '\\"') }}', '{{ folder.accent_color or '' }}', '{{ folder.thumbnail_url or '' }}')"
+                            class="p-1 bg-black/60 backdrop-blur-sm text-white rounded-md hover:bg-black/80 transition"
+                            title="Edit folder"
+                        >
+                            <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        <button
+                            onclick="deleteFolder('{{ folder._id }}')"
+                            class="p-1 bg-red-600/80 backdrop-blur-sm text-white rounded-md hover:bg-red-600 transition"
+                            title="Delete folder"
+                        >
+                            <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
@@ -439,9 +415,8 @@
         {% endif %}
 
         <!-- Content Grid -->
-        <div class="p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-300">Content</h3>
-            {% if content_items|length > 0 %}
+        {% if content_items|length > 0 %}
+        <div class="p-4 sm:p-5">
             <div class="content-grid grid gap-3 sm:gap-4">
                 {% for item in content_items %}
                 <div id="content-{{ item._id }}" class="content-card group relative bg-gray-800/50 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
@@ -494,20 +469,20 @@
                         {% if is_admin %}
                         <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition z-20">
                             <button
-                                onclick="toggleEdit('{{ item._id }}')"
-                                class="p-2 bg-gray-900/90 text-white rounded hover:bg-gray-800"
+                                onclick="editFolderContent('{{ item._id }}','{{ item.title|replace("'","\\'") }}','{{ item.media_url or "" }}','{{ (item.caption or item.text or "")|replace("'","\\'") }}','{{ item.media_type }}','{{ item.folder_id or "" }}')"
+                                class="p-1.5 bg-gray-900/90 text-white rounded-md hover:bg-gray-800 shadow"
                                 title="Edit"
                             >
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </button>
                             <button
                                 onclick="deleteContent('{{ item._id }}')"
-                                class="p-2 bg-red-600/90 text-white rounded hover:bg-red-700"
+                                class="p-1.5 bg-red-600/90 text-white rounded-md hover:bg-red-700 shadow"
                                 title="Delete"
                             >
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                             </button>
@@ -567,18 +542,20 @@
                 </div>
                 {% endfor %}
             </div>
-            {% else %}
+        </div>
+        {% elif root_folders|length == 0 %}
+        <div class="p-4 sm:p-5">
             <div class="text-center py-12">
-                <svg class="w-16 h-16 mx-auto mb-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
-                <p class="text-gray-500 text-sm sm:text-base">No content in this category yet.</p>
+                <p class="text-gray-500 text-sm">No content in this category yet.</p>
                 {% if is_admin %}
-                <p class="text-gray-600 text-xs sm:text-sm mt-2">Create a folder and upload content to it</p>
+                <p class="text-gray-600 text-xs mt-2">Add folders or upload content using the buttons above</p>
                 {% endif %}
             </div>
-            {% endif %}
         </div>
+        {% endif %}
     </div>
 </div>
 
@@ -645,45 +622,34 @@
 {% if is_admin %}
 <!-- Create Folder Modal -->
 <div id="createFolderModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-700" onclick="event.stopPropagation()">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-5">
-                <h3 id="createFolderModalTitle" class="text-xl font-bold text-gray-200">Create Folder</h3>
-                <button onclick="closeCreateFolderModal()" class="p-2 hover:bg-gray-700 rounded-lg transition">
-                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full border border-gray-700/60" onclick="event.stopPropagation()">
+        <div class="p-5">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-[#21525D] flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 id="createFolderModalTitle" class="text-base font-bold text-gray-200">Create Folder</h3>
+                </div>
+                <button onclick="closeCreateFolderModal()" class="p-1.5 hover:bg-gray-700 rounded-lg transition text-gray-500 hover:text-gray-300">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
             <input type="hidden" id="createFolderParentId" value="" />
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Folder Name *</label>
-                    <input type="text" id="createFolderName" placeholder="Enter folder name" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Description</label>
-                    <textarea id="createFolderDesc" placeholder="Folder description (optional)" class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200 placeholder-gray-500"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Thumbnail Image URL</label>
-                    <input type="url" id="createFolderThumbnail" placeholder="https://example.com/thumb.jpg (optional)" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Accent Color</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="createFolderColor" value="{{ category.accent_color }}" class="flex-1 px-4 py-2 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200" />
-                        <input type="color" id="createFolderColorPicker" value="{{ category.accent_color }}" class="w-10 h-10 rounded border border-gray-600 cursor-pointer bg-gray-800" style="padding:2px;" />
-                    </div>
+            <div class="space-y-2.5">
+                <input type="text" id="createFolderName" placeholder="Folder name *" class="w-full px-3 py-2.5 border border-gray-700 rounded-lg bg-gray-800 text-gray-200 placeholder-gray-500 text-sm focus:border-[#317888] focus:outline-none transition" />
+                <textarea id="createFolderDesc" placeholder="Description (optional)" rows="2" class="w-full px-3 py-2.5 border border-gray-700 rounded-lg bg-gray-800 text-gray-200 placeholder-gray-500 text-sm resize-none focus:border-[#317888] focus:outline-none transition"></textarea>
+                <input type="url" id="createFolderThumbnail" placeholder="Thumbnail image URL (optional)" class="w-full px-3 py-2.5 border border-gray-700 rounded-lg bg-gray-800 text-gray-200 placeholder-gray-500 text-sm focus:border-[#317888] focus:outline-none transition" />
+                <div class="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2">
+                    <input type="color" id="createFolderColorPicker" value="{{ category.accent_color }}" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent flex-shrink-0" style="padding:0;" />
+                    <input type="text" id="createFolderColor" value="{{ category.accent_color }}" class="flex-1 bg-transparent text-gray-200 font-mono text-sm focus:outline-none" />
                 </div>
             </div>
-            <div class="flex gap-3 mt-6">
-                <button onclick="submitCreateFolder()" class="flex-1 py-2.5 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition font-semibold">
-                    Create Folder
-                </button>
-                <button onclick="closeCreateFolderModal()" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
-                    Cancel
-                </button>
+            <div class="flex gap-2 mt-4">
+                <button onclick="submitCreateFolder()" class="flex-1 py-2.5 bg-gradient-to-r from-[#21525D] to-[#317888] text-white rounded-lg hover:opacity-90 transition text-sm font-semibold">Create</button>
+                <button onclick="closeCreateFolderModal()" class="px-4 py-2.5 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 hover:text-gray-200 transition text-sm">Cancel</button>
             </div>
         </div>
     </div>
@@ -691,45 +657,34 @@
 
 <!-- Edit Folder Modal -->
 <div id="editFolderModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-700" onclick="event.stopPropagation()">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-5">
-                <h3 class="text-xl font-bold text-gray-200">Edit Folder</h3>
-                <button onclick="closeEditFolderModal()" class="p-2 hover:bg-gray-700 rounded-lg transition">
-                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+    <div class="bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full border border-gray-700/60" onclick="event.stopPropagation()">
+        <div class="p-5">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-200">Edit Folder</h3>
+                </div>
+                <button onclick="closeEditFolderModal()" class="p-1.5 hover:bg-gray-700 rounded-lg transition text-gray-500 hover:text-gray-300">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
             <input type="hidden" id="editFolderId">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Folder Name *</label>
-                    <input type="text" id="editFolderName" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Description</label>
-                    <textarea id="editFolderDescription" class="w-full px-4 py-2 border border-gray-600 rounded-lg h-20 bg-gray-800/50 text-gray-200"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Thumbnail Image URL</label>
-                    <input type="url" id="editFolderThumbnail" placeholder="https://example.com/thumb.jpg" class="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-800/50 text-gray-200 placeholder-gray-500" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Accent Color</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="editFolderColor" class="flex-1 px-4 py-2 border border-gray-600 rounded-lg font-mono bg-gray-800/50 text-gray-200" />
-                        <input type="color" id="editFolderColorPicker" class="w-10 h-10 rounded border border-gray-600 cursor-pointer bg-gray-800" style="padding:2px;" />
-                    </div>
+            <div class="space-y-2.5">
+                <input type="text" id="editFolderName" placeholder="Folder name *" class="w-full px-3 py-2.5 border border-gray-700 rounded-lg bg-gray-800 text-gray-200 placeholder-gray-500 text-sm focus:border-[#317888] focus:outline-none transition" />
+                <textarea id="editFolderDescription" placeholder="Description (optional)" rows="2" class="w-full px-3 py-2.5 border border-gray-700 rounded-lg bg-gray-800 text-gray-200 placeholder-gray-500 text-sm resize-none focus:border-[#317888] focus:outline-none transition"></textarea>
+                <input type="url" id="editFolderThumbnail" placeholder="Thumbnail image URL" class="w-full px-3 py-2.5 border border-gray-700 rounded-lg bg-gray-800 text-gray-200 placeholder-gray-500 text-sm focus:border-[#317888] focus:outline-none transition" />
+                <div class="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2">
+                    <input type="color" id="editFolderColorPicker" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent flex-shrink-0" style="padding:0;" />
+                    <input type="text" id="editFolderColor" class="flex-1 bg-transparent text-gray-200 font-mono text-sm focus:outline-none" />
                 </div>
             </div>
-            <div class="flex gap-3 mt-6">
-                <button onclick="saveEditFolder()" class="flex-1 py-2.5 bg-[#21525D] text-white rounded-lg hover:bg-[#1A1A1E] transition font-semibold">
-                    Save Changes
-                </button>
-                <button onclick="closeEditFolderModal()" class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition font-semibold">
-                    Cancel
-                </button>
+            <div class="flex gap-2 mt-4">
+                <button onclick="saveEditFolder()" class="flex-1 py-2.5 bg-gradient-to-r from-[#21525D] to-[#317888] text-white rounded-lg hover:opacity-90 transition text-sm font-semibold">Save</button>
+                <button onclick="closeEditFolderModal()" class="px-4 py-2.5 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 hover:text-gray-200 transition text-sm">Cancel</button>
             </div>
         </div>
     </div>
@@ -874,6 +829,7 @@
     const isAdmin = {{ 'true' if is_admin else 'false' }};
     let currentFolderId = null;
     let currentFolderName = '';
+    let folderBreadcrumbStack = [];
     const allFolders = {{ folders|tojson }};
     const folderTree = {{ folder_tree|tojson }};
 
@@ -899,8 +855,15 @@
             body: JSON.stringify({ name, description, banner_image: bannerImage, accent_color: accentColor, is_free: isFree })
         })
         .then(r => r.json())
-        .then(data => { if (data.success) location.reload(); })
-        .catch(() => alert('Failed to update category'));
+        .then(data => {
+            if (data.success) {
+                showToast('Category updated successfully', 'success');
+                setTimeout(() => location.reload(), 900);
+            } else {
+                showToast('Failed to update category', 'error');
+            }
+        })
+        .catch(() => showToast('Network error — could not update category', 'error'));
     }
 
     function clearColorInput(textInputId, pickerInputId) {
@@ -961,7 +924,7 @@
         const accentColor = document.getElementById('createFolderColor').value.trim();
         const parentId = document.getElementById('createFolderParentId').value || null;
 
-        if (!name) { alert('Please enter a folder name'); return; }
+        if (!name) { showAlert('Please enter a folder name', 'Missing Name', 'warning'); return; }
 
         fetch('/api/folders', {
             method: 'POST',
@@ -972,12 +935,13 @@
         .then(data => {
             if (data.success) {
                 closeCreateFolderModal();
-                location.reload();
+                showToast(`Folder "${name}" created`, 'success');
+                setTimeout(() => location.reload(), 900);
             } else {
-                alert('Failed to create folder');
+                showToast('Failed to create folder', 'error');
             }
         })
-        .catch(() => alert('Failed to create folder'));
+        .catch(() => showToast('Network error — could not create folder', 'error'));
     }
 
     // ============================
@@ -1013,7 +977,7 @@
         const thumbnail = document.getElementById('editFolderThumbnail').value.trim();
         const accentColor = document.getElementById('editFolderColor').value.trim();
 
-        if (!name) { alert('Please enter a folder name'); return; }
+        if (!name) { showAlert('Please enter a folder name', 'Missing Name', 'warning'); return; }
 
         fetch(`/api/folders/${folderId}`, {
             method: 'PUT',
@@ -1022,27 +986,52 @@
         })
         .then(r => r.json())
         .then(data => {
-            if (data.success) { closeEditFolderModal(); location.reload(); }
-            else alert('Failed to update folder');
+            if (data.success) {
+                closeEditFolderModal();
+                showToast(`Folder updated`, 'success');
+                setTimeout(() => location.reload(), 900);
+            } else {
+                showToast('Failed to update folder', 'error');
+            }
         })
-        .catch(() => alert('Failed to update folder'));
+        .catch(() => showToast('Network error — could not update folder', 'error'));
     }
 
     function deleteFolder(folderId) {
-        if (!confirm('Delete this folder and all its content (including subfolders)?')) return;
-
-        fetch(`/api/folders/${folderId}`, { method: 'DELETE' })
-        .then(r => r.json())
-        .then(data => { if (data.success) location.reload(); })
-        .catch(() => alert('Failed to delete folder'));
+        showConfirm('Delete this folder and all its content (including subfolders)?', 'Delete Folder', 'danger', 'Delete')
+        .then(ok => {
+            if (!ok) return;
+            fetch(`/api/folders/${folderId}`, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Folder deleted successfully', 'success');
+                    setTimeout(() => location.reload(), 900);
+                } else {
+                    showToast('Failed to delete folder', 'error');
+                }
+            })
+            .catch(() => showToast('Network error — could not delete folder', 'error'));
+        });
     }
 
     // ============================
     // UPLOAD IMAGE MODAL
     // ============================
 
+    function openRootUploadImageModal() {
+        document.getElementById('uploadImageTitle').value = '';
+        document.getElementById('uploadImageUrl').value = '';
+        document.getElementById('uploadImageBulkUrls').value = '';
+        document.getElementById('uploadImageFolderName').textContent = '{{ category.name }} (Root)';
+        // Temporarily set currentFolderId to null marker for root
+        window._uploadingToRoot = true;
+        document.getElementById('uploadImageModal').classList.remove('hidden');
+    }
+
     function openUploadImageModal() {
         if (!currentFolderId) return;
+        window._uploadingToRoot = false;
         document.getElementById('uploadImageTitle').value = '';
         document.getElementById('uploadImageUrl').value = '';
         document.getElementById('uploadImageBulkUrls').value = '';
@@ -1052,6 +1041,7 @@
 
     function closeUploadImageModal() {
         document.getElementById('uploadImageModal').classList.add('hidden');
+        window._uploadingToRoot = false;
     }
 
     async function submitUploadImage() {
@@ -1059,39 +1049,45 @@
         const singleUrl = document.getElementById('uploadImageUrl').value.trim();
         const bulkText = document.getElementById('uploadImageBulkUrls').value.trim();
 
-        if (!currentFolderId) { alert('No folder selected'); return; }
+        const isRoot = window._uploadingToRoot;
+        const targetFolderId = isRoot ? null : currentFolderId;
+
+        if (!isRoot && !currentFolderId) { showToast('No folder selected', 'warning'); return; }
 
         const bulkUrls = bulkText ? bulkText.split('\n').map(u => u.trim()).filter(Boolean) : [];
 
         if (bulkUrls.length > 0) {
-            // Bulk upload
             const response = await fetch('/api/content/bulk', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ category_id: categoryId, folder_id: currentFolderId, media_type: 'image', urls: bulkUrls })
+                body: JSON.stringify({ category_id: categoryId, folder_id: targetFolderId, media_type: 'image', urls: bulkUrls })
             });
             const data = await response.json();
             if (data.success) {
                 closeUploadImageModal();
-                loadFolderContent(currentFolderId);
+                showToast(`${bulkUrls.length} image${bulkUrls.length !== 1 ? 's' : ''} uploaded`, 'success');
+                if (isRoot) setTimeout(() => location.reload(), 800);
+                else loadFolderContent(currentFolderId);
             } else {
-                alert('Bulk upload failed');
+                showToast('Bulk upload failed', 'error');
             }
         } else if (singleUrl) {
             const response = await fetch('/api/content', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ category_id: categoryId, folder_id: currentFolderId, media_type: 'image', media_url: singleUrl, title })
+                body: JSON.stringify({ category_id: categoryId, folder_id: targetFolderId, media_type: 'image', media_url: singleUrl, title })
             });
             const data = await response.json();
             if (data.success) {
                 closeUploadImageModal();
-                loadFolderContent(currentFolderId);
+                showToast('Image uploaded', 'success');
+                if (isRoot) setTimeout(() => location.reload(), 800);
+                else loadFolderContent(currentFolderId);
             } else {
-                alert('Upload failed');
+                showToast('Upload failed', 'error');
             }
         } else {
-            alert('Please enter an image URL');
+            showToast('Please enter an image URL', 'warning');
         }
     }
 
@@ -1099,8 +1095,18 @@
     // UPLOAD VIDEO MODAL
     // ============================
 
+    function openRootUploadVideoModal() {
+        document.getElementById('uploadVideoTitle').value = '';
+        document.getElementById('uploadVideoUrl').value = '';
+        document.getElementById('uploadVideoBulkUrls').value = '';
+        document.getElementById('uploadVideoFolderName').textContent = '{{ category.name }} (Root)';
+        window._uploadingVideoToRoot = true;
+        document.getElementById('uploadVideoModal').classList.remove('hidden');
+    }
+
     function openUploadVideoModal() {
         if (!currentFolderId) return;
+        window._uploadingVideoToRoot = false;
         document.getElementById('uploadVideoTitle').value = '';
         document.getElementById('uploadVideoUrl').value = '';
         document.getElementById('uploadVideoBulkUrls').value = '';
@@ -1110,6 +1116,7 @@
 
     function closeUploadVideoModal() {
         document.getElementById('uploadVideoModal').classList.add('hidden');
+        window._uploadingVideoToRoot = false;
     }
 
     async function submitUploadVideo() {
@@ -1117,7 +1124,10 @@
         const singleUrl = document.getElementById('uploadVideoUrl').value.trim();
         const bulkText = document.getElementById('uploadVideoBulkUrls').value.trim();
 
-        if (!currentFolderId) { alert('No folder selected'); return; }
+        const isRoot = window._uploadingVideoToRoot;
+        const targetFolderId = isRoot ? null : currentFolderId;
+
+        if (!isRoot && !currentFolderId) { showToast('No folder selected', 'warning'); return; }
 
         const bulkUrls = bulkText ? bulkText.split('\n').map(u => u.trim()).filter(Boolean) : [];
 
@@ -1125,30 +1135,34 @@
             const response = await fetch('/api/content/bulk', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ category_id: categoryId, folder_id: currentFolderId, media_type: 'video', urls: bulkUrls })
+                body: JSON.stringify({ category_id: categoryId, folder_id: targetFolderId, media_type: 'video', urls: bulkUrls })
             });
             const data = await response.json();
             if (data.success) {
                 closeUploadVideoModal();
-                loadFolderContent(currentFolderId);
+                showToast(`${bulkUrls.length} video${bulkUrls.length !== 1 ? 's' : ''} uploaded`, 'success');
+                if (isRoot) setTimeout(() => location.reload(), 800);
+                else loadFolderContent(currentFolderId);
             } else {
-                alert('Bulk upload failed');
+                showToast('Bulk upload failed', 'error');
             }
         } else if (singleUrl) {
             const response = await fetch('/api/content', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ category_id: categoryId, folder_id: currentFolderId, media_type: 'video', media_url: singleUrl, title })
+                body: JSON.stringify({ category_id: categoryId, folder_id: targetFolderId, media_type: 'video', media_url: singleUrl, title })
             });
             const data = await response.json();
             if (data.success) {
                 closeUploadVideoModal();
-                loadFolderContent(currentFolderId);
+                showToast('Video uploaded', 'success');
+                if (isRoot) setTimeout(() => location.reload(), 800);
+                else loadFolderContent(currentFolderId);
             } else {
-                alert('Upload failed');
+                showToast('Upload failed', 'error');
             }
         } else {
-            alert('Please enter a video URL');
+            showToast('Please enter a video URL', 'warning');
         }
     }
 
@@ -1162,42 +1176,47 @@
 
         currentFolderId = folderId;
         currentFolderName = folder.name;
+        folderBreadcrumbStack = [{id: folderId, name: folder.name}];
 
         document.getElementById('folderModalTitle').textContent = folder.name;
         document.getElementById('folderModalDescription').textContent = folder.description || '';
         document.getElementById('folderModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
 
-        // Show subfolders
+        renderBreadcrumb();
         renderSubfolders(folderId);
-
-        // Load content
         loadFolderContent(folderId);
     }
 
     function renderSubfolders(parentFolderId) {
         const subfolders = allFolders.filter(f => f.parent_folder_id === parentFolderId);
         const container = document.getElementById('folderSubfolders');
-        const breadcrumb = document.getElementById('folderBreadcrumb');
-        
+
         if (subfolders.length > 0) {
             container.classList.remove('hidden');
-            let html = '<h4 class="text-sm font-semibold text-gray-400 mb-2">Subfolders</h4>';
-            html += '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 pb-4">';
+            let html = '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 pb-4">';
             subfolders.forEach(sf => {
+                const color = sf.accent_color || '{{ category.accent_color }}';
                 html += `
-                <div class="group relative bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-700/50 transition cursor-pointer text-sm" onclick="navigateToSubfolder('${sf._id}')">
-                    ${sf.thumbnail_url ? `<div class="w-full h-12 overflow-hidden"><img src="${sf.thumbnail_url}" class="w-full h-full object-cover"></div>` : 
-                    `<div class="w-full h-10 flex items-center justify-center" style="background-color:${sf.accent_color || '{{ category.accent_color }}'}20;"><svg class="w-6 h-6" style="color:${sf.accent_color || '{{ category.accent_color }}'}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg></div>`}
-                    <div class="p-2">
-                        <span class="text-gray-200 font-medium truncate block text-xs">${sf.name}</span>
+                <div class="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-xl" 
+                     style="background-color:${color}15; border:1px solid ${color}30;"
+                     onclick="navigateToSubfolder('${sf._id}')">
+                    ${sf.thumbnail_url 
+                        ? `<div class="w-full aspect-video overflow-hidden relative"><img src="${sf.thumbnail_url}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div></div>` 
+                        : `<div class="w-full aspect-video flex items-center justify-center relative overflow-hidden" style="background:linear-gradient(135deg,${color}25,${color}08);">
+                            <div class="absolute -top-3 -right-3 w-12 h-12 rounded-full opacity-10" style="background-color:${color}"></div>
+                            <svg class="w-10 h-10 relative z-10 opacity-70" style="color:${color}" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+                           </div>`
+                    }
+                    <div class="p-2.5">
+                        <span class="text-gray-200 font-semibold truncate block text-sm leading-tight">${escapeHtml(sf.name)}</span>
                     </div>
                     ${isAdmin ? `
                     <div class="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition" onclick="event.stopPropagation()">
-                        <button onclick="openEditFolderModal('${sf._id}', '${sf.name.replace(/'/g,"\\'")}', '${(sf.description||'').replace(/'/g,"\\'")}', '${sf.accent_color||''}', '${sf.thumbnail_url||''}')" class="p-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600" title="Edit">
+                        <button onclick="openEditFolderModal('${sf._id}', '${sf.name.replace(/'/g,"\\'")}', '${(sf.description||'').replace(/'/g,"\\'")}', '${sf.accent_color||''}', '${sf.thumbnail_url||''}')" class="p-1 bg-black/60 backdrop-blur-sm text-white rounded hover:bg-black/80" title="Edit">
                             <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
-                        <button onclick="deleteFolder('${sf._id}')" class="p-1 bg-red-700 text-white rounded hover:bg-red-600" title="Delete">
+                        <button onclick="deleteFolder('${sf._id}')" class="p-1 bg-red-600/80 backdrop-blur-sm text-white rounded hover:bg-red-600" title="Delete">
                             <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                         </button>
                     </div>` : ''}
@@ -1213,23 +1232,61 @@
     function navigateToSubfolder(folderId) {
         const folder = allFolders.find(f => f._id === folderId);
         if (!folder) return;
-        
+
         currentFolderId = folderId;
         currentFolderName = folder.name;
+        folderBreadcrumbStack.push({id: folderId, name: folder.name});
         document.getElementById('folderModalTitle').textContent = folder.name;
         document.getElementById('folderModalDescription').textContent = folder.description || '';
+        renderBreadcrumb();
         renderSubfolders(folderId);
         loadFolderContent(folderId);
     }
 
+    function navigateBreadcrumb(index) {
+        folderBreadcrumbStack = folderBreadcrumbStack.slice(0, index + 1);
+        const entry = folderBreadcrumbStack[folderBreadcrumbStack.length - 1];
+        currentFolderId = entry.id;
+        currentFolderName = entry.name;
+        document.getElementById('folderModalTitle').textContent = entry.name;
+        document.getElementById('folderModalDescription').textContent = (allFolders.find(f => f._id === entry.id) || {}).description || '';
+        renderBreadcrumb();
+        renderSubfolders(entry.id);
+        loadFolderContent(entry.id);
+    }
+
+    function renderBreadcrumb() {
+        const container = document.getElementById('folderBreadcrumb');
+        if (folderBreadcrumbStack.length <= 1) {
+            container.classList.add('hidden');
+            container.innerHTML = '';
+            return;
+        }
+        container.classList.remove('hidden');
+        let html = '<nav class="flex items-center gap-1 flex-wrap text-sm">';
+        folderBreadcrumbStack.forEach((entry, i) => {
+            const isLast = i === folderBreadcrumbStack.length - 1;
+            if (i > 0) {
+                html += '<svg class="w-3 h-3 text-gray-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+            }
+            if (isLast) {
+                html += `<span class="text-[#5eead4] font-semibold px-1 truncate max-w-[160px]">${escapeHtml(entry.name)}</span>`;
+            } else {
+                html += `<button onclick="navigateBreadcrumb(${i})" class="text-gray-400 hover:text-[#5eead4] px-1 hover:underline transition-colors truncate max-w-[120px]">${escapeHtml(entry.name)}</button>`;
+            }
+        });
+        html += '</nav>';
+        container.innerHTML = html;
+    }
+
     function loadFolderContent(folderId) {
         document.getElementById('folderContent').innerHTML = '<div class="text-center py-8"><p class="text-gray-500">Loading...</p></div>';
-        
+
         fetch(`/api/folders/${folderId}/content`)
             .then(r => r.json())
             .then(items => {
                 const container = document.getElementById('folderContent');
-                
+
                 if (items.length === 0) {
                     container.innerHTML = `
                         <div class="text-center py-12">
@@ -1277,12 +1334,12 @@
                         html += `
                             <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition z-20">
                                 <button onclick="editFolderContent('${item._id}','${escapeHtml(item.title||'')}','${escapeHtml(item.media_url||'')}','${escapeHtml(item.caption||'')}','${item.media_type}','${item.folder_id||''}')"
-                                    class="p-2 bg-gray-900/90 text-white rounded hover:bg-gray-800" title="Edit">
-                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                    class="p-1.5 bg-gray-900/90 text-white rounded-md hover:bg-gray-800 shadow" title="Edit">
+                                    <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                 </button>
                                 <button onclick="deleteFolderContent('${item._id}')"
-                                    class="p-2 bg-red-600/90 text-white rounded hover:bg-red-700" title="Delete">
-                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    class="p-1.5 bg-red-600/90 text-white rounded-md hover:bg-red-700 shadow" title="Delete">
+                                    <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </button>
                             </div>`;
                     }
@@ -1317,6 +1374,7 @@
         document.body.style.overflow = '';
         currentFolderId = null;
         currentFolderName = '';
+        folderBreadcrumbStack = [];
     }
 
     // ============================
@@ -1324,24 +1382,52 @@
     // ============================
 
     function renderFolderTreeForPicker(folders, selectedId) {
-        let html = `<label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-700 cursor-pointer text-sm ${!selectedId ? 'bg-gray-700' : ''}">
-            <input type="radio" name="editContentFolderRadio" value="" ${!selectedId ? 'checked' : ''} onchange="document.getElementById('editContentFolder').value='';" class="sr-only">
-            <span class="text-gray-400">Root (No Folder)</span>
+        const isRootSelected = !selectedId;
+        let html = `<label class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm transition-colors ${isRootSelected ? 'bg-[#317888]/20 border border-[#317888]/40 text-[#5eead4]' : 'hover:bg-gray-700 text-gray-400'}">
+            <input type="radio" name="editContentFolderRadio" value="" ${isRootSelected ? 'checked' : ''} onchange="document.getElementById('editContentFolder').value=''; highlightPickerSelection('');" class="sr-only">
+            ${isRootSelected
+                ? '<svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>'
+                : '<span class="w-4 h-4 flex-shrink-0 rounded-full border border-gray-600 inline-block"></span>'}
+            <span class="font-medium">Root (No Folder)</span>
         </label>`;
-        
+
         function renderNodes(nodes, depth) {
             nodes.forEach(f => {
                 const indent = depth * 12;
-                html += `<label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-700 cursor-pointer text-sm ${selectedId===f._id ? 'bg-gray-700' : ''}" style="padding-left:${8+indent}px">
-                    <input type="radio" name="editContentFolderRadio" value="${f._id}" ${selectedId===f._id ? 'checked' : ''} onchange="document.getElementById('editContentFolder').value='${f._id}';" class="sr-only">
-                    <svg class="w-3 h-3 text-gray-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
-                    <span class="text-gray-300 truncate">${escapeHtml(f.name)}</span>
+                const isSel = selectedId === f._id;
+                html += `<label class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm transition-colors ${isSel ? 'bg-[#317888]/20 border border-[#317888]/40 text-[#5eead4]' : 'hover:bg-gray-700 text-gray-300'}" style="padding-left:${8+indent}px">
+                    <input type="radio" name="editContentFolderRadio" value="${f._id}" ${isSel ? 'checked' : ''} onchange="document.getElementById('editContentFolder').value='${f._id}'; highlightPickerSelection('${f._id}');" class="sr-only">
+                    ${isSel
+                        ? '<svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>'
+                        : '<svg class="w-4 h-4 text-gray-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>'}
+                    <span class="truncate">${escapeHtml(f.name)}</span>
                 </label>`;
                 if (f.children && f.children.length > 0) renderNodes(f.children, depth + 1);
             });
         }
         renderNodes(folderTree, 0);
         return html;
+    }
+
+    function highlightPickerSelection(selectedId) {
+        document.querySelectorAll('#editContentFolderTree label').forEach(label => {
+            const radio = label.querySelector('input[type=radio]');
+            const val = radio ? radio.value : '';
+            const isSel = val === selectedId;
+            label.className = `flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm transition-colors ${isSel ? 'bg-[#317888]/20 border border-[#317888]/40 text-[#5eead4]' : 'hover:bg-gray-700 ' + (val === '' ? 'text-gray-400' : 'text-gray-300')}`;
+            const paddingLeft = label.style.paddingLeft;
+            if (paddingLeft) label.style.paddingLeft = paddingLeft; // preserve indent
+            const icon = label.querySelector('svg, span.inline-block');
+            if (icon) {
+                if (isSel) {
+                    icon.outerHTML = '<svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
+                } else if (val === '') {
+                    icon.outerHTML = '<span class="w-4 h-4 flex-shrink-0 rounded-full border border-gray-600 inline-block"></span>';
+                } else {
+                    icon.outerHTML = '<svg class="w-4 h-4 text-gray-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>';
+                }
+            }
+        });
     }
 
     function editFolderContent(contentId, title, url, caption, mediaType, currentFolder) {
@@ -1385,25 +1471,28 @@
         .then(data => {
             if (data.success) {
                 closeEditContentModal();
-                location.reload();
+                showToast('Content updated', 'success');
+                setTimeout(() => location.reload(), 800);
             } else {
-                alert('Failed to update content');
+                showToast('Failed to update content', 'error');
             }
         })
-        .catch(() => alert('Failed to update content'));
+        .catch(() => showToast('Failed to update content', 'error'));
     }
 
-    function deleteFolderContent(contentId) {
-        if (!confirm('Delete this content?')) return;
+    async function deleteFolderContent(contentId) {
+        const ok = await showConfirm('Delete this content? This cannot be undone.', 'Delete Content', 'danger', 'Delete');
+        if (!ok) return;
         fetch(`/api/content/${contentId}`, { method: 'DELETE' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
                 const el = document.getElementById(`content-${contentId}`);
-                if (el) { el.style.opacity = '0'; el.style.transform = 'scale(0.9)'; setTimeout(() => el.remove(), 300); }
-            }
+                if (el) { el.style.transition = 'opacity 0.3s,transform 0.3s'; el.style.opacity = '0'; el.style.transform = 'scale(0.9)'; setTimeout(() => el.remove(), 300); }
+                showToast('Content deleted', 'success');
+            } else showToast('Failed to delete content', 'error');
         })
-        .catch(() => alert('Failed to delete content'));
+        .catch(() => showToast('Failed to delete content', 'error'));
     }
 
     // Edit root content (inline forms)
@@ -1432,21 +1521,26 @@
             body: JSON.stringify({ title, media_url: url, caption, text: caption, folder_id: folderId || null })
         })
         .then(r => r.json())
-        .then(data => { if (data.success) location.reload(); })
-        .catch(() => alert('Failed to update content'));
+        .then(data => {
+            if (data.success) { showToast('Content updated', 'success'); setTimeout(() => location.reload(), 800); }
+            else showToast('Failed to update content', 'error');
+        })
+        .catch(() => showToast('Failed to update content', 'error'));
     }
 
-    function deleteContent(contentId) {
-        if (!confirm('Delete this content?')) return;
+    async function deleteContent(contentId) {
+        const ok = await showConfirm('Delete this content? This cannot be undone.', 'Delete Content', 'danger', 'Delete');
+        if (!ok) return;
         fetch(`/api/content/${contentId}`, { method: 'DELETE' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
                 const el = document.getElementById(`content-${contentId}`);
-                if (el) { el.style.opacity = '0'; el.style.transform = 'scale(0.9)'; setTimeout(() => el.remove(), 300); }
-            }
+                if (el) { el.style.transition = 'opacity 0.3s,transform 0.3s'; el.style.opacity = '0'; el.style.transform = 'scale(0.9)'; setTimeout(() => el.remove(), 300); }
+                showToast('Content deleted', 'success');
+            } else showToast('Failed to delete content', 'error');
         })
-        .catch(() => alert('Failed to delete content'));
+        .catch(() => showToast('Failed to delete content', 'error'));
     }
 
     // ============================
@@ -1504,7 +1598,7 @@
                     if (typeof window.updateFavoritesCounter === 'function') window.updateFavoritesCounter();
                 } else if (data.limit_reached) {
                     if (typeof window.showFavoritesLimitModal === 'function') window.showFavoritesLimitModal();
-                    else alert(data.message || 'Favorites limit reached. Upgrade to premium for unlimited favorites!');
+                    else showAlert(data.message || 'Favorites limit reached. Upgrade to premium for unlimited favorites!', 'Favorites Limit', 'warning');
                 }
             })
             .catch(error => console.error('Error:', error));
