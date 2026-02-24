@@ -127,7 +127,7 @@
                     </svg>
                     <span id="favoritesCountDisplay" class="text-sm font-semibold text-white">--/--</span>
                 </div>
-                
+
                 <!-- Timer Display for non-subscribed users -->
                 <div id="navbarTimerDisplay"
                      class="flex items-center gap-2
@@ -152,7 +152,7 @@
                 </div>
 
 
-                
+
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-medium text-gray-200">{{ session.get('username') }}</p>
                     <p class="text-xs text-gray-400">
@@ -224,7 +224,7 @@
                 opacity: 1;
             }
         }
-        
+
         .animate-slide-down {
             animation: slide-down 0.4s ease-out;
         }
@@ -360,6 +360,7 @@
 
 
                 <!-- Search for Categories -->
+                {% if not (global_content_hidden and not session.get('is_admin')) %}
                 <div class="mb-3 sm:mb-4">
                     <input 
                         type="text" 
@@ -369,11 +370,24 @@
                         onkeyup="filterSidebarCategories()"
                     />
                 </div>
+                {% endif %}
 
                 <!-- Categories Section -->
                 <div class="space-y-1">
                     <p class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Your Categories</p>
                     <div id="sidebarCategories">
+                        {% if global_content_hidden and not session.get('is_admin') %}
+                        <!-- Hidden state for non-admin users -->
+                        <div class="mx-2 mt-1 mb-2 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 text-center">
+                            <div class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/15">
+                                <svg class="h-5 w-5 text-orange-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                </svg>
+                            </div>
+                            <p class="text-sm font-semibold text-orange-300 mb-1">Categories Hidden</p>
+                            <p class="text-xs text-gray-500 leading-relaxed">All categories have been hidden.<br>Check back soon!</p>
+                        </div>
+                        {% else %}
                         {% for category in sidebar_categories %}
                         <div class="sidebar-category-item relative" data-name="{{ category.name.lower() }}">
                             <!-- Pin Button (Left side) -->
@@ -394,19 +408,15 @@
                             </button>
 
                             <a 
-                                href="{% if global_content_hidden and not session.get('is_admin') %}javascript:void(0);{% elif session.get('is_admin') or session.get('is_subscribed') or category.is_free %}/category/{{ category._id }}{% else %}javascript:void(0);{% endif %}"
-                                {% if global_content_hidden and not session.get('is_admin') %}
-                                onclick="event.preventDefault(); event.stopPropagation();"
-                                style="cursor: not-allowed;"
-                                data-locked="true"
-                                {% elif not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
+                                href="{% if session.get('is_admin') or session.get('is_subscribed') or category.is_free %}/category/{{ category._id }}{% else %}javascript:void(0);{% endif %}"
+                                {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
                                 onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/premium';"
                                 style="cursor: pointer;"
                                 data-locked="true"
                                 {% else %}
                                 data-locked="false"
                                 {% endif %}
-                                class="sidebar-category-link w-full flex items-center justify-between pl-8 pr-3 sm:pr-4 py-2.5 sm:py-3 {% if (global_content_hidden and not session.get('is_admin')) or (not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free) %}opacity-60{% endif %} hover:bg-gray-700/50 rounded-lg transition"
+                                class="sidebar-category-link w-full flex items-center justify-between pl-8 pr-3 sm:pr-4 py-2.5 sm:py-3 {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}opacity-60{% endif %} hover:bg-gray-700/50 rounded-lg transition"
                             >
                                 <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                                     <div 
@@ -416,14 +426,7 @@
                                     <span class="font-medium text-gray-200 text-sm sm:text-base truncate">{{ category.name }}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
-                                    {% if global_content_hidden and not session.get('is_admin') %}
-                                    <span class="text-xs px-2 py-0.5 sm:py-1 rounded bg-orange-500/20 text-orange-400 flex items-center gap-1">
-                                        <svg class="w-2.5 h-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                                        </svg>
-                                        Hidden
-                                    </span>
-                                    {% elif not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
+                                    {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
                                     <span class="text-xs px-2 py-0.5 sm:py-1 rounded bg-gray-700 text-gray-300 flex items-center gap-1">
                                         <svg class="w-2.5 h-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -441,6 +444,7 @@
 
                         {% if sidebar_categories|length == 0 %}
                         <p class="px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-gray-500 text-center">No categories available</p>
+                        {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -461,11 +465,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                
+
                 <!-- Title -->
                 <h3 class="text-2xl font-bold text-white mb-2">Time's Up!</h3>
                 <p class="text-gray-400 mb-6">Your free access time has expired for today. Upgrade to premium for unlimited access!</p>
-                
+
                 <!-- Benefits -->
                 <div class="bg-gray-800 rounded-lg p-4 mb-6 text-left">
                     <p class="text-sm font-semibold text-gray-300 mb-2">Premium Benefits:</p>
@@ -496,12 +500,12 @@
                         </li>
                     </ul>
                 </div>
-                
+
                 <!-- CTA Button -->
                 <a href="/premium" class="block w-full py-3 px-6 bg-gradient-to-r from-[#21525D] to-[#317888] text-white font-semibold rounded-lg hover:from-[#21525D] hover:to-[#317888] transition mb-3">
                     View Premium Plans
                 </a>
-                
+
                 <p class="text-xs text-gray-500">Your timer will reset tomorrow</p>
             </div>
         </div>
@@ -521,11 +525,11 @@
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
                 </div>
-                
+
                 <!-- Title -->
                 <h3 class="text-2xl font-bold text-white mb-2">Favorites Limit Reached!</h3>
                 <p class="text-gray-400 mb-6">You've reached your limit of 50 favorites. Upgrade to premium for unlimited favorites!</p>
-                
+
                 <!-- Current Status -->
                 <div class="bg-gray-800 rounded-lg p-4 mb-4">
                     <div class="flex items-center justify-center gap-3 mb-3">
@@ -542,7 +546,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Benefits -->
                 <div class="bg-gray-800 rounded-lg p-4 mb-6 text-left">
                     <p class="text-sm font-semibold text-gray-300 mb-2">Premium Benefits:</p>
@@ -573,16 +577,16 @@
                         </li>
                     </ul>
                 </div>
-                
+
                 <!-- CTA Buttons -->
                 <a href="/premium" class="block w-full py-3 px-6 bg-gradient-to-r from-[#21525D] to-[#317888] text-white font-semibold rounded-lg hover:from-[#21525D] hover:to-[#317888] transition mb-3">
                     Upgrade to Premium
                 </a>
-                
+
                 <button onclick="closeFavoritesLimitModal()" class="block w-full py-3 px-6 bg-gray-800 text-gray-300 font-semibold rounded-lg hover:bg-gray-700 transition">
                     Maybe Later
                 </button>
-                
+
                 <p class="text-xs text-gray-500 mt-4">Remove some favorites to add new ones</p>
             </div>
         </div>
@@ -623,7 +627,7 @@
         function filterSidebarCategories() {
             const searchTerm = document.getElementById('sidebarSearch').value.toLowerCase();
             const items = document.querySelectorAll('.sidebar-category-item');
-            
+
             items.forEach(item => {
                 const name = item.getAttribute('data-name');
                 if (name.includes(searchTerm)) {
@@ -664,7 +668,7 @@
                 const hours = Math.floor(seconds / 3600);
                 const minutes = Math.floor((seconds % 3600) / 60);
                 const secs = seconds % 60;
-                
+
                 if (hours > 0) {
                     return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
                 }
@@ -675,10 +679,10 @@
                 const display = document.getElementById('timerDisplay');
                 const displayMobile = document.getElementById('timerDisplayMobile');
                 const timeStr = formatTime(timeRemaining);
-                
+
                 if (display) {
                     display.textContent = timeStr;
-                    
+
                     // Change color based on time remaining
                     if (timeRemaining <= 300) { // 5 minutes
                         display.classList.add('text-red-400');
@@ -700,7 +704,7 @@
             function updateTimerVisibility(isSubscribed) {
                 const navbarTimer = document.getElementById('navbarTimerDisplay');
                 const mobileTimer = document.getElementById('mobileTimerDisplay');
-                
+
                 if (isSubscribed) {
                     // Hide timer for subscribed users
                     if (navbarTimer) navbarTimer.classList.add('hidden');
@@ -720,16 +724,16 @@
                         if (data.success) {
                             const wasSubscribed = isSubscribedOrAdmin;
                             isSubscribedOrAdmin = data.is_subscribed || data.is_admin;
-                            
+
                             // Update timer visibility if subscription status changed
                             if (wasSubscribed !== isSubscribedOrAdmin) {
                                 updateTimerVisibility(isSubscribedOrAdmin);
                             }
-                            
+
                             if (!isSubscribedOrAdmin) {
                                 timeRemaining = data.time_remaining;
                                 updateTimerDisplay();
-                                
+
                                 if (timeRemaining <= 0) {
                                     showExpiredModal();
                                 } else if (!isExpired) {
@@ -756,12 +760,12 @@
                 if (currentPath === '/premium' || currentPath === '/settings') {
                     return;
                 }
-                
+
                 const modal = document.getElementById('accessExpiredModal');
                 if (modal && !isExpired) {
                     modal.classList.remove('hidden');
                     isExpired = true;
-                    
+
                     // Block ALL interactions except navigation to premium/settings/logout
                     document.body.addEventListener('click', function(e) {
                         const link = e.target.closest('a');
@@ -844,11 +848,11 @@
                     if (data.success) {
                         isSubscribedOrAdmin = data.is_subscribed || data.is_admin;
                         updateTimerVisibility(isSubscribedOrAdmin);
-                        
+
                         if (!isSubscribedOrAdmin) {
                             timeRemaining = data.time_remaining;
                             updateTimerDisplay();
-                            
+
                             if (timeRemaining <= 0) {
                                 showExpiredModal();
                             } else {
@@ -881,16 +885,16 @@
                             if (data.success) {
                                 const wasSubscribed = isSubscribedOrAdmin;
                                 isSubscribedOrAdmin = data.is_subscribed || data.is_admin;
-                                
+
                                 // Update timer visibility if subscription status changed
                                 if (wasSubscribed !== isSubscribedOrAdmin) {
                                     updateTimerVisibility(isSubscribedOrAdmin);
                                 }
-                                
+
                                 if (!isSubscribedOrAdmin) {
                                     timeRemaining = data.time_remaining;
                                     updateTimerDisplay();
-                                    
+
                                     if (timeRemaining <= 0) {
                                         showExpiredModal();
                                     } else if (!isExpired) {
@@ -940,7 +944,7 @@
                         const desktopDisplay = document.getElementById('favoritesCountDisplay');
                         if (desktopDisplay) {
                             desktopDisplay.textContent = displayText;
-                            
+
                             // Change color if approaching limit (non-subscribed users)
                             if (!isSubscribed && count >= 45) {
                                 desktopDisplay.classList.add('text-yellow-400');
@@ -955,7 +959,7 @@
                         const mobileDisplay = document.getElementById('favoritesCountDisplayMobile');
                         if (mobileDisplay) {
                             mobileDisplay.textContent = displayText;
-                            
+
                             // Change color if approaching limit (non-subscribed users)
                             if (!isSubscribed && count >= 45) {
                                 mobileDisplay.classList.add('text-yellow-400');
@@ -1002,11 +1006,11 @@
                     .then(data => {
                         if (data.needs_refresh && !notificationHidden) {
                             showUpdateNotification();
-                            
+
                             // Check if user is currently on a premium page without access
                             // This will catch cases where user is viewing a category that's now locked
                             const currentPath = window.location.pathname;
-                            
+
                             // Only redirect if on a non-admin premium page
                             // Admin users should stay on admin page if they're still admin
                             if (currentPath.startsWith('/category/')) {
@@ -1026,13 +1030,13 @@
                             }
                             // For admin page, let the normal refresh happen (stays on same page)
                         }
-                        
+
                         // Also update timer and favorites counter to reflect any subscription changes
                         // This allows the UI to update even before the page refresh
                         if (typeof window.updateFavoritesCounter === 'function') {
                             window.updateFavoritesCounter();
                         }
-                        
+
                         // Refresh timer status
                         if (typeof window.refreshTimerStatus === 'function') {
                             window.refreshTimerStatus();
@@ -1044,24 +1048,24 @@
             function showUpdateNotification() {
                 const notification = document.getElementById('accountUpdateNotification');
                 notification.classList.remove('hidden');
-                
+
                 let countdown = 30;
                 const countdownElement = document.getElementById('refreshCountdown');
-                
+
                 // Clear any existing intervals
                 if (refreshCountdownInterval) clearInterval(refreshCountdownInterval);
                 if (refreshTimeout) clearTimeout(refreshTimeout);
-                
+
                 // Start countdown
                 refreshCountdownInterval = setInterval(() => {
                     countdown--;
                     countdownElement.textContent = countdown;
-                    
+
                     if (countdown <= 0) {
                         clearInterval(refreshCountdownInterval);
                     }
                 }, 1000);
-                
+
                 // Auto refresh after 30 seconds
                 refreshTimeout = setTimeout(() => {
                     fetch('/api/account/mark-refreshed', { 
@@ -1075,7 +1079,7 @@
                             window.location.reload();
                         });
                 }, 30000);
-                
+
                 // Stop checking for updates once notification is shown
                 if (checkInterval) {
                     clearInterval(checkInterval);
@@ -1108,22 +1112,22 @@
                 const notification = document.getElementById('accountUpdateNotification');
                 notification.classList.add('hidden');
                 notificationHidden = true;
-                
+
                 // Clear intervals
                 if (refreshCountdownInterval) clearInterval(refreshCountdownInterval);
                 if (refreshTimeout) clearTimeout(refreshTimeout);
-                
+
                 // Mark as refreshed in database (without reload)
                 fetch('/api/account/mark-refreshed', { method: 'POST' })
                     .catch(error => console.error('Error marking as refreshed:', error));
-                
+
                 // Restart checking in case user hides but hasn't refreshed
                 checkInterval = setInterval(checkForAccountUpdates, 10000);
             };
 
             // Check for updates every 10 seconds
             checkInterval = setInterval(checkForAccountUpdates, 10000);
-            
+
             // Initial check on page load
             checkForAccountUpdates();
         })();
