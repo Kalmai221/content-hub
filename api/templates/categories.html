@@ -91,6 +91,19 @@
     {% set pinned_categories = categories | selectattr('is_user_pinned', 'equalto', true) | list %}
     {% set unpinned_categories = categories | rejectattr('is_user_pinned', 'equalto', true) | list %}
 
+    <!-- Content Hidden Banner (non-admins only) -->
+    {% if content_hidden and not is_admin %}
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-800 mb-6">
+            <svg class="w-10 h-10 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+            </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-300 mb-3">Content Unavailable</h3>
+        <p class="text-gray-500 max-w-md">Content is currently hidden. Please check back later.</p>
+    </div>
+    {% else %}
+
     <!-- Pinned Categories Grid -->
     {% if pinned_categories|length > 0 %}
     <div class="mb-6">
@@ -320,6 +333,8 @@
         {% endif %}
     </div>
     {% endif %}
+
+    {% endif %}{# end content_hidden check #}
 </div>
 {% endblock %}
 

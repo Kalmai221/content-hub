@@ -624,10 +624,15 @@ def categories():
     # Combine: pinned first, then paid, then free
     categories = pinned_categories + paid_categories + free_categories
 
+    # Check if content is hidden site-wide
+    content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
+    content_hidden = content_hidden_doc and content_hidden_doc.get('value', 'false').lower() == 'true'
+
     return render_template('categories.html', 
                          categories=categories, 
                          is_admin=is_admin,
-                         is_subscribed=is_subscribed)
+                         is_subscribed=is_subscribed,
+                         content_hidden=content_hidden)
 
 @app.route('/category/<category_id>')
 @login_required
