@@ -139,6 +139,114 @@
             </div>
         </section>
 
+        <!-- ===== REGISTRATION TOGGLE ===== -->
+        <section class="mb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-1.5 h-5 rounded-full bg-gradient-to-b from-red-500 to-red-700"></span>
+                <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Registration</h3>
+            </div>
+            <div class="rounded-xl border border-gray-700/50 p-4 space-y-4" style="background: rgba(255,255,255,0.022)">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-200">Disable Sign Up</p>
+                        <p class="text-xs text-gray-500">Block all new registrations site-wide</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="registrationDisabledToggle" {% if site_settings.registration_disabled %}checked{% endif %}
+                            onchange="toggleRegistrationDisabled(this.checked)" class="sr-only peer"/>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-red-500/40 rounded-full peer
+                                    peer-checked:after:translate-x-full peer-checked:after:border-white
+                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                    after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                    </label>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg {% if site_settings.registration_disabled %}bg-red-500/15 border border-red-500/25{% else %}bg-gray-800/40 border border-gray-700/40{% endif %}" id="registrationStatusBadge">
+                    <div class="w-2 h-2 rounded-full {% if site_settings.registration_disabled %}bg-red-500{% else %}bg-gray-600{% endif %}" id="registrationStatusDot"></div>
+                    <p class="text-xs {% if site_settings.registration_disabled %}text-red-400{% else %}text-gray-500{% endif %}" id="registrationStatusText">Registration <strong>{% if site_settings.registration_disabled %}DISABLED{% else %}ENABLED{% endif %}</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CONTENT VISIBILITY ===== -->
+        <section class="mb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-1.5 h-5 rounded-full bg-gradient-to-b from-orange-500 to-orange-700"></span>
+                <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Content Visibility</h3>
+            </div>
+            <div class="rounded-xl border border-gray-700/50 p-4 space-y-4" style="background: rgba(255,255,255,0.022)">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-200">Hide All Content</p>
+                        <p class="text-xs text-gray-500">Hide all files, photos &amp; videos from users</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="contentHiddenToggle" {% if site_settings.content_hidden %}checked{% endif %}
+                            onchange="toggleContentHidden(this.checked)" class="sr-only peer"/>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-orange-500/40 rounded-full peer
+                                    peer-checked:after:translate-x-full peer-checked:after:border-white
+                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                    after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                    </label>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg {% if site_settings.content_hidden %}bg-orange-500/15 border border-orange-500/25{% else %}bg-gray-800/40 border border-gray-700/40{% endif %}" id="contentStatusBadge">
+                    <div class="w-2 h-2 rounded-full {% if site_settings.content_hidden %}bg-orange-500{% else %}bg-gray-600{% endif %}" id="contentStatusDot"></div>
+                    <p class="text-xs {% if site_settings.content_hidden %}text-orange-400{% else %}text-gray-500{% endif %}" id="contentStatusText">Content <strong>{% if site_settings.content_hidden %}HIDDEN{% else %}VISIBLE{% endif %}</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SITE CONTROLS ===== -->
+        <section class="mb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-1.5 h-5 rounded-full bg-gradient-to-b from-orange-500 to-red-600"></span>
+                <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Site Controls</h3>
+            </div>
+            <div class="rounded-xl border border-gray-700/50 p-4 space-y-4" style="background: rgba(255,255,255,0.022)">
+
+                <!-- Disable Signups Toggle -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-200">Disable Registrations</p>
+                        <p class="text-xs text-gray-500">Block all new account sign-ups</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="signupDisabledToggle" {% if signup_disabled %}checked{% endif %}
+                            onchange="toggleSignupDisabled(this.checked)" class="sr-only peer"/>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-orange-500/40 rounded-full peer
+                                    peer-checked:after:translate-x-full peer-checked:after:border-white
+                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                    after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                    </label>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg {% if signup_disabled %}bg-orange-500/15 border border-orange-500/25{% else %}bg-gray-800/40 border border-gray-700/40{% endif %}" id="signupStatusBadge">
+                    <div class="w-2 h-2 rounded-full {% if signup_disabled %}bg-orange-500{% else %}bg-gray-600{% endif %}" id="signupStatusDot"></div>
+                    <p class="text-xs {% if signup_disabled %}text-orange-300{% else %}text-gray-500{% endif %}" id="signupStatusText">Registrations <strong>{% if signup_disabled %}DISABLED{% else %}ENABLED{% endif %}</strong></p>
+                </div>
+
+                <div class="border-t border-gray-700/40"></div>
+
+                <!-- Hide Content Toggle -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-200">Hide All Content</p>
+                        <p class="text-xs text-gray-500">Hide all images &amp; videos site-wide</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="contentHiddenToggle" {% if content_hidden %}checked{% endif %}
+                            onchange="toggleContentHidden(this.checked)" class="sr-only peer"/>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-red-500/40 rounded-full peer
+                                    peer-checked:after:translate-x-full peer-checked:after:border-white
+                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                    after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                    </label>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg {% if content_hidden %}bg-red-500/15 border border-red-500/25{% else %}bg-gray-800/40 border border-gray-700/40{% endif %}" id="contentStatusBadge">
+                    <div class="w-2 h-2 rounded-full {% if content_hidden %}bg-red-500{% else %}bg-gray-600{% endif %}" id="contentStatusDot"></div>
+                    <p class="text-xs {% if content_hidden %}text-red-300{% else %}text-gray-500{% endif %}" id="contentStatusText">Media content <strong>{% if content_hidden %}HIDDEN{% else %}VISIBLE{% endif %}</strong></p>
+                </div>
+            </div>
+        </section>
+
         <!-- ===== ACCESS TIME ===== -->
         <section class="mb-8">
             <div class="flex items-center gap-2 mb-4">
@@ -288,11 +396,103 @@
         .catch(()=>showToast('Failed to update pin','error'));
     }
 
+    async function toggleRegistrationDisabled(disabled) {
+        try {
+            const d = await fetch('/api/settings/signup-disabled', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({disabled})}).then(r=>r.json());
+            if (d.success) {
+                showToast(`Registration ${disabled ? 'disabled' : 'enabled'}`, disabled ? 'warning' : 'success');
+                const badge = document.getElementById('registrationStatusBadge');
+                const dot = document.getElementById('registrationStatusDot');
+                const text = document.getElementById('registrationStatusText');
+                if (disabled) {
+                    badge.className = badge.className.replace('bg-gray-800/40 border border-gray-700/40', 'bg-red-500/15 border border-red-500/25');
+                    dot.className = dot.className.replace('bg-gray-600', 'bg-red-500');
+                    text.className = text.className.replace('text-gray-500', 'text-red-400');
+                    text.innerHTML = 'Registration <strong>DISABLED</strong>';
+                } else {
+                    badge.className = badge.className.replace('bg-red-500/15 border border-red-500/25', 'bg-gray-800/40 border border-gray-700/40');
+                    dot.className = dot.className.replace('bg-red-500', 'bg-gray-600');
+                    text.className = text.className.replace('text-red-400', 'text-gray-500');
+                    text.innerHTML = 'Registration <strong>ENABLED</strong>';
+                }
+            } else { showToast('Failed to update registration setting', 'error'); location.reload(); }
+        } catch(e) { showToast('Network error', 'error'); location.reload(); }
+    }
+
+    async function toggleContentHidden(hidden) {
+        try {
+            const d = await fetch('/api/settings/content-hidden', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({hidden})}).then(r=>r.json());
+            if (d.success) {
+                showToast(`Content ${hidden ? 'hidden' : 'visible'}`, hidden ? 'warning' : 'success');
+                const badge = document.getElementById('contentStatusBadge');
+                const dot = document.getElementById('contentStatusDot');
+                const text = document.getElementById('contentStatusText');
+                if (hidden) {
+                    badge.className = badge.className.replace('bg-gray-800/40 border border-gray-700/40', 'bg-orange-500/15 border border-orange-500/25');
+                    dot.className = dot.className.replace('bg-gray-600', 'bg-orange-500');
+                    text.className = text.className.replace('text-gray-500', 'text-orange-400');
+                    text.innerHTML = 'Content <strong>HIDDEN</strong>';
+                } else {
+                    badge.className = badge.className.replace('bg-orange-500/15 border border-orange-500/25', 'bg-gray-800/40 border border-gray-700/40');
+                    dot.className = dot.className.replace('bg-orange-500', 'bg-gray-600');
+                    text.className = text.className.replace('text-orange-400', 'text-gray-500');
+                    text.innerHTML = 'Content <strong>VISIBLE</strong>';
+                }
+            } else { showToast('Failed to update content visibility', 'error'); location.reload(); }
+        } catch(e) { showToast('Network error', 'error'); location.reload(); }
+    }
+
     async function toggleBetaMode(enabled) {
         try {
             const d = await fetch('/api/beta-settings/mode', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({enabled})}).then(r=>r.json());
             if (d.success) showToast(`Beta mode ${enabled?'enabled':'disabled'}`,'success');
             else { showToast('Failed to update beta mode','error'); location.reload(); }
+        } catch(e) { showToast('Network error','error'); location.reload(); }
+    }
+
+    async function toggleSignupDisabled(disabled) {
+        try {
+            const d = await fetch('/api/settings/signup-disabled', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({disabled})}).then(r=>r.json());
+            if (d.success) {
+                showToast(`Registrations ${disabled?'disabled':'enabled'}`,'success');
+                const badge = document.getElementById('signupStatusBadge');
+                const dot = document.getElementById('signupStatusDot');
+                const text = document.getElementById('signupStatusText');
+                if (disabled) {
+                    badge.className = 'flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/15 border border-orange-500/25';
+                    dot.className = 'w-2 h-2 rounded-full bg-orange-500';
+                    text.className = 'text-xs text-orange-300';
+                    text.innerHTML = 'Registrations <strong>DISABLED</strong>';
+                } else {
+                    badge.className = 'flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-800/40 border border-gray-700/40';
+                    dot.className = 'w-2 h-2 rounded-full bg-gray-600';
+                    text.className = 'text-xs text-gray-500';
+                    text.innerHTML = 'Registrations <strong>ENABLED</strong>';
+                }
+            } else { showToast('Failed to update signup setting','error'); location.reload(); }
+        } catch(e) { showToast('Network error','error'); location.reload(); }
+    }
+
+    async function toggleContentHidden(hidden) {
+        try {
+            const d = await fetch('/api/settings/content-hidden', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({hidden})}).then(r=>r.json());
+            if (d.success) {
+                showToast(`Media content ${hidden?'hidden':'visible'}`,'success');
+                const badge = document.getElementById('contentStatusBadge');
+                const dot = document.getElementById('contentStatusDot');
+                const text = document.getElementById('contentStatusText');
+                if (hidden) {
+                    badge.className = 'flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/15 border border-red-500/25';
+                    dot.className = 'w-2 h-2 rounded-full bg-red-500';
+                    text.className = 'text-xs text-red-300';
+                    text.innerHTML = 'Media content <strong>HIDDEN</strong>';
+                } else {
+                    badge.className = 'flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-800/40 border border-gray-700/40';
+                    dot.className = 'w-2 h-2 rounded-full bg-gray-600';
+                    text.className = 'text-xs text-gray-500';
+                    text.innerHTML = 'Media content <strong>VISIBLE</strong>';
+                }
+            } else { showToast('Failed to update content visibility','error'); location.reload(); }
         } catch(e) { showToast('Network error','error'); location.reload(); }
     }
 

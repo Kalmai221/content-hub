@@ -268,6 +268,13 @@ def register():
         email = data.get('email')
         password = data.get('password')
 
+        # Check if signup is disabled
+        signup_disabled_config = db['secrets'].find_one({'key': 'signup_disabled'})
+        signup_disabled = signup_disabled_config and signup_disabled_config.get('value', 'false').lower() == 'true'
+
+        if signup_disabled:
+            return jsonify({'success': False, 'message': 'Registrations are currently closed'}), 403
+
         # Check beta mode from secrets
         beta_config = db['secrets'].find_one({'key': 'beta_mode'})
         beta_mode = beta_config and beta_config.get('value', 'false').lower() == 'true'
@@ -333,7 +340,9 @@ def register():
     # GET request - show registration form
     beta_config = db['secrets'].find_one({'key': 'beta_mode'})
     beta_mode = beta_config and beta_config.get('value', 'false').lower() == 'true'
-    return render_template('register.html', beta_mode=beta_mode)
+    signup_disabled_config = db['secrets'].find_one({'key': 'signup_disabled'})
+    signup_disabled = signup_disabled_config and signup_disabled_config.get('value', 'false').lower() == 'true'
+    return render_template('register.html', beta_mode=beta_mode, signup_disabled=signup_disabled)
 
 @app.route('/verify-email', methods=['POST'])
 def verify_email():
@@ -659,13 +668,18 @@ def category_detail(category_id):
     # Fetch content for this category (root level only - no folder_id)
     content_items = list(content_collection.find({'category_id': category_id, 'folder_id': None}))
 
+    # Check if content is hidden site-wide
+    content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
+    content_hidden = content_hidden_doc and content_hidden_doc.get('value', 'false').lower() == 'true'
+
     return render_template('category_detail.html', 
                          category=category, 
                          content_items=content_items,
                          folders=folders,
                          root_folders=root_folders,
                          folder_tree=folder_tree,
-                         is_admin=is_admin)
+                         is_admin=is_admin,
+                         content_hidden=content_hidden)
 
 @app.route('/admin')
 @login_required
@@ -686,7 +700,13 @@ def admin_panel():
         'key': beta_key.get('value', '') if beta_key else ''
     }
 
-    return render_template('admin.html', users=users, categories=categories, beta_settings=beta_settings)
+    signup_disabled_doc = db['secrets'].find_one({'key': 'signup_disabled'})
+    content_hidden_doc2 = db['secrets'].find_one({'key': 'content_hidden'})
+    site_settings = {
+        'registration_disabled': signup_disabled_doc and signup_disabled_doc.get('value', 'false').lower() == 'true',
+        'content_hidden': content_hidden_doc2 and content_hidden_doc2.get('value', 'false').lower() == 'true'
+    }
+    return render_template('admin.html', users=users, categories=categories, beta_settings=beta_settings, site_settings=site_settings)
 
 # API Routes
 @app.route('/api/users', methods=['GET'])
@@ -1149,6 +1169,37 @@ def update_beta_key():
 
     return jsonify({'success': True})
 
+# Site Control Settings
+@app.route('/api/settings/signup-disabled', methods=['PUT'])
+@admin_required
+def update_signup_disabled():
+    """Enable or disable new user registrations"""
+    data = request.json
+    disabled = data.get('disabled', False)
+
+    db['secrets'].update_one(
+        {'key': 'signup_disabled'},
+        {'$set': {'value': 'true' if disabled else 'false'}},
+        upsert=True
+    )
+
+    return jsonify({'success': True})
+
+@app.route('/api/settings/content-hidden', methods=['PUT'])
+@admin_required
+def update_content_hidden():
+    """Show or hide all media content (images/videos) site-wide"""
+    data = request.json
+    hidden = data.get('hidden', False)
+
+    db['secrets'].update_one(
+        {'key': 'content_hidden'},
+        {'$set': {'value': 'true' if hidden else 'false'}},
+        upsert=True
+    )
+
+    return jsonify({'success': True})
+
 # Favorites Page Route (must come before API routes)
 @app.route('/favorites')
 @login_required
@@ -1181,10 +1232,14 @@ def favorites_page():
                     content['category_accent_color'] = category.get('accent_color', '#4F46E5')
             favorited_content.append(content)
 
+    # Check if content is hidden site-wide
+    content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
+
     return render_template('favorites.html',
                          favorited_content=favorited_content,
                          is_admin=is_admin,
-                         is_subscribed=is_subscribed)
+                         is_subscribed=is_subscribed,
+                         content_hidden=content_hidden_doc and content_hidden_doc.get('value','false').lower()=='true')
 
 # Favorites API Routes
 
