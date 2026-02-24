@@ -141,10 +141,12 @@ def get_accessible_categories():
 # Context processor to make categories available in all templates
 @app.context_processor
 def inject_categories():
+    content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
+    content_hidden = bool(content_hidden_doc and content_hidden_doc.get('value', 'false').lower() == 'true')
     if 'user_id' in session:
         cats = get_accessible_categories()
-        return {'sidebar_categories': cats, 'categories': cats}
-    return {'sidebar_categories': [], 'categories': []}
+        return {'sidebar_categories': cats, 'categories': cats, 'global_content_hidden': content_hidden}
+    return {'sidebar_categories': [], 'categories': [], 'global_content_hidden': content_hidden}
 
 # Authentication decorator
 def login_required(f):

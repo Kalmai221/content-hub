@@ -394,15 +394,19 @@
                             </button>
 
                             <a 
-                                href="{% if session.get('is_admin') or session.get('is_subscribed') or category.is_free %}/category/{{ category._id }}{% else %}javascript:void(0);{% endif %}"
-                                {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
+                                href="{% if global_content_hidden and not session.get('is_admin') %}javascript:void(0);{% elif session.get('is_admin') or session.get('is_subscribed') or category.is_free %}/category/{{ category._id }}{% else %}javascript:void(0);{% endif %}"
+                                {% if global_content_hidden and not session.get('is_admin') %}
+                                onclick="event.preventDefault(); event.stopPropagation();"
+                                style="cursor: not-allowed;"
+                                data-locked="true"
+                                {% elif not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
                                 onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/premium';"
                                 style="cursor: pointer;"
                                 data-locked="true"
                                 {% else %}
                                 data-locked="false"
                                 {% endif %}
-                                class="sidebar-category-link w-full flex items-center justify-between pl-8 pr-3 sm:pr-4 py-2.5 sm:py-3 {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}opacity-60{% endif %} hover:bg-gray-700/50 rounded-lg transition"
+                                class="sidebar-category-link w-full flex items-center justify-between pl-8 pr-3 sm:pr-4 py-2.5 sm:py-3 {% if (global_content_hidden and not session.get('is_admin')) or (not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free) %}opacity-60{% endif %} hover:bg-gray-700/50 rounded-lg transition"
                             >
                                 <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                                     <div 
@@ -412,7 +416,14 @@
                                     <span class="font-medium text-gray-200 text-sm sm:text-base truncate">{{ category.name }}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
-                                    {% if not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
+                                    {% if global_content_hidden and not session.get('is_admin') %}
+                                    <span class="text-xs px-2 py-0.5 sm:py-1 rounded bg-orange-500/20 text-orange-400 flex items-center gap-1">
+                                        <svg class="w-2.5 h-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                        </svg>
+                                        Hidden
+                                    </span>
+                                    {% elif not session.get('is_admin') and not session.get('is_subscribed') and not category.is_free %}
                                     <span class="text-xs px-2 py-0.5 sm:py-1 rounded bg-gray-700 text-gray-300 flex items-center gap-1">
                                         <svg class="w-2.5 h-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
