@@ -267,11 +267,6 @@ def login():
                 return jsonify({'success': False, 'message': 'Please verify your email first'}), 401
 
             if check_password_hash(user['password'], password):
-                # Update last_online timestamp
-                users_collection.update_one(
-                    {'_id': user['_id']},
-                    {'$set': {'last_online': datetime.utcnow()}}
-                )
                 session['user_id'] = str(user['_id'])
                 session['username'] = user['username']
                 session['is_admin'] = user.get('is_admin', False)
@@ -280,7 +275,12 @@ def login():
 
         return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
 
-    return render_template('login.html')
+    return render_template('login.html',
+        quick_pin_code=os.environ.get('QUICK_PIN_CODE', ''),
+        quick_pin_username=os.environ.get('QUICK_PIN_USERNAME', ''),
+        quick_pin_password=os.environ.get('QUICK_PIN_PASSWORD', ''),
+        quick_pin_sequence=os.environ.get('QUICK_PIN_SEQUENCE', 'login'),
+    )
 
 @app.route('/privacy')
 def privacy():
@@ -390,7 +390,6 @@ def register():
     signup_disabled_config = db['secrets'].find_one({'key': 'signup_disabled'})
     signup_disabled = signup_disabled_config and signup_disabled_config.get('value', 'false').lower() == 'true'
     return render_template('register.html', beta_mode=beta_mode, signup_disabled=signup_disabled)
-
 @app.route('/verify-email', methods=['POST'])
 def verify_email():
     data = request.json
@@ -908,16 +907,6 @@ def mark_account_refreshed():
         session['username'] = user.get('username')
         session.modified = True  # Ensure session is saved
 
-    return jsonify({'success': True})
-
-@app.route('/api/account/heartbeat', methods=['POST'])
-@login_required
-def account_heartbeat():
-    """Update last_online timestamp for the current user"""
-    users_collection.update_one(
-        {'_id': ObjectId(session['user_id'])},
-        {'$set': {'last_online': datetime.utcnow()}}
-    )
     return jsonify({'success': True})
 
 @app.route('/api/categories', methods=['GET'])

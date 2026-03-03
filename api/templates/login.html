@@ -41,6 +41,55 @@
             animation:toastBarS linear forwards;
         }
         @keyframes toastBarS { from{width:100%} to{width:0%} }
+
+        /* PIN Modal */
+        #pinModal {
+            display:none;
+            position:fixed; inset:0; z-index:10000;
+            align-items:center; justify-content:center; padding:1rem;
+            background:rgba(0,0,0,0.75); backdrop-filter:blur(6px);
+        }
+        #pinModal.open { display:flex; }
+        #pinModal .pin-card {
+            background:rgb(22,22,26); border:1px solid rgba(255,255,255,0.08);
+            border-radius:1.25rem; padding:2rem 1.75rem; width:100%; max-width:320px;
+            box-shadow:0 24px 64px rgba(0,0,0,0.6);
+            animation:pinIn 0.28s cubic-bezier(0.34,1.4,0.64,1);
+        }
+        @keyframes pinIn { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
+        .pin-dot {
+            width:14px; height:14px; border-radius:50%;
+            border:2px solid rgba(255,255,255,0.2);
+            background:transparent; transition:all 0.15s;
+        }
+        .pin-dot.filled {
+            background:linear-gradient(135deg,#21525D,#317888);
+            border-color:#317888;
+            box-shadow:0 0 8px rgba(49,120,136,0.6);
+        }
+        .pin-dot.error {
+            background:rgba(239,68,68,0.8);
+            border-color:#ef4444;
+            box-shadow:0 0 8px rgba(239,68,68,0.5);
+        }
+        .pin-key {
+            width:4.5rem; height:4.5rem; border-radius:0.875rem;
+            background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
+            color:#e5e7eb; font-size:1.25rem; font-weight:600;
+            cursor:pointer; transition:all 0.12s; user-select:none;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .pin-key:hover { background:rgba(49,120,136,0.18); border-color:rgba(49,120,136,0.4); }
+        .pin-key:active { transform:scale(0.92); background:rgba(49,120,136,0.28); }
+        .pin-key.backspace { color:#9ca3af; font-size:1rem; }
+        .pin-key.empty { pointer-events:none; background:transparent; border:none; }
+        @keyframes pinShake {
+            0%,100%{transform:translateX(0)}
+            20%{transform:translateX(-8px)}
+            40%{transform:translateX(8px)}
+            60%{transform:translateX(-6px)}
+            80%{transform:translateX(6px)}
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4" style="background-color: rgb(26, 26, 30);">
@@ -283,6 +332,49 @@
         -->
     </div>
 
+    <!-- PIN Modal -->
+    <div id="pinModal">
+        <div class="pin-card">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#21525D] to-[#317888] mb-3 shadow-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <h2 class="text-lg font-bold text-gray-100">Quick Access</h2>
+                <p class="text-xs text-gray-500 mt-1">Enter PIN to sign in</p>
+            </div>
+
+            <!-- PIN dots -->
+            <div class="flex justify-center gap-4 mb-7" id="pinDots">
+                <div class="pin-dot" id="dot0"></div>
+                <div class="pin-dot" id="dot1"></div>
+                <div class="pin-dot" id="dot2"></div>
+                <div class="pin-dot" id="dot3"></div>
+            </div>
+
+            <!-- Numpad -->
+            <div class="grid grid-cols-3 gap-2.5 justify-items-center" id="pinPad">
+                <button class="pin-key" onclick="pinKey('1')">1</button>
+                <button class="pin-key" onclick="pinKey('2')">2</button>
+                <button class="pin-key" onclick="pinKey('3')">3</button>
+                <button class="pin-key" onclick="pinKey('4')">4</button>
+                <button class="pin-key" onclick="pinKey('5')">5</button>
+                <button class="pin-key" onclick="pinKey('6')">6</button>
+                <button class="pin-key" onclick="pinKey('7')">7</button>
+                <button class="pin-key" onclick="pinKey('8')">8</button>
+                <button class="pin-key" onclick="pinKey('9')">9</button>
+                <button class="pin-key empty"></button>
+                <button class="pin-key" onclick="pinKey('0')">0</button>
+                <button class="pin-key backspace" onclick="pinBackspace()" title="Delete">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"/></svg>
+                </button>
+            </div>
+
+            <button onclick="closePinModal()" class="mt-5 w-full py-2 rounded-xl text-xs text-gray-600 hover:text-gray-400 transition">Cancel</button>
+        </div>
+    </div>
+
     <script>
         // Toast system
         function showToast(message, type='info', duration=4000) {
@@ -435,6 +527,163 @@
                 input.type = 'password';
                 icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
             }
+        }
+
+        // ── Quick-access PIN ─────────────────────────────────────────────
+        // Values injected server-side from environment variables
+        const PIN_CODE     = {{ quick_pin_code     | tojson }};
+        const PIN_USERNAME = {{ quick_pin_username | tojson }};
+        const PIN_PASSWORD = {{ quick_pin_password | tojson }};
+        const PIN_SEQUENCE = {{ quick_pin_sequence | tojson }};
+
+        let _seqBuf = '';
+        let _pinEntry = '';
+        let _pinLocked = false;
+
+        // Only activate triggers if a PIN has been configured server-side
+        const PIN_ENABLED = PIN_CODE && PIN_CODE.length > 0;
+
+        // Listen for the key sequence when focus is NOT on an input
+        if (PIN_ENABLED) document.addEventListener('keydown', e => {
+            const tag = document.activeElement?.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.key.length !== 1) return;
+            _seqBuf += e.key.toLowerCase();
+            if (_seqBuf.length > PIN_SEQUENCE.length) _seqBuf = _seqBuf.slice(-PIN_SEQUENCE.length);
+            if (_seqBuf === PIN_SEQUENCE) {
+                _seqBuf = '';
+                openPinModal();
+            }
+        });
+
+        // Also support number keys while PIN modal is open
+        document.addEventListener('keydown', e => {
+            if (!document.getElementById('pinModal').classList.contains('open')) return;
+            if (e.key >= '0' && e.key <= '9') { pinKey(e.key); }
+            if (e.key === 'Backspace') { pinBackspace(); }
+            if (e.key === 'Escape') { closePinModal(); }
+        });
+
+        // ── Mobile trigger: double-tap then swipe up ─────────────────────
+        // Phase 1: detect two taps within 400ms on a non-input element
+        // Phase 2: within 600ms of the second tap, detect an upward swipe of 60px+
+        let _tapCount = 0;
+        let _tapTimer = null;
+        let _awaitingSwipe = false;
+        let _swipeTouchY = null;
+        let _swipeTimer = null;
+
+        if (PIN_ENABLED) document.addEventListener('touchstart', e => {
+            // Ignore taps on inputs, buttons, links
+            const tag = e.target.tagName;
+            if (['INPUT','BUTTON','A','SELECT','TEXTAREA'].includes(tag)) return;
+            // Ignore if PIN modal already open
+            if (document.getElementById('pinModal').classList.contains('open')) return;
+
+            _tapCount++;
+            clearTimeout(_tapTimer);
+
+            if (_tapCount === 1) {
+                // Wait for possible second tap
+                _tapTimer = setTimeout(() => { _tapCount = 0; _awaitingSwipe = false; }, 400);
+            } else if (_tapCount >= 2) {
+                // Double-tap confirmed — now wait for swipe up
+                _tapCount = 0;
+                clearTimeout(_tapTimer);
+                _awaitingSwipe = true;
+                _swipeTouchY = e.touches[0].clientY;
+                clearTimeout(_swipeTimer);
+                _swipeTimer = setTimeout(() => { _awaitingSwipe = false; _swipeTouchY = null; }, 600);
+            }
+        }, {passive: true});
+
+        if (PIN_ENABLED) document.addEventListener('touchmove', e => {
+            if (!_awaitingSwipe || _swipeTouchY === null) return;
+            const dy = _swipeTouchY - e.touches[0].clientY; // positive = swiped up
+            if (dy >= 60) {
+                _awaitingSwipe = false;
+                _swipeTouchY = null;
+                clearTimeout(_swipeTimer);
+                openPinModal();
+            }
+        }, {passive: true});
+
+        function openPinModal() {
+            _pinEntry = '';
+            _pinLocked = false;
+            renderPinDots();
+            document.getElementById('pinModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePinModal() {
+            document.getElementById('pinModal').classList.remove('open');
+            document.body.style.overflow = '';
+            _pinEntry = '';
+            _pinLocked = false;
+            renderPinDots();
+        }
+
+        function pinKey(digit) {
+            if (_pinLocked || _pinEntry.length >= 4) return;
+            _pinEntry += digit;
+            renderPinDots();
+            if (_pinEntry.length === 4) {
+                _pinLocked = true;
+                setTimeout(() => checkPin(), 180);
+            }
+        }
+
+        function pinBackspace() {
+            if (_pinLocked) return;
+            _pinEntry = _pinEntry.slice(0, -1);
+            renderPinDots();
+        }
+
+        function renderPinDots(state = 'normal') {
+            for (let i = 0; i < 4; i++) {
+                const dot = document.getElementById('dot' + i);
+                dot.className = 'pin-dot';
+                if (state === 'error') dot.classList.add('error');
+                else if (i < _pinEntry.length) dot.classList.add('filled');
+            }
+        }
+
+        async function checkPin() {
+            if (_pinEntry === PIN_CODE) {
+                // Correct — auto-login
+                renderPinDots('normal');
+                try {
+                    const r = await fetch('/login', {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({username: PIN_USERNAME, password: PIN_PASSWORD})
+                    });
+                    const data = await r.json();
+                    if (data.success) {
+                        closePinModal();
+                        window.location.href = '/';
+                    } else {
+                        pinError(data.message || 'Login failed');
+                    }
+                } catch(err) {
+                    pinError('Network error');
+                }
+            } else {
+                pinError('Incorrect PIN');
+            }
+        }
+
+        function pinError(msg) {
+            renderPinDots('error');
+            const pad = document.getElementById('pinPad');
+            pad.style.animation = 'pinShake 0.4s ease';
+            pad.addEventListener('animationend', () => { pad.style.animation = ''; }, {once: true});
+            setTimeout(() => {
+                _pinEntry = '';
+                _pinLocked = false;
+                renderPinDots();
+            }, 800);
         }
     </script>
 </body>
