@@ -38,8 +38,20 @@ SMTP_USERNAME = os.environ.get('SMTP_USERNAME')
 SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD')
 FROM_EMAIL = os.environ.get('FROM_EMAIL', SMTP_USERNAME)
 
+# Cleanup request counter
+_request_count = 0
+
 def cleanup_expired_data():
-    """Delete expired verification codes and unverified accounts older than 1 day"""
+    """
+    Delete expired verification codes (15-minute TTL) and
+    unverified accounts older than 1 day.
+    Runs every 50 requests to avoid hammering the DB.
+    """
+    global _request_count
+    _request_count += 1
+    if _request_count % 50 != 0:
+        return
+
     now = datetime.utcnow()
 
     # Delete expired verification codes (older than 15 minutes)
@@ -58,6 +70,11 @@ def cleanup_expired_data():
         favorites_collection.delete_many({'user_id': user_id})
         user_pins_collection.delete_many({'user_id': user_id})
         users_collection.delete_one({'_id': user_id})
+
+
+@app.before_request
+def before_each_request():
+    cleanup_expired_data()
 
 
 def send_email(to_email, subject, body):
@@ -235,7 +252,6 @@ def page_not_found(e):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        cleanup_expired_data()
         data = request.json
         username_or_email = data.get('username')
         password = data.get('password')
@@ -657,8 +673,8 @@ def categories():
     content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
     content_hidden = content_hidden_doc and content_hidden_doc.get('value', 'false').lower() == 'true'
 
-    return render_template('categories.html', 
-                         categories=categories, 
+    return render_template('categories.html',
+                         categories=categories,
                          is_admin=is_admin,
                          is_subscribed=is_subscribed,
                          content_hidden=content_hidden)
@@ -706,8 +722,8 @@ def category_detail(category_id):
     content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
     content_hidden = content_hidden_doc and content_hidden_doc.get('value', 'false').lower() == 'true'
 
-    return render_template('category_detail.html', 
-                         category=category, 
+    return render_template('category_detail.html',
+                         category=category,
                          content_items=content_items,
                          folders=folders,
                          root_folders=root_folders,
@@ -1123,7 +1139,7 @@ def bulk_create_content():
             failed_urls.append(url)
 
     return jsonify({
-        'success': True, 
+        'success': True,
         'created': created_count,
         'failed': len(failed_urls),
         'failed_urls': failed_urls
@@ -1304,7 +1320,7 @@ def add_favorite(content_id):
 
         if favorites_count >= 50:
             return jsonify({
-                'success': False, 
+                'success': False,
                 'error': 'Favorites limit reached',
                 'limit_reached': True,
                 'message': 'You have reached the maximum of 50 favorites. Upgrade to premium for unlimited favorites!'
@@ -1433,7 +1449,6 @@ def reset_user_timer_if_needed(user):
 @login_required
 def get_timer():
     """Get current user's remaining access time"""
-    cleanup_expired_data()
     user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
 
     if not user:
@@ -1513,9 +1528,6 @@ def update_access_time_setting():
         {'$set': {'value': new_limit}},
         upsert=True
     )
-
-    # Update all unsubscribed users who haven't been reset today
-    # This will apply to their next reset
 
     return jsonify({'success': True, 'access_time_limit': new_limit})
 
