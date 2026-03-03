@@ -581,68 +581,6 @@
 
 {% block scripts %}
 <script>
-    {% if session.get('user_id') and not session.get('is_subscribed') %}
-    // ── Timer ──
-    let timeRemaining = 0;
-    let timerInterval = null;
-    let isExpired = false;
-
-    function updateTimerDisplay() {
-        const displays = [document.getElementById('homeTimerDisplay'), document.getElementById('navbarTimerDisplay')].filter(Boolean);
-        if (isNaN(timeRemaining) || timeRemaining < 0) timeRemaining = 0;
-        const m = Math.floor(timeRemaining / 60);
-        const s = timeRemaining % 60;
-        const text = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        displays.forEach(d => { if (d) d.textContent = text; });
-    }
-
-    function showExpiredModal() {
-        isExpired = true;
-        updateTimerDisplay();
-        window.showModal({
-            title: 'Time Expired',
-            message: 'Your free viewing time has run out. Upgrade to Premium for unlimited access.',
-            type: 'warning',
-            buttons: [
-                { text: 'Upgrade to Premium', value: 'premium', cls: 'modal-btn-primary' },
-                { text: 'Close', value: false, cls: 'modal-btn-cancel' }
-            ]
-        }).then(val => { if (val === 'premium') window.location.href = '/premium'; });
-    }
-
-    function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if (timeRemaining > 0 && !isExpired) {
-                timeRemaining--;
-                updateTimerDisplay();
-                if (timeRemaining % 10 === 0) {
-                    fetch('/api/timer/update', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({time_remaining: timeRemaining}) })
-                        .then(r => r.json()).then(d => { if (d.expired && !isExpired) { showExpiredModal(); clearInterval(timerInterval); } });
-                }
-            } else if (timeRemaining <= 0 && !isExpired) {
-                clearInterval(timerInterval);
-                showExpiredModal();
-            }
-        }, 1000);
-    }
-
-    fetch('/api/timer/get').then(r => r.json()).then(data => {
-        if (data.success && !data.is_subscribed) {
-            timeRemaining = Math.max(0, Math.floor(data.time_remaining || 0));
-            updateTimerDisplay();
-            if (timeRemaining <= 0) showExpiredModal();
-            else startTimer();
-        }
-    }).catch(() => { timeRemaining = 0; updateTimerDisplay(); });
-
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) { if (timerInterval) clearInterval(timerInterval); navigator.sendBeacon && navigator.sendBeacon('/api/timer/update', JSON.stringify({time_remaining: timeRemaining})); }
-        else { if (!isExpired && timeRemaining > 0) startTimer(); }
-    });
-    window.addEventListener('beforeunload', function() { if (!isExpired && timeRemaining > 0) navigator.sendBeacon('/api/timer/update', JSON.stringify({time_remaining: timeRemaining})); });
-    {% endif %}
-
     {% if session.get('is_admin') %}
     function toggleEditHome() { document.getElementById('editHomeForm').classList.toggle('hidden'); }
 

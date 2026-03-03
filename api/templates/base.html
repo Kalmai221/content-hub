@@ -499,7 +499,9 @@
 
             function updateTimerDisplay() {
                 const d = document.getElementById('timerDisplay'), dm = document.getElementById('timerDisplayMobile');
+                const dh = document.getElementById('homeTimerDisplay');
                 const t = formatTime(timeRemaining);
+                if (dh) dh.textContent = t;
                 if (d) {
                     d.textContent = t;
                     d.className = d.className.replace(/text-(red|orange|white)-\d+/g,'');

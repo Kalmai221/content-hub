@@ -346,7 +346,7 @@ def register():
             'is_subscribed': False,
             'email_verified': False,
             'created_at': datetime.utcnow(),
-            'access_time_remaining': 3600,  # 1 hour in seconds
+            'access_time_remaining': get_access_time_limit(),  # use admin-configured limit
             'last_reset_date': datetime.utcnow().date().isoformat()
         }
 
@@ -1442,7 +1442,17 @@ def reset_user_timer_if_needed(user):
             }
         )
         user['access_time_remaining'] = access_limit
-        user['last_reset_date'] = today
+        user['last_reset_date'] = toda
+
+    else:
+        # Field missing entirely (old user with no timer field) — initialise it now
+        if user.get('access_time_remaining') is None:
+            access_limit = get_access_time_limit()
+            users_collection.update_one(
+                {'_id': user['_id']},
+                {'$set': {'access_time_remaining': access_limit}}
+            )
+            user['access_time_remaining'] = access_limit
 
     return user
 
@@ -1469,7 +1479,7 @@ def get_timer():
     return jsonify({
         'success': True,
         'is_subscribed': False,
-        'time_remaining': user.get('access_time_remaining', 3600)
+        'time_remaining': user.get('access_time_remaining') if user.get('access_time_remaining') is not None else get_access_time_limit()
     })
 
 @app.route('/api/timer/update', methods=['POST'])
