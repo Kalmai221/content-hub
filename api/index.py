@@ -10,6 +10,8 @@ import secrets
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'abc123')
@@ -38,23 +40,16 @@ SMTP_USERNAME = os.environ.get('SMTP_USERNAME')
 SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD')
 FROM_EMAIL = os.environ.get('FROM_EMAIL', SMTP_USERNAME)
 
-# Cleanup request counter
-_request_count = 0
 
 def cleanup_expired_data():
     """
     Delete expired verification codes (15-minute TTL) and
     unverified accounts older than 1 day.
-    Runs every 50 requests to avoid hammering the DB.
+    Runs every second via APScheduler, independent of traffic.
     """
-    global _request_count
-    _request_count += 1
-    if _request_count % 50 != 0:
-        return
-
     now = datetime.utcnow()
 
-    # Delete expired verification codes (older than 15 minutes)
+    # Delete expired verification codes
     verification_codes_collection.delete_many({
         'expires_at': {'$lt': now}
     })
@@ -72,9 +67,11 @@ def cleanup_expired_data():
         users_collection.delete_one({'_id': user_id})
 
 
-@app.before_request
-def before_each_request():
-    cleanup_expired_data()
+# Start background scheduler
+scheduler = BackgroundScheduler()
+scheduler.add_job(cleanup_expired_data, 'interval', seconds=1)
+scheduler.start()
+atexit.register(lambda: scheduler.shutdown())
 
 
 def send_email(to_email, subject, body):
