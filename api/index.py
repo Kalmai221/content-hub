@@ -32,6 +32,7 @@ verification_codes_collection = db['verification_codes']
 favorites_collection = db['favorites']
 user_pins_collection = db['user_pins']
 system_settings_collection = db['system_settings']
+messages_collection = db['messages']
 
 # Email Configuration
 SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp-mail.outlook.com')
@@ -1541,6 +1542,258 @@ def update_access_time_setting():
     )
 
     return jsonify({'success': True, 'access_time_limit': new_limit})
+
+# =======================
+# MESSAGING SYSTEM
+# =======================
+
+@app.route('/messages')
+@login_required
+def messages_page():
+    """User messages page"""
+    return render_template('messages.html')
+
+
+@app.route('/api/messages', methods=['GET'])
+@login_required
+def get_user_messages():
+    """Get all messages for the current user's conversation with admins"""
+    user_id = ObjectId(session['user_id'])
+
+    msgs = list(messages_collection.find(
+        {'conversation_user_id': user_id},
+        sort=[('created_at', 1)]
+    ))
+
+    for m in msgs:
+        m['_id'] = str(m['_id'])
+        m['sender_id'] = str(m['sender_id'])
+        m['conversation_user_id'] = str(m['conversation_user_id'])
+        if isinstance(m.get('created_at'), datetime):
+            m['created_at'] = m['created_at'].isoformat()
+
+    return jsonify({'messages': msgs})
+
+
+@app.route('/api/messages', methods=['POST'])
+@login_required
+def send_user_message():
+    """User sends a message to admins"""
+    data = request.json
+    content = (data.get('content') or '').strip()
+    if not content:
+        return jsonify({'success': False, 'error': 'Empty message'}), 400
+
+    user_id = ObjectId(session['user_id'])
+    username = session.get('username', 'Unknown')
+
+    msg = {
+        'conversation_user_id': user_id,
+        'sender_id': user_id,
+        'sender_username': username,
+        'sender_role': 'user',
+        'content': content,
+        'read_by_admin': False,
+        'created_at': datetime.utcnow()
+    }
+
+    result = messages_collection.insert_one(msg)
+    msg['_id'] = str(result.inserted_id)
+    msg['sender_id'] = str(msg['sender_id'])
+    msg['conversation_user_id'] = str(msg['conversation_user_id'])
+    msg['created_at'] = msg['created_at'].isoformat()
+
+    return jsonify({'success': True, 'message': msg})
+
+
+@app.route('/api/messages/poll', methods=['GET'])
+@login_required
+def poll_user_messages():
+    """Poll for new messages since a given message ID"""
+    after_id = request.args.get('after')
+    user_id = ObjectId(session['user_id'])
+
+    query = {'conversation_user_id': user_id}
+    if after_id:
+        try:
+            query['_id'] = {'$gt': ObjectId(after_id)}
+        except Exception:
+            pass
+
+    msgs = list(messages_collection.find(query, sort=[('created_at', 1)]))
+    for m in msgs:
+        m['_id'] = str(m['_id'])
+        m['sender_id'] = str(m['sender_id'])
+        m['conversation_user_id'] = str(m['conversation_user_id'])
+        if isinstance(m.get('created_at'), datetime):
+            m['created_at'] = m['created_at'].isoformat()
+
+    return jsonify({'messages': msgs})
+
+
+# Admin messaging endpoints
+
+@app.route('/api/admin/conversations', methods=['GET'])
+@admin_required
+def get_admin_conversations():
+    """Get all unique conversations (one per user) for admin view.
+    Automatically purges message threads whose user no longer exists."""
+    pipeline = [
+        {'$sort': {'created_at': -1}},
+        {'$group': {
+            '_id': '$conversation_user_id',
+            'last_message': {'$first': '$content'},
+            'last_at': {'$first': '$created_at'},
+            'unread_count': {
+                '$sum': {'$cond': [
+                    {'$and': [
+                        {'$eq': ['$sender_role', 'user']},
+                        {'$eq': ['$read_by_admin', False]}
+                    ]}, 1, 0
+                ]}
+            }
+        }},
+        {'$sort': {'last_at': -1}}
+    ]
+
+    convs = list(messages_collection.aggregate(pipeline))
+
+    result = []
+    for c in convs:
+        uid = c['_id']
+        user = users_collection.find_one({'_id': uid}, {'username': 1})
+        if not user:
+            # User no longer exists — delete all their messages
+            messages_collection.delete_many({'conversation_user_id': uid})
+            continue
+        result.append({
+            'user_id': str(uid),
+            'username': user['username'],
+            'last_message': c.get('last_message', ''),
+            'unread_count': c.get('unread_count', 0)
+        })
+
+    return jsonify({'conversations': result})
+
+
+@app.route('/api/admin/messages/<user_id>', methods=['GET'])
+@admin_required
+def get_admin_user_messages(user_id):
+    """Get all messages in a specific user's conversation"""
+    try:
+        uid = ObjectId(user_id)
+    except Exception:
+        return jsonify({'error': 'Invalid user ID'}), 400
+
+    msgs = list(messages_collection.find(
+        {'conversation_user_id': uid},
+        sort=[('created_at', 1)]
+    ))
+
+    for m in msgs:
+        m['_id'] = str(m['_id'])
+        m['sender_id'] = str(m['sender_id'])
+        m['conversation_user_id'] = str(m['conversation_user_id'])
+        if isinstance(m.get('created_at'), datetime):
+            m['created_at'] = m['created_at'].isoformat()
+
+    return jsonify({'messages': msgs})
+
+
+@app.route('/api/admin/messages/<user_id>', methods=['POST'])
+@admin_required
+def admin_send_message(user_id):
+    """Admin sends a reply to a user"""
+    try:
+        uid = ObjectId(user_id)
+    except Exception:
+        return jsonify({'error': 'Invalid user ID'}), 400
+
+    data = request.json
+    content = (data.get('content') or '').strip()
+    if not content:
+        return jsonify({'success': False, 'error': 'Empty message'}), 400
+
+    admin_username = session.get('username', 'Admin')
+    admin_id = ObjectId(session['user_id'])
+
+    msg = {
+        'conversation_user_id': uid,
+        'sender_id': admin_id,
+        'sender_username': admin_username,
+        'sender_role': 'admin',
+        'content': content,
+        'read_by_admin': True,
+        'created_at': datetime.utcnow()
+    }
+
+    result = messages_collection.insert_one(msg)
+    msg['_id'] = str(result.inserted_id)
+    msg['sender_id'] = str(msg['sender_id'])
+    msg['conversation_user_id'] = str(msg['conversation_user_id'])
+    msg['created_at'] = msg['created_at'].isoformat()
+
+    return jsonify({'success': True, 'message': msg})
+
+
+@app.route('/api/admin/messages/<user_id>/poll', methods=['GET'])
+@admin_required
+def admin_poll_messages(user_id):
+    """Poll for new messages in a conversation since a given message ID"""
+    try:
+        uid = ObjectId(user_id)
+    except Exception:
+        return jsonify({'error': 'Invalid user ID'}), 400
+
+    after_id = request.args.get('after')
+    query = {'conversation_user_id': uid}
+    if after_id:
+        try:
+            query['_id'] = {'$gt': ObjectId(after_id)}
+        except Exception:
+            pass
+
+    msgs = list(messages_collection.find(query, sort=[('created_at', 1)]))
+    for m in msgs:
+        m['_id'] = str(m['_id'])
+        m['sender_id'] = str(m['sender_id'])
+        m['conversation_user_id'] = str(m['conversation_user_id'])
+        if isinstance(m.get('created_at'), datetime):
+            m['created_at'] = m['created_at'].isoformat()
+
+    return jsonify({'messages': msgs})
+
+
+@app.route('/api/admin/messages/<user_id>/read', methods=['POST'])
+@admin_required
+def mark_messages_read(user_id):
+    """Mark all messages from a user as read by admin"""
+    try:
+        uid = ObjectId(user_id)
+    except Exception:
+        return jsonify({'error': 'Invalid user ID'}), 400
+
+    messages_collection.update_many(
+        {'conversation_user_id': uid, 'sender_role': 'user', 'read_by_admin': False},
+        {'$set': {'read_by_admin': True}}
+    )
+
+    return jsonify({'success': True})
+
+
+
+
+@app.route('/api/admin/messages/<user_id>/thread', methods=['DELETE'])
+@admin_required
+def delete_message_thread(user_id):
+    """Delete all messages in a conversation thread for a given user"""
+    try:
+        uid = ObjectId(user_id)
+    except Exception:
+        return jsonify({'error': 'Invalid user ID'}), 400
+
+    result = messages_collection.delete_many({'conversation_user_id': uid})
+    return jsonify({'success': True, 'deleted': result.deleted_count})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
