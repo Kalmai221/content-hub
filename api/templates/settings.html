@@ -3,81 +3,59 @@
 {% block title %}Settings - Effexor Hub{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
-    <div class="mb-6 sm:mb-8">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-200 mb-1">Account Settings</h2>
-        <p class="text-sm text-gray-500">Manage your account preferences and security</p>
-    </div>
+<div class="max-w-lg mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
-    <!-- Account Information -->
-    <div class="rounded-xl border border-gray-700/50 mb-5" style="background-color: rgb(18, 18, 20);">
-        <div class="p-4 sm:p-6 border-b border-gray-700/50">
-            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">Account Information</h3>
-            <div class="space-y-3">
-                <div class="flex items-center justify-between p-3 rounded-xl" style="background:rgba(255,255,255,0.025)">
-                    <div>
-                        <p class="text-xs text-gray-500 mb-0.5">Username</p>
-                        <p class="text-sm font-semibold text-gray-200">{{ user.username }}</p>
-                    </div>
-                </div>
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 p-3 rounded-xl" style="background:rgba(255,255,255,0.025)">
-                    <div class="min-w-0 flex-1">
-                        <p class="text-xs text-gray-500 mb-0.5">Email</p>
-                        <p class="text-sm font-semibold text-gray-200 truncate">{{ user.email }}</p>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 {% if user.email_verified %}bg-green-500/20 text-green-400{% else %}bg-yellow-500/20 text-yellow-400{% endif %}">
-                        {% if user.email_verified %}Verified{% else %}Not Verified{% endif %}
-                    </span>
-                </div>
-                <div class="flex items-center justify-between p-3 rounded-xl" style="background:rgba(255,255,255,0.025)">
-                    <div>
-                        <p class="text-xs text-gray-500 mb-0.5">Account Type</p>
-                        <p class="text-sm font-semibold text-gray-200">
-                            {% if user.is_admin %}Administrator
-                            {% elif user.is_subscribed %}Premium Member
-                            {% else %}Free Account{% endif %}
-                        </p>
-                    </div>
-                    {% if not user.is_subscribed and not user.is_admin %}
-                    <a href="/premium" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-[#21525D] to-[#317888] text-white hover:opacity-90 transition">Upgrade</a>
-                    {% endif %}
-                </div>
-            </div>
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-6 sm:mb-8">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg,#21525D,#317888);">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+        </div>
+        <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-100">Settings</h2>
+            <p class="text-xs text-gray-500 mt-0.5">Account & security</p>
         </div>
     </div>
 
-    <!-- Security -->
-    <div class="rounded-xl border border-gray-700/50 mb-5" style="background-color: rgb(18, 18, 20);">
-        <div class="p-4 sm:p-6">
-            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">Security</h3>
-            <div class="flex items-center justify-between p-3 rounded-xl" style="background:rgba(255,255,255,0.025)">
-                <div>
-                    <p class="text-sm font-semibold text-gray-200 mb-0.5">Password</p>
-                    <p class="text-xs text-gray-500">Keep your account secure with a strong password</p>
-                </div>
-                <button onclick="showChangePasswordModal()"
-                    class="flex-shrink-0 px-4 py-2 bg-gradient-to-r from-[#21525D] to-[#317888] text-white rounded-lg hover:opacity-90 transition text-sm font-semibold">
-                    Change
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Single unified card -->
+    <div class="rounded-2xl border border-gray-800 divide-y divide-gray-800" style="background-color: rgb(18,18,20);">
 
-    <!-- Danger Zone -->
-    <div class="rounded-xl border-2 border-red-500/25" style="background-color: rgb(18, 18, 20);">
-        <div class="p-4 sm:p-6">
-            <h3 class="text-sm font-semibold text-red-400 uppercase tracking-wide mb-4">Danger Zone</h3>
-            <div class="flex items-center justify-between p-3 rounded-xl" style="background:rgba(239,68,68,0.05)">
-                <div>
-                    <p class="text-sm font-semibold text-red-400 mb-0.5">Delete Account</p>
-                    <p class="text-xs text-gray-500">Permanently remove your account and all data</p>
-                </div>
-                <button onclick="showDeleteAccountModal()"
-                    class="flex-shrink-0 px-4 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition text-sm font-semibold">
-                    Delete
-                </button>
-            </div>
+        <!-- Username + Email + Plan — compact rows -->
+        <div class="flex items-center gap-3 px-5 py-4">
+            <span class="text-xs text-gray-500 w-16 flex-shrink-0">Username</span>
+            <span class="text-sm font-semibold text-gray-200 break-all min-w-0">{{ user.username }}</span>
         </div>
+        <div class="flex items-center gap-3 px-5 py-4">
+            <span class="text-xs text-gray-500 w-16 flex-shrink-0">Email</span>
+            <span class="text-sm font-semibold text-gray-200 break-all min-w-0 flex-1">{{ user.email }}</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 {% if user.email_verified %}bg-green-500/15 text-green-400{% else %}bg-yellow-500/15 text-yellow-400{% endif %}">
+                {% if user.email_verified %}✓{% else %}!{% endif %}
+            </span>
+        </div>
+        <div class="flex items-center gap-3 px-5 py-4">
+            <span class="text-xs text-gray-500 w-16 flex-shrink-0">Plan</span>
+            <span class="text-sm font-semibold flex-1 {% if user.is_admin %}text-blue-400{% elif user.is_subscribed %}text-[#5eead4]{% else %}text-gray-200{% endif %}">
+                {% if user.is_admin %}Admin{% elif user.is_subscribed %}Premium{% else %}Free{% endif %}
+            </span>
+            {% if not user.is_subscribed and not user.is_admin %}
+            <a href="/premium" class="text-xs font-semibold text-white px-2.5 py-1 rounded-lg hover:opacity-90 transition flex-shrink-0" style="background:linear-gradient(135deg,#21525D,#317888);">Upgrade</a>
+            {% endif %}
+        </div>
+
+        <!-- Password row -->
+        <div class="flex items-center justify-between gap-3 px-5 py-4">
+            <span class="text-sm font-semibold text-gray-200">Password</span>
+            <button onclick="showChangePasswordModal()" class="text-xs font-semibold text-white px-2.5 py-1 rounded-lg hover:opacity-90 transition flex-shrink-0" style="background:linear-gradient(135deg,#21525D,#317888);">Change</button>
+        </div>
+
+        <!-- Delete row — subtle red tint -->
+        <div class="flex items-center justify-between gap-3 px-5 py-4 rounded-b-2xl" style="background:rgba(239,68,68,0.03);">
+            <span class="text-sm font-semibold text-red-400">Delete Account</span>
+            <button onclick="showDeleteAccountModal()" class="text-xs font-semibold text-red-400 px-2.5 py-1 rounded-lg border border-red-800/40 hover:bg-red-900/20 transition flex-shrink-0">Delete</button>
+        </div>
+
     </div>
 </div>
 
@@ -94,20 +72,16 @@
             <button onclick="hideChangePasswordModal()" class="text-gray-500 hover:text-gray-300 transition" style="background:none;border:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:0.25rem">×</button>
         </div>
         <div class="modal-body">
-
-            <!-- Step 1: Send code -->
             <div id="passwordStep1">
-                <p class="text-sm text-gray-400 mb-4">We'll send a verification code to <span class="text-[#5eead4] font-medium">{{ user.email }}</span></p>
+                <p class="text-sm text-gray-400 mb-4">We'll send a verification code to <span class="text-[#5eead4] font-medium break-all">{{ user.email }}</span></p>
                 <div id="passwordError" class="hidden mb-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
                     <p class="text-red-400 text-xs" id="passwordErrorText"></p>
                 </div>
                 <div class="modal-actions">
-                    <button onclick="sendPasswordChangeCode()" class="modal-btn modal-btn-primary w-full" style="flex:1">Send Verification Code</button>
-                    <button onclick="hideChangePasswordModal()" class="modal-btn modal-btn-cancel w-full" style="flex:1">Cancel</button>
+                    <button onclick="sendPasswordChangeCode()" class="modal-btn modal-btn-primary" style="flex:1">Send Code</button>
+                    <button onclick="hideChangePasswordModal()" class="modal-btn modal-btn-cancel" style="flex:1">Cancel</button>
                 </div>
             </div>
-
-            <!-- Step 2: Enter code + new password -->
             <div id="passwordStep2" class="hidden">
                 <div id="passwordError2" class="hidden mb-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
                     <p class="text-red-400 text-xs" id="passwordErrorText2"></p>
@@ -115,26 +89,22 @@
                 <div class="space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-gray-400 mb-1.5">Verification Code</label>
-                        <input type="text" id="passwordCode" maxlength="6" pattern="[0-9]{6}"
-                            class="modal-input text-center text-2xl tracking-widest font-mono" placeholder="000000"/>
+                        <input type="text" id="passwordCode" maxlength="6" pattern="[0-9]{6}" class="modal-input text-center text-2xl tracking-widest font-mono" placeholder="000000"/>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-400 mb-1.5">New Password</label>
-                        <input type="password" id="newPasswordInput" minlength="6"
-                            class="modal-input" placeholder="Enter new password"/>
+                        <input type="password" id="newPasswordInput" minlength="6" class="modal-input" placeholder="Enter new password"/>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1.5">Confirm New Password</label>
-                        <input type="password" id="confirmPasswordInput"
-                            class="modal-input" placeholder="Confirm new password"/>
+                        <label class="block text-xs font-semibold text-gray-400 mb-1.5">Confirm Password</label>
+                        <input type="password" id="confirmPasswordInput" class="modal-input" placeholder="Confirm new password"/>
                     </div>
                 </div>
                 <div class="modal-actions">
                     <button onclick="changePassword()" class="modal-btn modal-btn-primary" style="flex:1">Change Password</button>
-                    <button onclick="backToPasswordStep1()" class="modal-btn modal-btn-cancel">Resend Code</button>
+                    <button onclick="backToPasswordStep1()" class="modal-btn modal-btn-cancel">Resend</button>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -152,14 +122,12 @@
             <button onclick="hideDeleteAccountModal()" class="text-gray-500 hover:text-gray-300 transition" style="background:none;border:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:0.25rem">×</button>
         </div>
         <div class="modal-body">
-
-            <!-- Step 1: Warning + send code -->
             <div id="deleteStep1">
                 <div class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 mb-4">
-                    <p class="text-xs text-red-400 font-semibold mb-1">This action is permanent and cannot be undone.</p>
+                    <p class="text-xs text-red-400 font-semibold mb-1">This cannot be undone.</p>
                     <p class="text-xs text-gray-400">Your account, all data, and favorites will be permanently deleted.</p>
                 </div>
-                <p class="text-sm text-gray-400 mb-4">Code will be sent to <span class="text-red-400 font-medium">{{ user.email }}</span></p>
+                <p class="text-sm text-gray-400 mb-4">Code will be sent to <span class="text-red-400 font-medium break-all">{{ user.email }}</span></p>
                 <div id="deleteError" class="hidden mb-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
                     <p class="text-red-400 text-xs" id="deleteErrorText"></p>
                 </div>
@@ -168,8 +136,6 @@
                     <button onclick="hideDeleteAccountModal()" class="modal-btn modal-btn-cancel" style="flex:1">Cancel</button>
                 </div>
             </div>
-
-            <!-- Step 2: Verify + type DELETE -->
             <div id="deleteStep2" class="hidden">
                 <div id="deleteError2" class="hidden mb-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
                     <p class="text-red-400 text-xs" id="deleteErrorText2"></p>
@@ -177,21 +143,18 @@
                 <div class="space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-red-400 mb-1.5">Verification Code</label>
-                        <input type="text" id="deleteCode" maxlength="6" pattern="[0-9]{6}"
-                            class="modal-input text-center text-2xl tracking-widest font-mono" style="border-color:rgba(239,68,68,0.4)" placeholder="000000"/>
+                        <input type="text" id="deleteCode" maxlength="6" pattern="[0-9]{6}" class="modal-input text-center text-2xl tracking-widest font-mono" style="border-color:rgba(239,68,68,0.4)" placeholder="000000"/>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-red-400 mb-1.5">Type "DELETE" to confirm</label>
-                        <input type="text" id="deleteConfirm"
-                            class="modal-input" style="border-color:rgba(239,68,68,0.4)" placeholder="DELETE"/>
+                        <input type="text" id="deleteConfirm" class="modal-input" style="border-color:rgba(239,68,68,0.4)" placeholder="DELETE"/>
                     </div>
                 </div>
                 <div class="modal-actions">
                     <button onclick="deleteAccount()" class="modal-btn modal-btn-danger" style="flex:1">Delete Account</button>
-                    <button onclick="backToDeleteStep1()" class="modal-btn modal-btn-cancel">Resend Code</button>
+                    <button onclick="backToDeleteStep1()" class="modal-btn modal-btn-cancel">Resend</button>
                 </div>
             </div>
-
         </div>
     </div>
 </div>

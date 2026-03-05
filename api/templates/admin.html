@@ -122,6 +122,13 @@
         </div>
 
         <!-- ===== SECTION BUTTONS GRID ===== -->
+
+        <!-- Settings heading -->
+        <div class="flex items-center gap-2 mb-3 mt-2">
+            <span class="w-1.5 h-5 rounded-full bg-gradient-to-b from-gray-500 to-gray-700"></span>
+            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Settings</h3>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
 
             <!-- Beta Access -->
@@ -184,23 +191,30 @@
                 <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </button>
 
-            <!-- User Messages -->
-            <button onclick="openMessagesModal()"
-                class="flex items-center gap-3 px-4 py-4 rounded-xl border border-[#317888]/30 bg-[#21525D]/10 hover:bg-[#21525D]/20 transition-colors text-left w-full sm:col-span-2">
-                <div class="w-10 h-10 rounded-xl bg-[#21525D]/30 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-[#5eead4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3-3-3z"/>
-                    </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-semibold text-gray-200">Message Centre</div>
-                    <div class="text-xs text-gray-500 mt-0.5">View and reply to user messages</div>
-                </div>
-                <div id="unreadBadgeBtn" class="hidden px-2 py-0.5 text-xs font-bold rounded-full text-white flex-shrink-0" style="background:#317888;"></div>
-                <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            </button>
-
         </div>
+
+        <!-- Messages heading -->
+        <div class="flex items-center gap-2 mb-3">
+            <span class="w-1.5 h-5 rounded-full bg-gradient-to-b from-green-500 to-emerald-700"></span>
+            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Messages</h3>
+            <div id="unreadBadge" class="hidden ml-1 px-2 py-0.5 text-xs font-bold rounded-full text-white" style="background:#317888;"></div>
+        </div>
+
+        <!-- Message Centre button — full width, distinct green colour -->
+        <button onclick="openMessagesModal()"
+            class="flex items-center gap-3 px-4 py-4 rounded-xl border border-green-500/20 bg-green-500/5 hover:bg-green-500/10 transition-colors text-left w-full mb-6">
+            <div class="w-10 h-10 rounded-xl bg-green-500/15 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3-3-3z"/>
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="text-sm font-semibold text-gray-200">Message Centre</div>
+                <div class="text-xs text-gray-500 mt-0.5">View and reply to user messages</div>
+            </div>
+            <div id="unreadBadgeBtn" class="hidden px-2 py-0.5 text-xs font-bold rounded-full text-white flex-shrink-0" style="background:#317888;"></div>
+            <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
 
     </div>
 </div>
@@ -408,14 +422,67 @@
 <!-- MESSAGES MODAL                 -->
 <!-- ============================== -->
 <style>
+/* Mobile edge-to-edge for categories modal */
 @media (max-width: 640px) {
-    #msgConvPanel { position: absolute !important; left: 0; top: 0; bottom: 0; width: 100% !important; z-index: 10; transform: translateX(-100%); transition: transform 0.25s ease; }
-    #msgConvPanel.mobile-open { transform: translateX(0); }
-    #msgChatArea { width: 100% !important; }
+    #categoriesModal {
+        padding: 0 !important;
+        align-items: flex-end !important;
+    }
+    #categoriesModal .modal-box {
+        border-radius: 1.25rem 1.25rem 0 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        transform: translateY(20px) !important;
+    }
+    #categoriesModal.open .modal-box {
+        transform: translateY(0) !important;
+    }
+}
+
+/* Desktop: normal popup modal */
+#messagesModal .msg-inner {
+    background: rgb(18,18,20);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 1.25rem;
+    width: 100%;
+    max-width: 900px;
+    height: 85vh;
+    max-height: 700px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+}
+/* Mobile: edge-to-edge, no padding, no border-radius */
+@media (max-width: 640px) {
+    #messagesModal {
+        padding: 0 !important;
+        align-items: stretch !important;
+    }
+    #messagesModal .msg-inner {
+        border-radius: 0 !important;
+        border: none !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+    }
+    /* Conv panel: absolute overlay on top of chat area */
+    #msgConvPanel {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        z-index: 20 !important;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        border-right: none !important;
+    }
+    #msgConvPanel.mobile-open {
+        transform: translateX(0) !important;
+    }
 }
 </style>
 <div id="messagesModal" style="display:none; position:fixed; inset:0; z-index:9980; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:16px;">
-    <div style="background:rgb(18,18,20); border:1px solid rgba(255,255,255,0.1); border-radius:1.25rem; width:100%; max-width:900px; height:85vh; max-height:700px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.7);">
+    <div class="msg-inner">
 
         <!-- Modal header -->
         <div style="padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; gap:12px; flex-shrink:0; background:rgba(255,255,255,0.03);">
@@ -423,11 +490,6 @@
             <button id="msgBackBtn" onclick="showConvPanel()" style="display:none; width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.05); border:none; cursor:pointer; align-items:center; justify-content:center; color:#9ca3af; flex-shrink:0;"
                 onmouseenter="this.style.background='rgba(255,255,255,0.1)'" onmouseleave="this.style.background='rgba(255,255,255,0.05)'">
                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            </button>
-            <!-- Mobile: burger button (shown when conv list visible) -->
-            <button id="msgBurgerBtn" onclick="showConvPanel()" style="display:none; width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.05); border:none; cursor:pointer; align-items:center; justify-content:center; color:#9ca3af; flex-shrink:0;"
-                onmouseenter="this.style.background='rgba(255,255,255,0.1)'" onmouseleave="this.style.background='rgba(255,255,255,0.05)'">
-                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
             <div style="width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,#21525D,#317888); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <svg style="width:18px;height:18px;color:white;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3-3-3z"/></svg>
@@ -446,7 +508,7 @@
         <div style="flex:1; display:flex; min-height:0; overflow:hidden; position:relative;">
 
             <!-- Conversation list panel -->
-            <div id="msgConvPanel" style="width:220px; flex-shrink:0; border-right:1px solid rgba(255,255,255,0.07); display:flex; flex-direction:column; background:rgba(255,255,255,0.015);">
+            <div id="msgConvPanel" style="width:220px; flex-shrink:0; border-right:1px solid rgba(255,255,255,0.07); display:flex; flex-direction:column; background:rgb(18,18,20);">
                 <div style="padding:10px 10px 8px;">
                     <input id="convSearch" type="text" placeholder="Search users..."
                         style="width:100%; padding:7px 10px; border-radius:8px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); color:#e5e7eb; font-size:0.75rem; outline:none; box-sizing:border-box;"
@@ -853,8 +915,11 @@
                        : 'background:rgba(255,255,255,0.08); color:#e5e7eb; border-radius:4px 12px 12px 12px;');
         // Always show sender name for both users and admins
         const sender = document.createElement('div');
-        sender.style.cssText = 'font-size:0.65rem; font-weight:700; margin-bottom:3px; white-space:nowrap; color:' + (isAdmin ? 'rgba(255,255,255,0.6);' : '#5eead4;');
-        sender.textContent = (isAdmin ? '🛡 ' : '') + msg.sender_username;
+        sender.style.cssText = 'font-size:0.65rem; font-weight:700; margin-bottom:3px; white-space:nowrap;'
+            + (isAdmin
+                ? 'color:rgba(255,255,255,0.75);'   /* soft white on teal bubble */
+                : 'color:#5eead4;');                  /* site teal on glass bubble */
+        sender.textContent = (isAdmin ? '⚡ ' : '') + msg.sender_username;
         bubble.appendChild(sender);
         const text = document.createElement('div');
         text.textContent = msg.content;
@@ -873,51 +938,46 @@
 
     // Mobile panel helpers
     const isMobile = () => window.innerWidth <= 640;
+
     function showConvPanel() {
-        if (!isMobile()) return;
-        const panel = document.getElementById('msgConvPanel');
-        panel.classList.add('mobile-open');
-        // hide active chat, show nothing-selected placeholder
-        document.getElementById('activeChatPanel').style.display = 'none';
-        document.getElementById('noChatSelected').style.display = 'flex';
-        // swap header buttons
+        // Slide conv panel in over the chat (mobile only)
+        document.getElementById('msgConvPanel').classList.add('mobile-open');
         document.getElementById('msgBackBtn').style.display = 'none';
-        document.getElementById('msgBurgerBtn').style.display = 'none';
         document.getElementById('msgModalTitle').textContent = 'Message Centre';
-        adminCurrentUserId = null;
-        adminLastMsgId = null;
     }
+
     function hideMobileConvPanel() {
-        if (!isMobile()) return;
         document.getElementById('msgConvPanel').classList.remove('mobile-open');
-        // show back button in header
         document.getElementById('msgBackBtn').style.display = 'flex';
-        document.getElementById('msgBurgerBtn').style.display = 'none';
     }
+
     function initMobileLayout() {
         if (isMobile()) {
-            // On mobile, start with conv panel open (slide-in)
+            // Always start with conv panel visible on open
             document.getElementById('msgConvPanel').classList.add('mobile-open');
-            document.getElementById('msgBurgerBtn').style.display = 'flex';
+            document.getElementById('msgBackBtn').style.display = 'none';
+            document.getElementById('msgModalTitle').textContent = 'Message Centre';
+        } else {
+            // Desktop: reset any leftover mobile state
+            document.getElementById('msgConvPanel').classList.remove('mobile-open');
+            document.getElementById('msgBackBtn').style.display = 'none';
         }
     }
-    window.addEventListener('resize', () => {
-        if (!isMobile()) {
-            // restore desktop layout
-            const panel = document.getElementById('msgConvPanel');
-            panel.classList.remove('mobile-open');
-            panel.style.transform = '';
-            document.getElementById('msgBackBtn').style.display = 'none';
-            document.getElementById('msgBurgerBtn').style.display = 'none';
-        }
-    });
+
+    window.addEventListener('resize', initMobileLayout);
     function openMessagesModal() {
+        // Reset state: always start at conv list, no active chat on mobile
+        adminCurrentUserId = null;
+        adminLastMsgId = null;
+        document.getElementById('activeChatPanel').style.display = 'none';
+        document.getElementById('noChatSelected').style.display = 'flex';
         document.getElementById('messagesModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
         loadConversations();
         if (adminPollingInterval) clearInterval(adminPollingInterval);
         adminPollingInterval = setInterval(adminPollMessages, 3000);
-        setTimeout(initMobileLayout, 50);
+        // Initialise mobile layout after a tick (so display:flex has applied)
+        requestAnimationFrame(initMobileLayout);
     }
     function closeMessagesModal() {
         document.getElementById('messagesModal').style.display = 'none';
