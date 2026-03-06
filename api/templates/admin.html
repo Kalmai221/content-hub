@@ -964,7 +964,8 @@
         }
     }
 
-    window.addEventListener('resize', initMobileLayout);
+    // No resize listener — real mobile browsers fire resize on keyboard open/close
+    // which would incorrectly re-open the conv panel mid-chat.
     function openMessagesModal() {
         // Reset state: always start at conv list, no active chat on mobile
         adminCurrentUserId = null;
