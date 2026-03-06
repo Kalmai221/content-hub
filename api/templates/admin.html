@@ -1052,7 +1052,11 @@
             document.getElementById('msgModalTitle').textContent = username;
         }
         await loadAdminMessages(userId);
-        document.getElementById('adminReplyInput').focus();
+        // Don't auto-focus the input — on mobile this immediately opens the
+        // keyboard and resizes the viewport mid-animation.
+        if (!isMobile()) {
+            document.getElementById('adminReplyInput').focus();
+        }
     }
     async function loadAdminMessages(userId) {
         try {
