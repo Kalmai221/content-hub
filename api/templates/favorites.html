@@ -45,8 +45,8 @@
             {% if content.media_type == 'image' %}
             <div class="media-item relative" onclick="openLightbox('{{ content.media_url }}', 'image', '{{ content.title }}', '{{ content.caption }}')">
                 <img 
-                    src="{{ content.media_url }}" 
-                    alt="{{ content.title }}"
+                    src="/api/imgproxy?url={{ content.media_url | urlencode }}" 
+                    alt="{{ content.title }}" referrerpolicy="no-referrer"
                     class="w-full h-auto cursor-pointer"
                     loading="lazy"
                 />
@@ -60,9 +60,9 @@
             {% elif content.media_type == 'video' %}
             <div class="relative">
                 <video 
-                    src="{{ content.media_url }}" 
+                    src="/api/imgproxy?url={{ content.media_url | urlencode }}" 
                     class="w-full h-auto"
-                    controls
+                    controls referrerpolicy="no-referrer"
                     preload="metadata"
                 ></video>
                 {% if content.title or content.caption %}
@@ -107,7 +107,7 @@
 <!-- Lightbox -->
 <div id="lightbox" class="lightbox">
     <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-    <img id="lightbox-image" class="lightbox-content" alt="Lightbox content">
+    <img id="lightbox-image" class="lightbox-content" alt="Lightbox content" referrerpolicy="no-referrer">
     <div id="lightbox-info" class="lightbox-info">
         <div id="lightbox-title" class="lightbox-title"></div>
         <div id="lightbox-caption" class="lightbox-caption"></div>
@@ -281,18 +281,14 @@
 {% block scripts %}
 <script>
     function toggleFavorite(contentId, button) {
-        console.log('toggleFavorite called with contentId:', contentId);
         const isFavorited = button.dataset.favorited === 'true';
         const method = isFavorited ? 'DELETE' : 'POST';
-        console.log('Current state:', isFavorited, 'Method:', method);
 
         fetch(`/api/favorites/${contentId}`, { method })
         .then(response => {
-            console.log('Response status:', response.status);
             return response.json();
         })
         .then(data => {
-            console.log('Response data:', data);
             if (data.success) {
                 // On favorites page, removing from favorites means removing from view
                 const card = button.closest('.content-card');
@@ -317,13 +313,10 @@
                     }
                 }, 300);
             } else {
-                console.error('API returned success: false', data);
-                alert('Failed to update favorite: ' + (data.error || 'Unknown error'));
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Error updating favorite. Check console for details.');
+                console.error('Error:', error);
         });
     }
 
@@ -336,7 +329,7 @@
         const lightboxTitle = document.getElementById('lightbox-title');
         const lightboxCaption = document.getElementById('lightbox-caption');
 
-        lightboxImage.src = url;
+        lightboxImage.src = '/api/imgproxy?url=' + encodeURIComponent(url);
 
         if (title || caption) {
             lightboxTitle.textContent = title || '';

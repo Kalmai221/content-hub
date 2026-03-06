@@ -7,6 +7,7 @@ from functools import wraps
 import os
 from datetime import datetime, timedelta
 import secrets
+import requests as req_lib
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -51,17 +52,16 @@ def cleanup_expired_data():
     now = datetime.utcnow()
 
     # Delete expired verification codes
-    verification_codes_collection.delete_many({'expires_at': {'$lt': now}})
+    verification_codes_collection.delete_many({
+        'expires_at': {'$lt': now}
+    })
 
     # Delete unverified accounts older than 1 day
     one_day_ago = now - timedelta(days=1)
-    old_unverified = list(
-        users_collection.find({
-            'email_verified': False,
-            'created_at': {
-                '$lt': one_day_ago
-            }
-        }))
+    old_unverified = list(users_collection.find({
+        'email_verified': False,
+        'created_at': {'$lt': one_day_ago}
+    }))
     for user in old_unverified:
         user_id = user['_id']
         favorites_collection.delete_many({'user_id': user_id})
@@ -97,11 +97,9 @@ def send_email(to_email, subject, body):
         print(f"Email error: {e}")
         return False
 
-
 def generate_verification_code():
     """Generate a 6-digit verification code"""
     return ''.join([str(secrets.randbelow(10)) for _ in range(6)])
-
 
 def create_verification_code(user_id, email, code_type='email_verification'):
     """Create and store a verification code"""
@@ -119,7 +117,6 @@ def create_verification_code(user_id, email, code_type='email_verification'):
 
     return code
 
-
 def verify_code(email, code, code_type='email_verification'):
     """Verify a code and mark it as used"""
     verification = verification_codes_collection.find_one({
@@ -127,19 +124,16 @@ def verify_code(email, code, code_type='email_verification'):
         'code': code,
         'type': code_type,
         'used': False,
-        'expires_at': {
-            '$gt': datetime.utcnow()
-        }
+        'expires_at': {'$gt': datetime.utcnow()}
     })
 
     if verification:
-        verification_codes_collection.update_one({'_id': verification['_id']},
-                                                 {'$set': {
-                                                     'used': True
-                                                 }})
+        verification_codes_collection.update_one(
+            {'_id': verification['_id']},
+            {'$set': {'used': True}}
+        )
         return True
     return False
-
 
 # Helper function to get accessible categories for sidebar
 def get_accessible_categories():
@@ -155,71 +149,53 @@ def get_accessible_categories():
     all_categories = list(categories_collection.find())
 
     # Get user's pinned categories
-    user_pins = user_pins_collection.find_one(
-        {'user_id': ObjectId(session['user_id'])})
-    pinned_category_ids = set(user_pins.get('pinned_categories',
-                                            [])) if user_pins else set()
+    user_pins = user_pins_collection.find_one({'user_id': ObjectId(session['user_id'])})
+    pinned_category_ids = set(user_pins.get('pinned_categories', [])) if user_pins else set()
 
     # Mark all categories with is_user_pinned
     for category in all_categories:
-        category['is_user_pinned'] = str(
-            category['_id']) in pinned_category_ids
+        category['is_user_pinned'] = str(category['_id']) in pinned_category_ids
 
     # Separate into pinned and unpinned based on user's pins
     pinned_categories = sorted(
         [c for c in all_categories if c['is_user_pinned']],
-        key=lambda x: x['name'].lower())
-    unpinned_categories = [
-        c for c in all_categories if not c['is_user_pinned']
-    ]
+        key=lambda x: x['name'].lower()
+    )
+    unpinned_categories = [c for c in all_categories if not c['is_user_pinned']]
 
     # Within unpinned, separate into paid and free
     paid_categories = sorted(
         [c for c in unpinned_categories if not c.get('is_free', False)],
-        key=lambda x: x['name'].lower())
+        key=lambda x: x['name'].lower()
+    )
     free_categories = sorted(
         [c for c in unpinned_categories if c.get('is_free', False)],
-        key=lambda x: x['name'].lower())
+        key=lambda x: x['name'].lower()
+    )
 
     # Combine: pinned first, then paid, then free
     return pinned_categories + paid_categories + free_categories
-
 
 # Context processor to make categories available in all templates
 @app.context_processor
 def inject_categories():
     content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
-    content_hidden = bool(
-        content_hidden_doc
-        and content_hidden_doc.get('value', 'false').lower() == 'true')
+    content_hidden = bool(content_hidden_doc and content_hidden_doc.get('value', 'false').lower() == 'true')
     if 'user_id' in session:
         cats = get_accessible_categories()
-        return {
-            'sidebar_categories': cats,
-            'categories': cats,
-            'global_content_hidden': content_hidden
-        }
-    return {
-        'sidebar_categories': [],
-        'categories': [],
-        'global_content_hidden': content_hidden
-    }
-
+        return {'sidebar_categories': cats, 'categories': cats, 'global_content_hidden': content_hidden}
+    return {'sidebar_categories': [], 'categories': [], 'global_content_hidden': content_hidden}
 
 # Authentication decorator
 def login_required(f):
-
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('login'))
         return f(*args, **kwargs)
-
     return decorated_function
 
-
 def admin_required(f):
-
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
@@ -228,29 +204,22 @@ def admin_required(f):
         if not user or not user.get('is_admin', False):
             return jsonify({'error': 'Admin access required'}), 403
         return f(*args, **kwargs)
-
     return decorated_function
-
 
 def check_access_timer(f):
     """Decorator to check if unsubscribed user has time remaining"""
-
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' in session:
-            user = users_collection.find_one(
-                {'_id': ObjectId(session['user_id'])})
+            user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
             # Admin and subscribed users bypass timer
-            if user and not user.get('is_subscribed', False) and not user.get(
-                    'is_admin', False):
+            if user and not user.get('is_subscribed', False) and not user.get('is_admin', False):
                 # Reset timer if needed
                 user = reset_user_timer_if_needed(user)
                 # Don't redirect - let JavaScript modal handle it
                 # Just ensure timer is reset
         return f(*args, **kwargs)
-
     return decorated_function
-
 
 # Routes
 @app.route('/')
@@ -269,8 +238,7 @@ def index():
     # If user is logged in and not subscribed, check/reset timer
     if 'user_id' in session:
         user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
-        if user and not user.get('is_subscribed', False) and not user.get(
-                'is_admin', False):
+        if user and not user.get('is_subscribed', False) and not user.get('is_admin', False):
             user = reset_user_timer_if_needed(user)
 
     # ── Trending content: top 10 most-favourited content items ──────────
@@ -278,117 +246,67 @@ def index():
     top_category = None
     try:
         # Count favorites per content_id
-        fav_pipeline = [{
-            '$group': {
-                '_id': '$content_id',
-                'count': {
-                    '$sum': 1
-                }
-            }
-        }, {
-            '$sort': {
-                'count': -1
-            }
-        }, {
-            '$limit': 10
-        }]
+        fav_pipeline = [
+            {'$group': {'_id': '$content_id', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}},
+            {'$limit': 10}
+        ]
         top_fav_docs = list(favorites_collection.aggregate(fav_pipeline))
         if top_fav_docs:
             top_content_ids = [d['_id'] for d in top_fav_docs]
             fav_counts = {d['_id']: d['count'] for d in top_fav_docs}
-            content_docs = list(
-                content_collection.find({'_id': {
-                    '$in': top_content_ids
-                }}))
+            content_docs = list(content_collection.find({'_id': {'$in': top_content_ids}}))
             # Attach category info
-            cat_ids = list({
-                c['category_id']
-                for c in content_docs if c.get('category_id')
-            })
+            cat_ids = list({c['category_id'] for c in content_docs if c.get('category_id')})
             cats_map = {}
-            for cat in categories_collection.find(
-                {'_id': {
-                    '$in': [ObjectId(cid) for cid in cat_ids]
-                }}):
+            for cat in categories_collection.find({'_id': {'$in': [ObjectId(cid) for cid in cat_ids]}}):
                 cats_map[str(cat['_id'])] = cat
             for doc in content_docs:
                 doc['_id'] = str(doc['_id'])
                 cat = cats_map.get(doc.get('category_id', ''), {})
                 doc['category_name'] = cat.get('name', '')
-                doc['category_accent_color'] = cat.get('accent_color',
-                                                       '#317888')
+                doc['category_accent_color'] = cat.get('accent_color', '#317888')
                 doc['category_id'] = doc.get('category_id', '')
                 doc['favorite_count'] = fav_counts.get(ObjectId(doc['_id']), 0)
             # Sort by favorite count descending
-            trending_content = sorted(content_docs,
-                                      key=lambda x: x['favorite_count'],
-                                      reverse=True)
+            trending_content = sorted(content_docs, key=lambda x: x['favorite_count'], reverse=True)
 
         # ── Top category: most pinned across all users ───────────────────
-        pin_pipeline = [{
-            '$unwind': '$pinned_categories'
-        }, {
-            '$group': {
-                '_id': '$pinned_categories',
-                'count': {
-                    '$sum': 1
-                }
-            }
-        }, {
-            '$sort': {
-                'count': -1
-            }
-        }, {
-            '$limit': 1
-        }]
+        pin_pipeline = [
+            {'$unwind': '$pinned_categories'},
+            {'$group': {'_id': '$pinned_categories', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}},
+            {'$limit': 1}
+        ]
         top_pin_docs = list(user_pins_collection.aggregate(pin_pipeline))
         if top_pin_docs:
             top_cat_id = top_pin_docs[0]['_id']
-            top_cat = categories_collection.find_one(
-                {'_id': ObjectId(top_cat_id)})
+            top_cat = categories_collection.find_one({'_id': ObjectId(top_cat_id)})
             if top_cat:
                 top_cat['_id'] = str(top_cat['_id'])
                 # Attach content count
-                top_cat['content_count'] = content_collection.count_documents(
-                    {'category_id': top_cat_id})
+                top_cat['content_count'] = content_collection.count_documents({'category_id': top_cat_id})
                 # Attach total favorites across all content in this category
-                cat_content_ids = [
-                    c['_id'] for c in content_collection.find(
-                        {'category_id': top_cat_id}, {'_id': 1})
-                ]
-                top_cat[
-                    'total_favorites'] = favorites_collection.count_documents(
-                        {'content_id': {
-                            '$in': cat_content_ids
-                        }})
+                cat_content_ids = [c['_id'] for c in content_collection.find({'category_id': top_cat_id}, {'_id': 1})]
+                top_cat['total_favorites'] = favorites_collection.count_documents({'content_id': {'$in': cat_content_ids}})
                 # Attach up to 4 recent thumbnails
-                recent = list(
-                    content_collection.find(
-                        {
-                            'category_id': top_cat_id,
-                            'media_type': 'image',
-                            'media_url': {
-                                '$ne': ''
-                            }
-                        }, {
-                            'media_url': 1
-                        }).sort('created_at', -1).limit(4))
+                recent = list(content_collection.find(
+                    {'category_id': top_cat_id, 'media_type': 'image', 'media_url': {'$ne': ''}},
+                    {'media_url': 1}
+                ).sort('created_at', -1).limit(4))
                 top_cat['recent_thumbnails'] = [r['media_url'] for r in recent]
                 top_cat['is_premium'] = not top_cat.get('is_free', False)
                 top_category = top_cat
     except Exception:
         pass  # Never crash the home page
 
-    return render_template('index.html',
-                           page=page_data,
+    return render_template('index.html', page=page_data,
                            trending_content=trending_content,
                            top_category=top_category)
-
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -399,50 +317,37 @@ def login():
 
         # Search by username or email
         user = users_collection.find_one({
-            '$or': [{
-                'username': username_or_email
-            }, {
-                'email': username_or_email
-            }]
+            '$or': [
+                {'username': username_or_email},
+                {'email': username_or_email}
+            ]
         })
 
         if user:
             # Check if email is verified
             if not user.get('email_verified', False):
-                return jsonify({
-                    'success': False,
-                    'message': 'Please verify your email first'
-                }), 401
+                return jsonify({'success': False, 'message': 'Please verify your email first'}), 401
 
             if check_password_hash(user['password'], password):
                 session['user_id'] = str(user['_id'])
                 session['username'] = user['username']
                 session['is_admin'] = user.get('is_admin', False)
                 session['is_subscribed'] = user.get('is_subscribed', False)
-                return jsonify({
-                    'success': True,
-                    'is_admin': user.get('is_admin', False)
-                })
+                return jsonify({'success': True, 'is_admin': user.get('is_admin', False)})
 
-        return jsonify({
-            'success': False,
-            'message': 'Invalid credentials'
-        }), 401
+        return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
 
-    return render_template(
-        'login.html',
+    return render_template('login.html',
         quick_pin_code=os.environ.get('QUICK_PIN_CODE', ''),
         quick_pin_username=os.environ.get('QUICK_PIN_USERNAME', ''),
         quick_pin_password=os.environ.get('QUICK_PIN_PASSWORD', ''),
         quick_pin_sequence=os.environ.get('QUICK_PIN_SEQUENCE', 'login'),
     )
 
-
 @app.route('/privacy')
 def privacy():
     """Privacy policy page"""
     return render_template('privacy.html')
-
 
 @app.route('/verify-beta-key', methods=['POST'])
 def verify_beta_key():
@@ -454,10 +359,7 @@ def verify_beta_key():
     beta_secret = db['secrets'].find_one({'key': 'beta_key'})
 
     if not beta_secret:
-        return jsonify({
-            'success': False,
-            'message': 'Beta system not configured'
-        }), 500
+        return jsonify({'success': False, 'message': 'Beta system not configured'}), 500
 
     correct_key = beta_secret.get('value', '').strip().upper()
 
@@ -466,7 +368,6 @@ def verify_beta_key():
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'message': 'Invalid beta key'}), 401
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -477,41 +378,26 @@ def register():
         password = data.get('password')
 
         # Check if signup is disabled
-        signup_disabled_config = db['secrets'].find_one(
-            {'key': 'signup_disabled'})
-        signup_disabled = signup_disabled_config and signup_disabled_config.get(
-            'value', 'false').lower() == 'true'
+        signup_disabled_config = db['secrets'].find_one({'key': 'signup_disabled'})
+        signup_disabled = signup_disabled_config and signup_disabled_config.get('value', 'false').lower() == 'true'
 
         if signup_disabled:
-            return jsonify({
-                'success': False,
-                'message': 'Registrations are currently closed'
-            }), 403
+            return jsonify({'success': False, 'message': 'Registrations are currently closed'}), 403
 
         # Check beta mode from secrets
         beta_config = db['secrets'].find_one({'key': 'beta_mode'})
-        beta_mode = beta_config and beta_config.get('value',
-                                                    'false').lower() == 'true'
+        beta_mode = beta_config and beta_config.get('value', 'false').lower() == 'true'
 
         if beta_mode and not session.get('beta_verified', False):
-            return jsonify({
-                'success': False,
-                'message': 'Beta key verification required'
-            }), 403
+            return jsonify({'success': False, 'message': 'Beta key verification required'}), 403
 
         # Check if username already exists
         if users_collection.find_one({'username': username}):
-            return jsonify({
-                'success': False,
-                'message': 'Username already exists'
-            }), 400
+            return jsonify({'success': False, 'message': 'Username already exists'}), 400
 
         # Check if email already exists
         if users_collection.find_one({'email': email}):
-            return jsonify({
-                'success': False,
-                'message': 'Email already exists'
-            }), 400
+            return jsonify({'success': False, 'message': 'Email already exists'}), 400
 
         # Create new user
         user_data = {
@@ -522,8 +408,7 @@ def register():
             'is_subscribed': False,
             'email_verified': False,
             'created_at': datetime.utcnow(),
-            'access_time_remaining':
-            get_access_time_limit(),  # use admin-configured limit
+            'access_time_remaining': get_access_time_limit(),  # use admin-configured limit
             'last_reset_date': datetime.utcnow().date().isoformat()
         }
 
@@ -559,23 +444,14 @@ def register():
         else:
             # If email fails, delete the user
             users_collection.delete_one({'_id': ObjectId(user_id)})
-            return jsonify({
-                'success': False,
-                'message': 'Failed to send verification email'
-            }), 500
+            return jsonify({'success': False, 'message': 'Failed to send verification email'}), 500
 
     # GET request - show registration form
     beta_config = db['secrets'].find_one({'key': 'beta_mode'})
-    beta_mode = beta_config and beta_config.get('value',
-                                                'false').lower() == 'true'
+    beta_mode = beta_config and beta_config.get('value', 'false').lower() == 'true'
     signup_disabled_config = db['secrets'].find_one({'key': 'signup_disabled'})
-    signup_disabled = signup_disabled_config and signup_disabled_config.get(
-        'value', 'false').lower() == 'true'
-    return render_template('register.html',
-                           beta_mode=beta_mode,
-                           signup_disabled=signup_disabled)
-
-
+    signup_disabled = signup_disabled_config and signup_disabled_config.get('value', 'false').lower() == 'true'
+    return render_template('register.html', beta_mode=beta_mode, signup_disabled=signup_disabled)
 @app.route('/verify-email', methods=['POST'])
 def verify_email():
     data = request.json
@@ -587,10 +463,10 @@ def verify_email():
         return jsonify({'success': False, 'message': 'User not found'}), 404
 
     if verify_code(user['email'], code, 'email_verification'):
-        users_collection.update_one({'_id': ObjectId(user_id)},
-                                    {'$set': {
-                                        'email_verified': True
-                                    }})
+        users_collection.update_one(
+            {'_id': ObjectId(user_id)},
+            {'$set': {'email_verified': True}}
+        )
 
         # Auto-login after verification
         session['user_id'] = user_id
@@ -600,11 +476,7 @@ def verify_email():
 
         return jsonify({'success': True})
 
-    return jsonify({
-        'success': False,
-        'message': 'Invalid or expired code'
-    }), 400
-
+    return jsonify({'success': False, 'message': 'Invalid or expired code'}), 400
 
 @app.route('/resend-verification', methods=['POST'])
 def resend_verification():
@@ -616,14 +488,10 @@ def resend_verification():
         return jsonify({'success': False, 'message': 'User not found'}), 404
 
     if user.get('email_verified', False):
-        return jsonify({
-            'success': False,
-            'message': 'Email already verified'
-        }), 400
+        return jsonify({'success': False, 'message': 'Email already verified'}), 400
 
     # Generate new code
-    code = create_verification_code(user_id, user['email'],
-                                    'email_verification')
+    code = create_verification_code(user_id, user['email'], 'email_verification')
 
     # Send verification email
     subject = "Verify Your Email - Effexor Hub"
@@ -649,7 +517,6 @@ def resend_verification():
         return jsonify({'success': True})
 
     return jsonify({'success': False, 'message': 'Failed to send email'}), 500
-
 
 @app.route('/forgot-password', methods=['POST'])
 def forgot_password():
@@ -688,7 +555,6 @@ def forgot_password():
     send_email(email, subject, body)
     return jsonify({'success': True})
 
-
 @app.route('/reset-password', methods=['POST'])
 def reset_password():
     data = request.json
@@ -703,22 +569,16 @@ def reset_password():
     if verify_code(email, code, 'password_reset'):
         users_collection.update_one(
             {'_id': user['_id']},
-            {'$set': {
-                'password': generate_password_hash(new_password)
-            }})
+            {'$set': {'password': generate_password_hash(new_password)}}
+        )
         return jsonify({'success': True})
 
-    return jsonify({
-        'success': False,
-        'message': 'Invalid or expired code'
-    }), 400
-
+    return jsonify({'success': False, 'message': 'Invalid or expired code'}), 400
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
-
 
 @app.route('/settings')
 @login_required
@@ -726,12 +586,10 @@ def settings():
     user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
     return render_template('settings.html', user=user)
 
-
 @app.route('/premium')
 @login_required
 def premium_page():
     return render_template('premium.html')
-
 
 @app.route('/settings/change-password', methods=['POST'])
 @login_required
@@ -745,16 +603,11 @@ def change_password():
     if verify_code(user['email'], code, 'password_change'):
         users_collection.update_one(
             {'_id': user['_id']},
-            {'$set': {
-                'password': generate_password_hash(new_password)
-            }})
+            {'$set': {'password': generate_password_hash(new_password)}}
+        )
         return jsonify({'success': True})
 
-    return jsonify({
-        'success': False,
-        'message': 'Invalid or expired code'
-    }), 400
-
+    return jsonify({'success': False, 'message': 'Invalid or expired code'}), 400
 
 @app.route('/settings/send-change-password-code', methods=['POST'])
 @login_required
@@ -762,8 +615,7 @@ def send_change_password_code():
     user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
 
     # Generate code
-    code = create_verification_code(session['user_id'], user['email'],
-                                    'password_change')
+    code = create_verification_code(session['user_id'], user['email'], 'password_change')
 
     # Send email
     subject = "Password Change Verification - Effexor Hub"
@@ -790,7 +642,6 @@ def send_change_password_code():
 
     return jsonify({'success': False, 'message': 'Failed to send email'}), 500
 
-
 @app.route('/settings/delete-account', methods=['POST'])
 @login_required
 def delete_account():
@@ -806,11 +657,7 @@ def delete_account():
         session.clear()
         return jsonify({'success': True})
 
-    return jsonify({
-        'success': False,
-        'message': 'Invalid or expired code'
-    }), 400
-
+    return jsonify({'success': False, 'message': 'Invalid or expired code'}), 400
 
 @app.route('/settings/send-delete-account-code', methods=['POST'])
 @login_required
@@ -818,8 +665,7 @@ def send_delete_account_code():
     user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
 
     # Generate code
-    code = create_verification_code(session['user_id'], user['email'],
-                                    'account_deletion')
+    code = create_verification_code(session['user_id'], user['email'], 'account_deletion')
 
     # Send email
     subject = "Account Deletion Verification - Effexor Hub"
@@ -847,7 +693,6 @@ def send_delete_account_code():
 
     return jsonify({'success': False, 'message': 'Failed to send email'}), 500
 
-
 @app.route('/categories')
 @login_required
 @check_access_timer
@@ -860,46 +705,42 @@ def categories():
     all_categories = list(categories_collection.find())
 
     # Get user's pinned categories
-    user_pins = user_pins_collection.find_one(
-        {'user_id': ObjectId(session['user_id'])})
-    pinned_category_ids = set(user_pins.get('pinned_categories',
-                                            [])) if user_pins else set()
+    user_pins = user_pins_collection.find_one({'user_id': ObjectId(session['user_id'])})
+    pinned_category_ids = set(user_pins.get('pinned_categories', [])) if user_pins else set()
 
     # Mark categories as pinned for the template
     for category in all_categories:
-        category['is_user_pinned'] = str(
-            category['_id']) in pinned_category_ids
+        category['is_user_pinned'] = str(category['_id']) in pinned_category_ids
 
     # Separate pinned categories
     pinned_categories = sorted(
         [c for c in all_categories if c['is_user_pinned']],
-        key=lambda x: x['name'].lower())
-    unpinned_categories = [
-        c for c in all_categories if not c['is_user_pinned']
-    ]
+        key=lambda x: x['name'].lower()
+    )
+    unpinned_categories = [c for c in all_categories if not c['is_user_pinned']]
 
     # Within unpinned, separate paid and free
     paid_categories = sorted(
         [c for c in unpinned_categories if not c.get('is_free', False)],
-        key=lambda x: x['name'].lower())
+        key=lambda x: x['name'].lower()
+    )
     free_categories = sorted(
         [c for c in unpinned_categories if c.get('is_free', False)],
-        key=lambda x: x['name'].lower())
+        key=lambda x: x['name'].lower()
+    )
 
     # Combine: pinned first, then paid, then free
     categories = pinned_categories + paid_categories + free_categories
 
     # Check if content is hidden site-wide
     content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
-    content_hidden = content_hidden_doc and content_hidden_doc.get(
-        'value', 'false').lower() == 'true'
+    content_hidden = content_hidden_doc and content_hidden_doc.get('value', 'false').lower() == 'true'
 
     return render_template('categories.html',
-                           categories=categories,
-                           is_admin=is_admin,
-                           is_subscribed=is_subscribed,
-                           content_hidden=content_hidden)
-
+                         categories=categories,
+                         is_admin=is_admin,
+                         is_subscribed=is_subscribed,
+                         content_hidden=content_hidden)
 
 @app.route('/category/<category_id>')
 @login_required
@@ -915,8 +756,7 @@ def category_detail(category_id):
         return render_template('no_access.html'), 404
 
     # Check access
-    if not is_admin and not is_subscribed and not category.get(
-            'is_free', False):
+    if not is_admin and not is_subscribed and not category.get('is_free', False):
         return render_template('no_access.html'), 403
 
     # Fetch folders for this category and convert ObjectId to string
@@ -940,27 +780,20 @@ def category_detail(category_id):
 
     # Fetch content for this category (root level only - no folder_id)
     # expand_content_items unpacks any batch documents into individual item dicts
-    content_items = expand_content_items(
-        list(
-            content_collection.find({
-                'category_id': category_id,
-                'folder_id': None
-            })))
+    content_items = expand_content_items(list(content_collection.find({'category_id': category_id, 'folder_id': None})))
 
     # Check if content is hidden site-wide
     content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
-    content_hidden = content_hidden_doc and content_hidden_doc.get(
-        'value', 'false').lower() == 'true'
+    content_hidden = content_hidden_doc and content_hidden_doc.get('value', 'false').lower() == 'true'
 
     return render_template('category_detail.html',
-                           category=category,
-                           content_items=content_items,
-                           folders=folders,
-                           root_folders=root_folders,
-                           folder_tree=folder_tree,
-                           is_admin=is_admin,
-                           content_hidden=content_hidden)
-
+                         category=category,
+                         content_items=content_items,
+                         folders=folders,
+                         root_folders=root_folders,
+                         folder_tree=folder_tree,
+                         is_admin=is_admin,
+                         content_hidden=content_hidden)
 
 @app.route('/admin')
 @login_required
@@ -977,27 +810,17 @@ def admin_panel():
     beta_key = db['secrets'].find_one({'key': 'beta_key'})
 
     beta_settings = {
-        'mode': beta_mode
-        and beta_mode.get('value', 'false').lower() == 'true',
+        'mode': beta_mode and beta_mode.get('value', 'false').lower() == 'true',
         'key': beta_key.get('value', '') if beta_key else ''
     }
 
     signup_disabled_doc = db['secrets'].find_one({'key': 'signup_disabled'})
     content_hidden_doc2 = db['secrets'].find_one({'key': 'content_hidden'})
     site_settings = {
-        'registration_disabled':
-        signup_disabled_doc
-        and signup_disabled_doc.get('value', 'false').lower() == 'true',
-        'content_hidden':
-        content_hidden_doc2
-        and content_hidden_doc2.get('value', 'false').lower() == 'true'
+        'registration_disabled': signup_disabled_doc and signup_disabled_doc.get('value', 'false').lower() == 'true',
+        'content_hidden': content_hidden_doc2 and content_hidden_doc2.get('value', 'false').lower() == 'true'
     }
-    return render_template('admin.html',
-                           users=users,
-                           categories=categories,
-                           beta_settings=beta_settings,
-                           site_settings=site_settings)
-
+    return render_template('admin.html', users=users, categories=categories, beta_settings=beta_settings, site_settings=site_settings)
 
 # API Routes
 @app.route('/api/users', methods=['GET'])
@@ -1008,7 +831,6 @@ def get_users():
         user['_id'] = str(user['_id'])
         user.pop('password', None)
     return jsonify(users)
-
 
 @app.route('/api/users/<user_id>', methods=['PUT'])
 @admin_required
@@ -1025,11 +847,12 @@ def update_user(user_id):
         update_data['needs_refresh'] = True
         update_data['updated_at'] = datetime.utcnow()
 
-    users_collection.update_one({'_id': ObjectId(user_id)},
-                                {'$set': update_data})
+    users_collection.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': update_data}
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/users/<user_id>/subscription', methods=['PUT'])
 @admin_required
@@ -1038,16 +861,16 @@ def update_subscription(user_id):
     data = request.json
     is_subscribed = data.get('is_subscribed', False)
 
-    users_collection.update_one({'_id': ObjectId(user_id)}, {
-        '$set': {
+    users_collection.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {
             'is_subscribed': is_subscribed,
             'needs_refresh': True,
             'updated_at': datetime.utcnow()
-        }
-    })
+        }}
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/users/<user_id>', methods=['DELETE'])
 @admin_required
@@ -1056,7 +879,6 @@ def delete_user(user_id):
     favorites_collection.delete_many({'user_id': user_id})
     users_collection.delete_one({'_id': ObjectId(user_id)})
     return jsonify({'success': True})
-
 
 @app.route('/api/admin/verify-password', methods=['POST'])
 @admin_required
@@ -1081,7 +903,6 @@ def verify_admin_password():
     correct_password = admin_password_doc.get('value', '')
     return jsonify({'success': provided_password == correct_password})
 
-
 @app.route('/api/admin/users/<user_id>/admin-status', methods=['PUT'])
 @admin_required
 def toggle_admin_status(user_id):
@@ -1089,16 +910,16 @@ def toggle_admin_status(user_id):
     data = request.json
     is_admin = data.get('is_admin', False)
 
-    users_collection.update_one({'_id': ObjectId(user_id)}, {
-        '$set': {
+    users_collection.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {
             'is_admin': is_admin,
             'needs_refresh': True,
             'updated_at': datetime.utcnow()
-        }
-    })
+        }}
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/admin/users/<user_id>/reset-password', methods=['POST'])
 @admin_required
@@ -1107,16 +928,16 @@ def reset_user_password(user_id):
     default_password = 'P@$$w0rd'
     hashed_password = generate_password_hash(default_password)
 
-    users_collection.update_one({'_id': ObjectId(user_id)}, {
-        '$set': {
+    users_collection.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {
             'password': hashed_password,
             'needs_refresh': True,
             'updated_at': datetime.utcnow()
-        }
-    })
+        }}
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/account/check-update', methods=['GET'])
 @login_required
@@ -1129,7 +950,6 @@ def check_account_update():
 
     return jsonify({'needs_refresh': needs_refresh})
 
-
 @app.route('/api/account/mark-refreshed', methods=['POST'])
 @login_required
 def mark_account_refreshed():
@@ -1137,10 +957,10 @@ def mark_account_refreshed():
     user_id = session.get('user_id')
 
     # Update user record
-    users_collection.update_one({'_id': ObjectId(user_id)},
-                                {'$set': {
-                                    'needs_refresh': False
-                                }})
+    users_collection.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {'needs_refresh': False}}
+    )
 
     # Update session with latest data
     user = users_collection.find_one({'_id': ObjectId(user_id)})
@@ -1152,7 +972,6 @@ def mark_account_refreshed():
 
     return jsonify({'success': True})
 
-
 @app.route('/api/categories', methods=['GET'])
 @login_required
 def get_categories():
@@ -1160,7 +979,6 @@ def get_categories():
     for category in categories:
         category['_id'] = str(category['_id'])
     return jsonify(categories)
-
 
 @app.route('/api/categories', methods=['POST'])
 @admin_required
@@ -1176,7 +994,6 @@ def create_category():
 
     result = categories_collection.insert_one(category_data)
     return jsonify({'success': True, 'id': str(result.inserted_id)})
-
 
 @app.route('/api/categories/<category_id>', methods=['PUT'])
 @admin_required
@@ -1195,11 +1012,12 @@ def update_category(category_id):
     if 'banner_image' in data:
         update_data['banner_image'] = data['banner_image']
 
-    categories_collection.update_one({'_id': ObjectId(category_id)},
-                                     {'$set': update_data})
+    categories_collection.update_one(
+        {'_id': ObjectId(category_id)},
+        {'$set': update_data}
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/categories/<category_id>/pin', methods=['PUT'])
 @login_required
@@ -1212,7 +1030,10 @@ def pin_category(category_id):
     user_pins = user_pins_collection.find_one({'user_id': user_id})
 
     if not user_pins:
-        user_pins = {'user_id': user_id, 'pinned_categories': []}
+        user_pins = {
+            'user_id': user_id,
+            'pinned_categories': []
+        }
         user_pins_collection.insert_one(user_pins)
 
     # Update pinned categories list
@@ -1230,13 +1051,11 @@ def pin_category(category_id):
     # Update the database
     user_pins_collection.update_one(
         {'user_id': user_id},
-        {'$set': {
-            'pinned_categories': pinned_categories
-        }},
-        upsert=True)
+        {'$set': {'pinned_categories': pinned_categories}},
+        upsert=True
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/categories/<category_id>', methods=['DELETE'])
 @admin_required
@@ -1247,7 +1066,6 @@ def delete_category(category_id):
     # Delete all content in this category
     content_collection.delete_many({'category_id': category_id})
     return jsonify({'success': True})
-
 
 # Folder API Routes
 @app.route('/api/folders', methods=['POST'])
@@ -1267,7 +1085,6 @@ def create_folder():
     result = folders_collection.insert_one(folder_data)
     return jsonify({'success': True, 'id': str(result.inserted_id)})
 
-
 @app.route('/api/folders/<folder_id>', methods=['PUT'])
 @admin_required
 def update_folder(folder_id):
@@ -1283,11 +1100,12 @@ def update_folder(folder_id):
     if 'thumbnail_url' in data:
         update_data['thumbnail_url'] = data['thumbnail_url']
 
-    folders_collection.update_one({'_id': ObjectId(folder_id)},
-                                  {'$set': update_data})
+    folders_collection.update_one(
+        {'_id': ObjectId(folder_id)},
+        {'$set': update_data}
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/folders/<folder_id>', methods=['DELETE'])
 @admin_required
@@ -1303,15 +1121,12 @@ def delete_folder(folder_id):
     delete_folder_recursive(folder_id)
     return jsonify({'success': True})
 
-
 @app.route('/api/folders/<folder_id>/content', methods=['GET'])
 @login_required
 def get_folder_content(folder_id):
     # expand_content_items handles batch documents transparently
-    content_items = expand_content_items(
-        list(content_collection.find({'folder_id': folder_id})))
+    content_items = expand_content_items(list(content_collection.find({'folder_id': folder_id})))
     return jsonify(content_items)
-
 
 @app.route('/api/categories/<category_id>/folder-tree', methods=['GET'])
 @login_required
@@ -1334,12 +1149,11 @@ def get_folder_tree(category_id):
     tree = build_tree(None)
     return jsonify(tree)
 
-
 def _serialize_doc(doc):
     """Convert a MongoDB document dict to JSON-safe types."""
     out = {}
     for k, v in doc.items():
-        if hasattr(v, 'isoformat'):  # datetime / date
+        if hasattr(v, 'isoformat'):          # datetime / date
             out[k] = v.isoformat()
         elif hasattr(v, '__str__') and type(v).__name__ == 'ObjectId':
             out[k] = str(v)
@@ -1364,28 +1178,17 @@ def expand_content_items(raw_items):
                 created_at = created_at.isoformat()
             for idx, url in enumerate(item.get('urls', [])):
                 expanded.append({
-                    '_id':
-                    f"{batch_id}___{idx}",
-                    'category_id':
-                    item.get('category_id'),
-                    'folder_id':
-                    item.get('folder_id'),
-                    'title':
-                    '',
-                    'text':
-                    '',
-                    'media_url':
-                    url,
-                    'media_type':
-                    item.get('batch_media_type', 'image'),
-                    'caption':
-                    '',
-                    'created_at':
-                    created_at,
-                    '_batch_id':
-                    batch_id,
-                    '_batch_index':
-                    idx,
+                    '_id': f"{batch_id}___{idx}",
+                    'category_id': item.get('category_id'),
+                    'folder_id': item.get('folder_id'),
+                    'title': '',
+                    'text': '',
+                    'media_url': url,
+                    'media_type': item.get('batch_media_type', 'image'),
+                    'caption': '',
+                    'created_at': created_at,
+                    '_batch_id': batch_id,
+                    '_batch_index': idx,
                 })
         else:
             expanded.append(_serialize_doc(item))
@@ -1411,7 +1214,6 @@ def create_content():
     result = content_collection.insert_one(content_data)
     return jsonify({'success': True, 'id': str(result.inserted_id)})
 
-
 @app.route('/api/content/bulk', methods=['POST'])
 @admin_required
 def bulk_create_content():
@@ -1429,21 +1231,15 @@ def bulk_create_content():
     media_type = data.get('media_type', 'image')
 
     if not urls:
-        return jsonify({
-            'success': True,
-            'created': 0,
-            'failed': 0,
-            'failed_urls': []
-        })
+        return jsonify({'success': True, 'created': 0, 'failed': 0, 'failed_urls': []})
 
     batch_doc = {
         'category_id': category_id,
         'folder_id': folder_id,
         'title': '',
         'text': '',
-        'media_url': '',  # empty – real URLs live in the urls array
-        'media_type':
-        'batch',  # sentinel so expand_content_items knows to unpack
+        'media_url': '',           # empty – real URLs live in the urls array
+        'media_type': 'batch',      # sentinel so expand_content_items knows to unpack
         'batch_media_type': media_type,
         'urls': urls,
         'caption': '',
@@ -1451,13 +1247,7 @@ def bulk_create_content():
     }
     content_collection.insert_one(batch_doc)
 
-    return jsonify({
-        'success': True,
-        'created': len(urls),
-        'failed': 0,
-        'failed_urls': []
-    })
-
+    return jsonify({'success': True, 'created': len(urls), 'failed': 0, 'failed_urls': []})
 
 @app.route('/api/content/<content_id>', methods=['PUT'])
 @admin_required
@@ -1465,17 +1255,16 @@ def update_content(content_id):
     data = request.json
     update_data = {}
 
-    for field in [
-            'title', 'text', 'media_url', 'media_type', 'caption', 'folder_id'
-    ]:
+    for field in ['title', 'text', 'media_url', 'media_type', 'caption', 'folder_id']:
         if field in data:
             update_data[field] = data[field]
 
-    content_collection.update_one({'_id': ObjectId(content_id)},
-                                  {'$set': update_data})
+    content_collection.update_one(
+        {'_id': ObjectId(content_id)},
+        {'$set': update_data}
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/content/<content_id>', methods=['DELETE'])
 @admin_required
@@ -1493,10 +1282,7 @@ def delete_content(content_id):
             batch_oid = ObjectId(batch_id_str)
             idx = int(idx_str)
         except Exception:
-            return jsonify({
-                'success': False,
-                'error': 'Invalid batch content ID'
-            }), 400
+            return jsonify({'success': False, 'error': 'Invalid batch content ID'}), 400
 
         batch_doc = content_collection.find_one({'_id': batch_oid})
         if not batch_doc:
@@ -1507,17 +1293,13 @@ def delete_content(content_id):
             urls.pop(idx)
 
         if urls:
-            content_collection.update_one({'_id': batch_oid},
-                                          {'$set': {
-                                              'urls': urls
-                                          }})
+            content_collection.update_one({'_id': batch_oid}, {'$set': {'urls': urls}})
         else:
             content_collection.delete_one({'_id': batch_oid})
     else:
         content_collection.delete_one({'_id': ObjectId(content_id)})
 
     return jsonify({'success': True})
-
 
 @app.route('/api/pages/<page_name>', methods=['GET'])
 def get_page(page_name):
@@ -1526,15 +1308,16 @@ def get_page(page_name):
         page['_id'] = str(page['_id'])
     return jsonify(page)
 
-
 @app.route('/api/pages/<page_name>', methods=['PUT'])
 @admin_required
 def update_page(page_name):
     data = request.json
-    pages_collection.update_one({'page_name': page_name}, {'$set': data},
-                                upsert=True)
+    pages_collection.update_one(
+        {'page_name': page_name},
+        {'$set': data},
+        upsert=True
+    )
     return jsonify({'success': True})
-
 
 # Beta Settings API Routes
 @app.route('/api/beta-settings/mode', methods=['PUT'])
@@ -1545,13 +1328,11 @@ def update_beta_mode():
 
     db['secrets'].update_one(
         {'key': 'beta_mode'},
-        {'$set': {
-            'value': 'true' if enabled else 'false'
-        }},
-        upsert=True)
+        {'$set': {'value': 'true' if enabled else 'false'}},
+        upsert=True
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/beta-settings/key', methods=['PUT'])
 @admin_required
@@ -1561,18 +1342,15 @@ def update_beta_key():
 
     # Validate key format
     if len(key) != 12 or not key.isalnum():
-        return jsonify({
-            'success': False,
-            'message': 'Invalid key format'
-        }), 400
+        return jsonify({'success': False, 'message': 'Invalid key format'}), 400
 
-    db['secrets'].update_one({'key': 'beta_key'}, {'$set': {
-        'value': key
-    }},
-                             upsert=True)
+    db['secrets'].update_one(
+        {'key': 'beta_key'},
+        {'$set': {'value': key}},
+        upsert=True
+    )
 
     return jsonify({'success': True})
-
 
 # Site Control Settings
 @app.route('/api/settings/signup-disabled', methods=['PUT'])
@@ -1584,13 +1362,11 @@ def update_signup_disabled():
 
     db['secrets'].update_one(
         {'key': 'signup_disabled'},
-        {'$set': {
-            'value': 'true' if disabled else 'false'
-        }},
-        upsert=True)
+        {'$set': {'value': 'true' if disabled else 'false'}},
+        upsert=True
+    )
 
     return jsonify({'success': True})
-
 
 @app.route('/api/settings/content-hidden', methods=['PUT'])
 @admin_required
@@ -1601,13 +1377,11 @@ def update_content_hidden():
 
     db['secrets'].update_one(
         {'key': 'content_hidden'},
-        {'$set': {
-            'value': 'true' if hidden else 'false'
-        }},
-        upsert=True)
+        {'$set': {'value': 'true' if hidden else 'false'}},
+        upsert=True
+    )
 
     return jsonify({'success': True})
-
 
 # Favorites Page Route (must come before API routes)
 @app.route('/favorites')
@@ -1619,44 +1393,86 @@ def favorites_page():
     is_admin = session.get('is_admin', False)
     is_subscribed = session.get('is_subscribed', False)
 
-    # Get all favorited content IDs
-    favorite_docs = list(
-        favorites_collection.find({'user_id': ObjectId(user_id)}))
-    content_ids = [fav['content_id'] for fav in favorite_docs]
+    # Get all favorited content IDs (stored as strings, including synthetic batch IDs like "abc___0")
+    favorite_docs = list(favorites_collection.find({'user_id': ObjectId(user_id)}))
+    content_id_strs = [str(fav['content_id']) for fav in favorite_docs]
 
-    # Get all content details
     favorited_content = []
-    if content_ids:
-        contents = list(content_collection.find({'_id': {'$in': content_ids}}))
+    if content_id_strs:
+        # Separate real ObjectIds from synthetic batch IDs
+        real_ids = set()
+        for cid in content_id_strs:
+            if '___' in cid:
+                real_ids.add(ObjectId(cid.split('___')[0]))
+            else:
+                try:
+                    real_ids.add(ObjectId(cid))
+                except Exception:
+                    pass
 
-        # Get category info for each content
-        for content in contents:
-            # Handle category_id as either string or ObjectId
-            category_id = content.get('category_id')
+        # Fetch all relevant documents and expand batch items
+        raw_docs = list(content_collection.find({'_id': {'$in': list(real_ids)}}))
+        all_expanded = expand_content_items(raw_docs)
+
+        # Build lookup from expanded item ID -> item
+        expanded_map = {str(item['_id']): item for item in all_expanded}
+
+        # Return favorites in the order they were saved, keeping only matching items
+        for cid in content_id_strs:
+            item = expanded_map.get(cid)
+            if not item:
+                continue
+            # Attach category info
+            category_id = item.get('category_id')
             if category_id:
                 if isinstance(category_id, str):
-                    category_id = ObjectId(category_id)
-                category = categories_collection.find_one({'_id': category_id})
-                if category:
-                    content['category_name'] = category['name']
-                    content['category_accent_color'] = category.get(
-                        'accent_color', '#4F46E5')
-            favorited_content.append(content)
+                    try:
+                        category_id = ObjectId(category_id)
+                    except Exception:
+                        category_id = None
+                if category_id:
+                    category = categories_collection.find_one({'_id': category_id})
+                    if category:
+                        item['category_name'] = category['name']
+                        item['category_accent_color'] = category.get('accent_color', '#4F46E5')
+            favorited_content.append(item)
 
     # Check if content is hidden site-wide
     content_hidden_doc = db['secrets'].find_one({'key': 'content_hidden'})
 
-    return render_template(
-        'favorites.html',
-        favorited_content=favorited_content,
-        is_admin=is_admin,
-        is_subscribed=is_subscribed,
-        content_hidden=content_hidden_doc
-        and content_hidden_doc.get('value', 'false').lower() == 'true')
-
+    return render_template('favorites.html',
+                         favorited_content=favorited_content,
+                         is_admin=is_admin,
+                         is_subscribed=is_subscribed,
+                         content_hidden=content_hidden_doc and content_hidden_doc.get('value','false').lower()=='true')
 
 # Favorites API Routes
 
+
+@app.route('/api/imgproxy')
+def image_proxy():
+    """Proxy external images to avoid NotSameSite redirect blocks."""
+    url = request.args.get('url', '')
+    if not url or not url.startswith('https://'):
+        return '', 400
+    try:
+        resp = req_lib.get(url, timeout=10, allow_redirects=True, headers={'User-Agent': 'Mozilla/5.0'})
+        content_type = resp.headers.get('Content-Type', 'image/jpeg')
+        from flask import Response
+        return Response(resp.content, content_type=content_type)
+    except Exception as e:
+        return str(e), 502
+
+
+def parse_content_id(content_id):
+    """
+    Batch items have synthetic IDs like 'objectid___index'.
+    For favorites we store/look up using just the real ObjectId part.
+    Returns (real_object_id_str, original_content_id_str)
+    """
+    if '___' in content_id:
+        return content_id.split('___')[0], content_id
+    return content_id, content_id
 
 @app.route('/api/favorites/<content_id>', methods=['POST'])
 def add_favorite(content_id):
@@ -1668,10 +1484,12 @@ def add_favorite(content_id):
     is_subscribed = session.get('is_subscribed', False)
     is_admin = session.get('is_admin', False)
 
+    real_id, orig_id = parse_content_id(content_id)
+
     # Check if already favorited
     existing = favorites_collection.find_one({
         'user_id': ObjectId(user_id),
-        'content_id': ObjectId(content_id)
+        'content_id': orig_id
     })
 
     if existing:
@@ -1679,30 +1497,26 @@ def add_favorite(content_id):
 
     # Check favorites limit for non-premium users
     if not is_subscribed and not is_admin:
-        favorites_count = favorites_collection.count_documents(
-            {'user_id': ObjectId(user_id)})
+        favorites_count = favorites_collection.count_documents({
+            'user_id': ObjectId(user_id)
+        })
 
         if favorites_count >= 50:
             return jsonify({
-                'success':
-                False,
-                'error':
-                'Favorites limit reached',
-                'limit_reached':
-                True,
-                'message':
-                'You have reached the maximum of 50 favorites. Upgrade to premium for unlimited favorites!'
+                'success': False,
+                'error': 'Favorites limit reached',
+                'limit_reached': True,
+                'message': 'You have reached the maximum of 50 favorites. Upgrade to premium for unlimited favorites!'
             }), 403
 
-    # Add to favorites
+    # Add to favorites - store original synthetic ID so we can look it up later
     favorites_collection.insert_one({
         'user_id': ObjectId(user_id),
-        'content_id': ObjectId(content_id),
+        'content_id': orig_id,
         'created_at': datetime.utcnow()
     })
 
     return jsonify({'success': True})
-
 
 @app.route('/api/favorites/<content_id>', methods=['DELETE'])
 def remove_favorite(content_id):
@@ -1712,16 +1526,16 @@ def remove_favorite(content_id):
 
     user_id = session['user_id']
 
+    _, orig_id = parse_content_id(content_id)
     result = favorites_collection.delete_one({
         'user_id': ObjectId(user_id),
-        'content_id': ObjectId(content_id)
+        'content_id': orig_id
     })
 
     if result.deleted_count > 0:
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'error': 'Not in favorites'}), 400
-
 
 @app.route('/api/favorites/check/<content_id>', methods=['GET'])
 def check_favorite(content_id):
@@ -1731,13 +1545,13 @@ def check_favorite(content_id):
 
     user_id = session['user_id']
 
+    _, orig_id = parse_content_id(content_id)
     favorite = favorites_collection.find_one({
         'user_id': ObjectId(user_id),
-        'content_id': ObjectId(content_id)
+        'content_id': orig_id
     })
 
     return jsonify({'is_favorited': favorite is not None})
-
 
 @app.route('/api/favorites/check-bulk', methods=['POST'])
 def check_favorites_bulk():
@@ -1758,37 +1572,16 @@ def check_favorites_bulk():
 
     user_id = ObjectId(session['user_id'])
 
-    # Filter out synthetic batch IDs (format: "batchid___index") — they share the
-    # batch document's real ObjectId so map them back before querying.
-    real_id_map = {}  # real_object_id_str -> [original_id_str, ...]
-    for raw_id in ids:
-        if '___' in str(raw_id):
-            real_str = str(raw_id).split('___')[0]
-        else:
-            real_str = str(raw_id)
-        real_id_map.setdefault(real_str, []).append(str(raw_id))
-
-    try:
-        object_ids = [ObjectId(k) for k in real_id_map]
-    except Exception:
-        return jsonify({'favorited': []})
+    # Favorites are stored with the original ID string (including synthetic batch IDs)
+    str_ids = [str(i) for i in ids]
 
     favorited_docs = favorites_collection.find(
-        {
-            'user_id': user_id,
-            'content_id': {
-                '$in': object_ids
-            }
-        }, {'content_id': 1})
+        {'user_id': user_id, 'content_id': {'$in': str_ids}},
+        {'content_id': 1}
+    )
 
-    result = []
-    for doc in favorited_docs:
-        real_str = str(doc['content_id'])
-        # Return all original IDs that map to this real document
-        result.extend(real_id_map.get(real_str, [real_str]))
-
+    result = [str(doc['content_id']) for doc in favorited_docs]
     return jsonify({'favorited': result})
-
 
 @app.route('/api/favorites/count', methods=['GET'])
 def get_favorites_count():
@@ -1800,8 +1593,9 @@ def get_favorites_count():
     is_subscribed = session.get('is_subscribed', False)
     is_admin = session.get('is_admin', False)
 
-    count = favorites_collection.count_documents(
-        {'user_id': ObjectId(user_id)})
+    count = favorites_collection.count_documents({
+        'user_id': ObjectId(user_id)
+    })
 
     return jsonify({
         'count': count,
@@ -1809,11 +1603,9 @@ def get_favorites_count():
         'limit': None if (is_subscribed or is_admin) else 50
     })
 
-
 # =======================
 # CATEGORY BANNER IMAGE
 # =======================
-
 
 @app.route('/api/categories/<category_id>/banner', methods=['PUT'])
 def update_category_banner(category_id):
@@ -1824,28 +1616,24 @@ def update_category_banner(category_id):
     data = request.json
     banner_url = data.get('banner_url', '')
 
-    categories_collection.update_one({'_id': ObjectId(category_id)},
-                                     {'$set': {
-                                         'banner_image': banner_url
-                                     }})
+    categories_collection.update_one(
+        {'_id': ObjectId(category_id)},
+        {'$set': {'banner_image': banner_url}}
+    )
 
     return jsonify({'success': True})
-
 
 # =======================
 # ACCESS TIMER SYSTEM
 # =======================
 
-
 def get_access_time_limit():
     """Get the access time limit for unsubscribed users (in seconds)"""
-    settings = system_settings_collection.find_one(
-        {'key': 'access_time_limit'})
+    settings = system_settings_collection.find_one({'key': 'access_time_limit'})
     if settings:
         return settings.get('value', 3600)
     # Default to 1 hour if not set
     return 3600
-
 
 def reset_user_timer_if_needed(user):
     """Reset user's access timer if it's a new day in their local timezone"""
@@ -1858,12 +1646,15 @@ def reset_user_timer_if_needed(user):
     if last_reset != today:
         # It's a new day, reset the timer
         access_limit = get_access_time_limit()
-        users_collection.update_one({'_id': user['_id']}, {
-            '$set': {
-                'access_time_remaining': access_limit,
-                'last_reset_date': today
+        users_collection.update_one(
+            {'_id': user['_id']},
+            {
+                '$set': {
+                    'access_time_remaining': access_limit,
+                    'last_reset_date': today
+                }
             }
-        })
+        )
         user['access_time_remaining'] = access_limit
         user['last_reset_date'] = toda
 
@@ -1873,13 +1664,11 @@ def reset_user_timer_if_needed(user):
             access_limit = get_access_time_limit()
             users_collection.update_one(
                 {'_id': user['_id']},
-                {'$set': {
-                    'access_time_remaining': access_limit
-                }})
+                {'$set': {'access_time_remaining': access_limit}}
+            )
             user['access_time_remaining'] = access_limit
 
     return user
-
 
 @app.route('/api/timer/get', methods=['GET'])
 @login_required
@@ -1902,15 +1691,10 @@ def get_timer():
     user = reset_user_timer_if_needed(user)
 
     return jsonify({
-        'success':
-        True,
-        'is_subscribed':
-        False,
-        'time_remaining':
-        user.get('access_time_remaining') if user.get('access_time_remaining')
-        is not None else get_access_time_limit()
+        'success': True,
+        'is_subscribed': False,
+        'time_remaining': user.get('access_time_remaining') if user.get('access_time_remaining') is not None else get_access_time_limit()
     })
-
 
 @app.route('/api/timer/update', methods=['POST'])
 @login_required
@@ -1936,9 +1720,8 @@ def update_timer():
 
     users_collection.update_one(
         {'_id': user['_id']},
-        {'$set': {
-            'access_time_remaining': time_remaining
-        }})
+        {'$set': {'access_time_remaining': time_remaining}}
+    )
 
     return jsonify({
         'success': True,
@@ -1946,14 +1729,12 @@ def update_timer():
         'expired': time_remaining <= 0
     })
 
-
 @app.route('/api/settings/access-time', methods=['GET'])
 @admin_required
 def get_access_time_setting():
     """Get the access time limit setting"""
     limit = get_access_time_limit()
     return jsonify({'success': True, 'access_time_limit': limit})
-
 
 @app.route('/api/settings/access-time', methods=['PUT'])
 @admin_required
@@ -1967,19 +1748,17 @@ def update_access_time_setting():
         return jsonify({'success': False, 'error': 'Invalid time limit'}), 400
 
     # Update or create the setting
-    system_settings_collection.update_one({'key': 'access_time_limit'},
-                                          {'$set': {
-                                              'value': new_limit
-                                          }},
-                                          upsert=True)
+    system_settings_collection.update_one(
+        {'key': 'access_time_limit'},
+        {'$set': {'value': new_limit}},
+        upsert=True
+    )
 
     return jsonify({'success': True, 'access_time_limit': new_limit})
-
 
 # =======================
 # MESSAGING SYSTEM
 # =======================
-
 
 @app.route('/messages')
 @login_required
@@ -1994,9 +1773,10 @@ def get_user_messages():
     """Get all messages for the current user's conversation with admins"""
     user_id = ObjectId(session['user_id'])
 
-    msgs = list(
-        messages_collection.find({'conversation_user_id': user_id},
-                                 sort=[('created_at', 1)]))
+    msgs = list(messages_collection.find(
+        {'conversation_user_id': user_id},
+        sort=[('created_at', 1)]
+    ))
 
     for m in msgs:
         m['_id'] = str(m['_id'])
@@ -2066,42 +1846,28 @@ def poll_user_messages():
 
 # Admin messaging endpoints
 
-
 @app.route('/api/admin/conversations', methods=['GET'])
 @admin_required
 def get_admin_conversations():
     """Get all unique conversations (one per user) for admin view.
     Automatically purges message threads whose user no longer exists."""
-    pipeline = [{
-        '$sort': {
-            'created_at': -1
-        }
-    }, {
-        '$group': {
+    pipeline = [
+        {'$sort': {'created_at': -1}},
+        {'$group': {
             '_id': '$conversation_user_id',
-            'last_message': {
-                '$first': '$content'
-            },
-            'last_at': {
-                '$first': '$created_at'
-            },
+            'last_message': {'$first': '$content'},
+            'last_at': {'$first': '$created_at'},
             'unread_count': {
-                '$sum': {
-                    '$cond': [{
-                        '$and': [{
-                            '$eq': ['$sender_role', 'user']
-                        }, {
-                            '$eq': ['$read_by_admin', False]
-                        }]
-                    }, 1, 0]
-                }
+                '$sum': {'$cond': [
+                    {'$and': [
+                        {'$eq': ['$sender_role', 'user']},
+                        {'$eq': ['$read_by_admin', False]}
+                    ]}, 1, 0
+                ]}
             }
-        }
-    }, {
-        '$sort': {
-            'last_at': -1
-        }
-    }]
+        }},
+        {'$sort': {'last_at': -1}}
+    ]
 
     convs = list(messages_collection.aggregate(pipeline))
 
@@ -2132,9 +1898,10 @@ def get_admin_user_messages(user_id):
     except Exception:
         return jsonify({'error': 'Invalid user ID'}), 400
 
-    msgs = list(
-        messages_collection.find({'conversation_user_id': uid},
-                                 sort=[('created_at', 1)]))
+    msgs = list(messages_collection.find(
+        {'conversation_user_id': uid},
+        sort=[('created_at', 1)]
+    ))
 
     for m in msgs:
         m['_id'] = str(m['_id'])
@@ -2220,15 +1987,13 @@ def mark_messages_read(user_id):
         return jsonify({'error': 'Invalid user ID'}), 400
 
     messages_collection.update_many(
-        {
-            'conversation_user_id': uid,
-            'sender_role': 'user',
-            'read_by_admin': False
-        }, {'$set': {
-            'read_by_admin': True
-        }})
+        {'conversation_user_id': uid, 'sender_role': 'user', 'read_by_admin': False},
+        {'$set': {'read_by_admin': True}}
+    )
 
     return jsonify({'success': True})
+
+
 
 
 @app.route('/api/admin/messages/<user_id>/thread', methods=['DELETE'])
@@ -2242,7 +2007,6 @@ def delete_message_thread(user_id):
 
     result = messages_collection.delete_many({'conversation_user_id': uid})
     return jsonify({'success': True, 'deleted': result.deleted_count})
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

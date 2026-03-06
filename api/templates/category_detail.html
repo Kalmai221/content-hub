@@ -459,7 +459,7 @@
                         {% elif item.media_type == 'video' %}
                         <div class="relative">
                             <video controls class="w-full h-auto">
-                                <source src="{{ item.media_url }}" type="video/mp4">
+                                <source src="/api/imgproxy?url={{ item.media_url | urlencode }}" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
                             {% if item.title or item.caption %}
@@ -1343,20 +1343,25 @@
                     return;
                 }
 
+                // Store raw URLs in a side-channel JS map so they never
+                // pass through HTML attribute encoding (which can mangle unusual URLs).
+                window._folderUrlMap = window._folderUrlMap || {};
+                items.forEach(item => { window._folderUrlMap[item._id] = item.media_url || ''; });
+
                 let html = '<div class="content-grid grid gap-3 sm:gap-4">';
                 items.forEach(item => {
                     html += `<div id="content-${item._id}" class="content-card group relative bg-gray-800/50 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">`;
 
                     if (item.media_type === 'image') {
                         html += `
-                            <div class="media-item" data-url="${escapeHtml(item.media_url||'')}" data-title="${escapeHtml(item.title||'')}" data-caption="${escapeHtml(item.caption||'')}" onclick="openLightbox(this.dataset.url, 'image', this.dataset.title, this.dataset.caption)">
-                                <img data-src="${escapeHtml(item.media_url||'')}" alt="${escapeHtml(item.title||'')}" class="w-full h-auto lazy-img" referrerpolicy="no-referrer" onerror="this.style.opacity='0.3';this.title='Failed: '+this.src;">
+                            <div class="media-item" data-id="${item._id}" data-title="${escapeHtml(item.title||'')}" data-caption="${escapeHtml(item.caption||'')}" onclick="openLightbox(window._folderUrlMap[this.dataset.id], 'image', this.dataset.title, this.dataset.caption)">
+                                <img data-id="${item._id}" alt="${escapeHtml(item.title||'')}" class="w-full h-auto lazy-img folder-img" referrerpolicy="no-referrer">
                                 ${(item.title||item.caption) ? `<div class="content-overlay">${item.title?`<div class="content-overlay-title">${escapeHtml(item.title)}</div>`:''} ${item.caption?`<div class="content-overlay-caption">${escapeHtml(item.caption)}</div>`:''}</div>` : ''}
                             </div>`;
                     } else if (item.media_type === 'video') {
                         html += `
                             <div class="relative">
-                                <video controls class="w-full h-auto"><source src="${escapeHtml(item.media_url||'')}" type="video/mp4"></video>
+                                <video controls class="w-full h-auto"><source src="${proxyUrl(item.media_url||'')}" type="video/mp4"></video>
                                 ${(item.title||item.caption) ? `<div class="content-overlay">${item.title?`<div class="content-overlay-title">${escapeHtml(item.title)}</div>`:''} ${item.caption?`<div class="content-overlay-caption">${escapeHtml(item.caption)}</div>`:''}</div>` : ''}
                             </div>`;
                     } else {
@@ -1580,7 +1585,7 @@
     function openLightbox(url, type, title, caption) {
         if (type !== 'image') return;
         const lightbox = document.getElementById('lightbox');
-        document.getElementById('lightbox-image').src = url;
+        document.getElementById('lightbox-image').src = proxyUrl(url);
         const hasInfo = title || caption;
         document.getElementById('lightbox-info').style.display = hasInfo ? 'block' : 'none';
         if (title) { document.getElementById('lightbox-title').textContent = title; document.getElementById('lightbox-title').style.display='block'; }
@@ -1722,11 +1727,30 @@
         });
     }, { rootMargin: '200px 0px' }); // start loading 200px before entering viewport
 
+    function proxyUrl(url) {
+        if (!url) return '';
+        // Route through our server to avoid NotSameSite redirect blocks
+        return '/api/imgproxy?url=' + encodeURIComponent(url);
+    }
+
     function observeLazyImages(root) {
         // If loading into a modal/off-screen container, skip the IntersectionObserver
         // (it never fires for elements inside display:none parents) and set src directly.
         // Only use the observer for the main page scroll area (root === undefined/null).
         if (root) {
+            // folder-img: URL stored in window._folderUrlMap keyed by data-id (never HTML-encoded)
+            const folderImgs = root.querySelectorAll('img.folder-img[data-id]');
+            console.log('[DEBUG] folder-img count:', folderImgs.length, '| urlMap keys:', window._folderUrlMap ? Object.keys(window._folderUrlMap).length : 0);
+            folderImgs.forEach((img, i) => {
+                const url = window._folderUrlMap && window._folderUrlMap[img.dataset.id];
+                if (i < 3) console.log('[DEBUG] img', i, 'id:', img.dataset.id, '| url:', url ? url.substring(0,80) : 'MISSING');
+                if (url) {
+                    img.onerror = () => console.error('[DEBUG] LOAD FAILED for:', url.substring(0,80));
+                    img.onload = () => { if (i < 3) console.log('[DEBUG] LOADED ok:', url.substring(0,80)); };
+                    img.src = proxyUrl(url);
+                }
+            });
+            // legacy data-src images
             root.querySelectorAll('img.lazy-img[data-src]').forEach(img => {
                 img.src = img.dataset.src;
                 img.removeAttribute('data-src');
